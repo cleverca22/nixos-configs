@@ -1,4 +1,4 @@
-{ ... }:
+{ foo, ... }:
 
 {
   imports = [ ./clevers_machines.nix ];
@@ -25,6 +25,7 @@
   };
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
   services = {
+    mingetty.greetingLine = "${foo.result}";
     nixosManual.enable = false;
     toxvpn = {
       enable = true;
