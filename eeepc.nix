@@ -1,13 +1,12 @@
-{ foo, ... }:
+{ ... }:
 
 {
-  imports = [ ./clevers_machines.nix ];
+  imports = [ ./clevers_machines.nix ./snmpd.nix ];
   boot.loader.grub = {
     device = "/dev/sda";
     copyKernels = true;
   };
   swapDevices = [ { device = "/dev/sda2"; } ];
-  fileSystems."/" = { device = "/dev/sda1"; fsType = "xfs"; };
   programs = {
     man.enable = false;
     info.enable = false;
@@ -18,18 +17,15 @@
       enable = true;
       interfaces = [ "wlp1s0" ];
     };
-    hostName = "eeepc1";
     firewall = {
       allowedUDPPorts = [ 33445 ];
     };
   };
   i18n.supportedLocales = [ "en_US.UTF-8/UTF-8" ];
   services = {
-    mingetty.greetingLine = "${foo.result}";
     nixosManual.enable = false;
     toxvpn = {
       enable = true;
-      localip = "192.168.123.21";
     };
   };
 }

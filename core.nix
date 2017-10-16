@@ -2,7 +2,10 @@
 
 let
   passwords = import ./passwords.nix;
+  keys = import ./keys.nix;
 in {
+  imports = [ ./vim.nix ];
+
   environment.systemPackages = with pkgs; [
     sqlite-interactive screen nix-repl
     (if config.services.xserver.enable then gitAndTools.gitFull else git)
@@ -29,6 +32,7 @@ in {
         isNormalUser = true;
         uid = 1000;
         initialHashedPassword = passwords.hashedPw;
+        openssh.authorizedKeys.keys = with keys; [ clever_amd ];
       };
     };
     extraGroups = {
