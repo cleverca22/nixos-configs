@@ -2,7 +2,17 @@
 
 let
   nixos_release = import (pkgs.path + "/nixos/release.nix") {};
-  netboot = nixos_release.netboot.x86_64-linux;
+  netboot = let
+    build = (import (pkgs.path + "/nixos/lib/eval-config.nix") {
+      system = "i686-linux";
+      modules = [
+        (pkgs.path + "/nixos/modules/installer/netboot/netboot-minimal.nix")
+      ];
+    }).config.system.build;
+  in pkgs.symlinkJoin {
+    name = "netboot";
+    paths = with build; [ netbootRamdisk kernel netbootIpxeScript ];
+  };
   tftp_root = pkgs.runCommand "tftproot" {} ''
     mkdir -pv $out
     cp -vi ${pkgs.ipxe}/undionly.kpxe $out/undionly.kpxe
@@ -10,6 +20,7 @@ let
   nginx_root = pkgs.runCommand "nginxroot" {} ''
     mkdir -pv $out
     cat <<EOF > $out/boot.php
+    #!ipxe
     chain netboot/netboot.ipxe
     EOF
     ln -sv ${netboot} $out/netboot
@@ -26,7 +37,7 @@ in {
           };
         };
       };
-      dhcpd = {
+      dhcpd4 = {
         interfaces = [ "enp9s0" ];
         enable = true;
         extraConfig = ''
@@ -56,6 +67,11 @@ in {
       };
     };
     networking = {
+      interfaces = {
+        enp9s0 = {
+          ip4 = [ { address = "192.168.3.1"; prefixLength = 24; } ];
+        };
+      };
       nat = {
         enable = true;
         externalInterface = "wlan0";
