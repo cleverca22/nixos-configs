@@ -1,0 +1,3 @@
+[submodule "nix-tests"]
+	path = nix-tests
+	url = https://github.com/cleverca22/nix-tests

@@ -1,11 +1,15 @@
 { pkgs, ... }:
 let
   netboot = import (pkgs.path + "/nixos/lib/eval-config.nix") {
-      # you will want to add options here to support your filesystem
-      # and also maybe ssh to let you in
       modules = [
         (pkgs.path + "/nixos/modules/installer/netboot/netboot-minimal.nix")
+        module
       ];
+    };
+    module = {
+      # you will want to add options here to support your filesystem
+      # and also maybe ssh to let you in
+      boot.supportedFilesystems = [ "zfs" ];
     };
 in {
   boot.loader.grub.extraEntries = ''

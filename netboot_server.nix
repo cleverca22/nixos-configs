@@ -4,9 +4,10 @@ let
   nixos_release = import (pkgs.path + "/nixos/release.nix") {};
   netboot = let
     build = (import (pkgs.path + "/nixos/lib/eval-config.nix") {
-      system = "i686-linux";
+      system = "x86_64-linux";
       modules = [
         (pkgs.path + "/nixos/modules/installer/netboot/netboot-minimal.nix")
+        ./nix-tests/kexec/justdoit.nix
       ];
     }).config.system.build;
   in pkgs.symlinkJoin {
