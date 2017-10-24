@@ -1,4 +1,6 @@
-{ pkgs, ... }:
+{ lib, config, pkgs, ... }:
+
+with lib;
 
 let
   nixos_release = import (pkgs.path + "/nixos/release.nix") {};
@@ -26,8 +28,22 @@ let
     EOF
     ln -sv ${netboot} $out/netboot
   '';
+  cfg = config.netboot_server;
 in {
-  options = {};
+  options = {
+    netboot_server = {
+      network.wan = mkOption {
+        type = types.str;
+        description = "the internet facing IF";
+        default = "wlan0";
+      };
+      network.lan = mkOption {
+        type = types.str;
+        description = "the netboot client facing IF";
+        default = "enp9s0";
+      };
+    };
+  };
   config = {
     services = {
       nginx = {
@@ -39,7 +55,7 @@ in {
         };
       };
       dhcpd4 = {
-        interfaces = [ "enp9s0" ];
+        interfaces = [ cfg.network.lan ];
         enable = true;
         extraConfig = ''
           subnet 192.168.3.0 netmask 255.255.255.0 {
@@ -69,15 +85,15 @@ in {
     };
     networking = {
       interfaces = {
-        enp9s0 = {
+        ${cfg.network.lan} = {
           ip4 = [ { address = "192.168.3.1"; prefixLength = 24; } ];
         };
       };
       nat = {
         enable = true;
-        externalInterface = "wlan0";
+        externalInterface = cfg.network.wan;
         internalIPs = [ "192.168.3.0/24" ];
-        internalInterfaces = [ "enp9s0" ];
+        internalInterfaces = [ cfg.network.lan ];
       };
     };
   };
