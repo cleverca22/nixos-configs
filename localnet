@@ -1,0 +1,36 @@
+$TTL 3D
+@	IN	SOA	ns.localnet. hostmaster (
+			  1	; serial
+			  8H	; refresh
+			  2H	; retry
+			  4W	; expire
+			  1D)	; minimum ttl
+		NS	ns.localnet.
+localnet. IN    A       192.168.2.1
+router	IN	A	192.168.2.1
+ns	IN	A	192.168.2.1
+router	IN	AAAA	fe80::230:48ff:fec5:d2df
+amd	IN	A	192.168.2.15
+amd	IN	AAAA	fe80::4216:7eff:feb3:3248
+ramboot	IN	A	192.168.2.10
+ramboot	IN	AAAA	fe80::21c:23ff:fe16:4bb3
+nas	IN	A	192.168.2.11
+nas	IN	AAAA	2001:470:1d:19a:d250:99ff:fe7a:8021
+nix1	IN	A	192.168.2.30
+nix1	IN	AAAA	fe80::90c5:e2ff:febb:12a9
+nix2	IN	A	192.168.2.31
+system76 IN	AAAA	2001:470:1d:19a:a2af:bdff:fe82:390d
+system76 IN	A	192.168.2.32
+nix2	IN	AAAA	fe80::5c88:5bff:fed7:6ebc
+c2d	IN	A	192.168.2.61
+;c2d	IN	AAAA	2001:470:1d:19a:21c:c4ff:fe6e:46
+nixcache IN	CNAME	c2d
+gamer	IN	A	192.168.2.62
+gamer	IN	AAAA	fe80::217:a4ff:fe1c:6200
+
+
+batcave IN      A       192.168.123.4
+charlie IN      A       192.168.123.39
+nixsw   IN      A       192.168.123.50
+frosty  IN      A       192.168.18.10
+judah   IN      A       192.168.18.11

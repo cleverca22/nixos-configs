@@ -26,7 +26,9 @@ let
         {
           names = [
             "vim-nix"
-            #"youcompleteme" "Syntastic" "vundle"
+            "youcompleteme"
+            "Syntastic"
+            "vundle"
           ];
         }
       ];
