@@ -1,4 +1,4 @@
-{ foo }:
+{ ... }:
 {
   network = {
     enableRollback = true;
@@ -8,7 +8,6 @@
       targetHost = "192.168.123.21";
     };
     imports = [ ../eeepc.nix ];
-    _module.args.foo = foo;
     services.toxvpn.localip = "192.168.123.21";
     fileSystems."/" = { device = "/dev/sda1"; fsType = "xfs"; };
   };
@@ -16,7 +15,6 @@
     deployment.targetHost = "192.168.2.159";
     deployment.hasFastConnection = true;
     imports = [ ../eeepc.nix ];
-    _module.args.foo = foo;
     services.toxvpn.localip = "192.168.123.64";
     fileSystems = {
       "/boot" = { device = "/dev/sda1"; fsType = "ext2"; };
@@ -25,6 +23,6 @@
     };
   };
   defaults = {
-    imports = [ ../core.nix ];
+    imports = [ ../core.nix ../nixops-managed.nix ];
   };
 }
