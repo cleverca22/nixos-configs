@@ -1,5 +1,7 @@
 { pkgs, lib, ... }:
 
+with lib;
+
 let
   WANMASTER = "enp4s2f0";
   WAN = "wan";
@@ -133,8 +135,10 @@ in {
         }
       '';
     };
-    openvpn.servers.justasic = {
-      config = pkgs.lib.readFile ./clever_router.ovpn;
+    openvpn.servers = optionalAttrs (builtins.pathExists ./clever_router.ovpn) {
+      justasic = {
+        config = pkgs.lib.readFile ./clever_router.ovpn;
+      };
     };
     tftpd = {
       enable = true;
