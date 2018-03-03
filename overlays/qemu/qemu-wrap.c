@@ -10,6 +10,8 @@
   #define QEMU_ARM_BIN "qemu-arm"
 #endif
 
+const char * qemu_arm_bin = QEMU_ARM_BIN;
+
 // This program takes arguments according to the behavior of binfmt_misc with
 // the preserve-argv[0] flag set.
 //
@@ -27,7 +29,7 @@ int main(int argc, char const* argv[]) {
   }
 
   char *qemu;
-  asprintf(&qemu, "%s/%s", dirname(argv[0]), QEMU_ARM_BIN);
+  asprintf(&qemu, "%s/%s", dirname(argv[0]), qemu_arm_bin);
 
   // Allocate the new argc array to pass to qemu-arm
   const int new_argc = argc + 1;
