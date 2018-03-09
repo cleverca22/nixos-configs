@@ -1,4 +1,6 @@
-{config,pkgs,...}:
+{ config, pkgs, lib, ...}:
+
+with lib;
 
 let
   myVim = pkgs.vim_configurable.customize {
@@ -26,20 +28,28 @@ let
         {
           names = [
             "vim-nix"
-            "youcompleteme"
             "Syntastic"
             "vundle"
-          ];
+          ] ++ optional config.programs.vim.fat "youcompleteme";
         }
       ];
     };
   };
 in
 {
-  environment.systemPackages = [ myVim ];
-  environment.shellAliases.vi = "vim";
-  environment.variables.EDITOR = "vim";
-  programs.bash.shellAliases = {
-    vi = "vim";
+  options = {
+    programs.vim.fat = mkOption {
+      type = types.bool;
+      default = true;
+      description = "include vim modules that consume a lot of disk space";
+    };
+  };
+  config = {
+    environment.systemPackages = [ myVim ];
+    environment.shellAliases.vi = "vim";
+    environment.variables.EDITOR = "vim";
+    programs.bash.shellAliases = {
+      vi = "vim";
+    };
   };
 }

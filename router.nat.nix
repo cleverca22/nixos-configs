@@ -135,11 +135,11 @@ in {
         }
       '';
     };
-    openvpn.servers = optionalAttrs (builtins.pathExists ./clever_router.ovpn) {
-      justasic = {
-        config = pkgs.lib.readFile ./clever_router.ovpn;
-      };
-    };
+    #openvpn.servers = optionalAttrs (builtins.pathExists ./clever_router.ovpn) {
+    #justasic = {
+    #config = pkgs.lib.readFile ./clever_router.ovpn;
+    #};
+    #};
     tftpd = {
       enable = true;
       path = "/tftproot";
