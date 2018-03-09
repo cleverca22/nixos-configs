@@ -18,7 +18,10 @@ in {
     ./earthtools.ca.nix
     ./core.nix
     ./iohk-binary-cache.nix
+    ./datadog.nix
+    ./weechat.nix
   ];
+  programs.vim.fat = false;
   boot = {
     initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ata_piix" "usbhid" "usb_storage" ];
     loader.grub = {
