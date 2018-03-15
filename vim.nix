@@ -13,7 +13,7 @@ let
         set listchars=tab:->
         set list
         set backspace=indent,eol,start
-        nmap <F3> :!ninja <enter>
+        nmap <F3> :!nix-build -A default <enter>
         map <F7> :tabp<enter>
         map <F8> :tabn<enter>
         set expandtab
