@@ -1,25 +1,26 @@
 { stdenv, fetchurl, python, pkgconfig, zlib, glib, user_arch, flex, bison,
-makeStaticLibraries, glibc, qemu }:
+makeStaticLibraries, glibc, qemu, fetchFromGitHub }:
 
 let
   env2 = makeStaticLibraries stdenv;
   myglib = glib.override { stdenv = env2; };
-  magic = {
-    arm     = ''\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00'';
-    aarch64 = ''\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00'';
+  riscv_src = fetchFromGitHub {
+    owner = "riscv";
+    repo = "riscv-qemu";
+    rev = "7d2d2add16aff0304ab0c279152548dbd04a2138"; # riscv-all
+    sha256 = "16an7ifi2ifzqnlz0218rmbxq9vid434j98g14141qvlcl7gzsy2";
   };
-  mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
+  is_riscv = (user_arch == "riscv32") || (user_arch == "riscv64");
 in
 stdenv.mkDerivation rec {
   name = "qemu-user-${user_arch}-${version}";
   version = "2.7.0";
-  inherit (qemu) src;
+  src = if is_riscv then riscv_src else qemu.src;
   buildInputs = [ python pkgconfig zlib.static myglib flex bison glibc.static ];
   patches = [ ./qemu-stack.patch ];
   configureFlags = [
     "--enable-linux-user" "--target-list=${user_arch}-linux-user"
     "--disable-bsd-user" "--disable-system" "--disable-vnc"
-    #"--without-pixman"
     "--disable-curses" "--disable-sdl" "--disable-vde"
     "--disable-bluez" "--disable-kvm"
     "--static"
@@ -29,14 +30,5 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
   postInstall = ''
     cc -static ${./qemu-wrap.c} -D QEMU_ARM_BIN="\"qemu-${user_arch}"\" -o $out/bin/qemu-wrap
-    cat <<EOF > $out/bin/register
-    #!${stdenv.shell}
-    set -e
-    modprobe binfmt_misc
-    grep binfmt_misc /proc/mounts >/dev/null || mount -t binfmt_misc binfmt_misc /proc/sys/fs/binfmt_misc
-    [[ ! -e /proc/sys/fs/binfmt_misc/${user_arch} ]] || echo -1 > /proc/sys/fs/binfmt_misc/${user_arch}
-    echo ':${user_arch}:M::${magic.${user_arch}}:${mask}:$out/bin/qemu-wrap:P' > /proc/sys/fs/binfmt_misc/register
-    EOF
-    chmod +x $out/bin/register
   '';
 }
