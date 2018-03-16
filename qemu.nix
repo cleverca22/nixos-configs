@@ -16,7 +16,7 @@ let
     mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
   };
   arm = makeBinfmt "${pkgs.qemu-user-arm}/bin/qemu-arm" false archMagics.arm;
-  x86 = makeBinfmt "${pkgs.qemu-user-x86}/bin/qemu-x86_64" true archMagics.x86_64;
+  x86_64 = makeBinfmt "${pkgs.qemu-user-x86}/bin/qemu-x86_64" true archMagics.x86_64;
   aarch64 = makeBinfmt "${pkgs.qemu-user-arm64}/bin/qemu-aarch64" true archMagics.aarch64;
   riscv32 = makeBinfmt "${pkgs.qemu-user-riscv32}/bin/qemu-riscv32" false archMagics.riscv;
   riscv32 = makeBinfmt "${pkgs.qemu-user-riscv64}/bin/qemu-riscv64" true archMagics.riscv;
@@ -24,7 +24,7 @@ in {
   options = {
     qemu-user = {
       arm = mkEnableOption "enable 32bit arm emulation";
-      x86 = mkEnableOption "enable 32 and 64 bit x86 emulation";
+      x86 = mkEnableOption "enable 64bit x86 emulation";
       aarch64 = mkEnableOption "enable 64bit arm emulation";
       riscv32 = mkEnableOption "enable 32bit risc-v emulation";
       riscv64 = mkEnableOption "enable 64bit risc-v emulation";
@@ -47,7 +47,7 @@ in {
       optionalAttrs cfg.riscv64 { inherit riscv64; };
     nix.supportedPlatforms =
       (optionals cfg.arm [ "armv6l-linux" "armv7l-linux" ]) ++
-      (optionals cfg.x86 [ "x86-linux" "x86_64-linux" ]) ++
+      (optional cfg.x86 "x86_64-linux") ++
       (optional cfg.aarch64 "aarch64-linux") ++
       (optional cfg.riscv32 "riscv32-linux") ++
       (optional cfg.riscv64 "riscv64-linux");
