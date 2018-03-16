@@ -41,7 +41,7 @@ in {
     };
     boot.binfmtMiscRegistrations =
       optionalAttrs cfg.arm { inherit arm; } //
-      optionalAttrs cfg.x86 { inherit x86; } //
+      optionalAttrs cfg.x86 { inherit x86_64; } //
       optionalAttrs cfg.aarch64 { inherit aarch64; } //
       optionalAttrs cfg.riscv32 { inherit riscv32; } //
       optionalAttrs cfg.riscv64 { inherit riscv64; };
