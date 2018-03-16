@@ -6,9 +6,9 @@ let
   archMagics = {
     x86 = "\x03\x00";
     arm = "\x28\x00";
-    x86_64 = "\x3e\x00"
+    x86_64 = "\x3e\x00";
     aarch64 = "\xb7\x00";
-    riscv = "\xf3\x00" # Same ID for 32 and 64 bit
+    riscv = "\xf3\x00"; # Same ID for 32 and 64 bit
   };
   makeBinfmt = interpreter: bit64: archMagic: {
     inherit interpreter;
