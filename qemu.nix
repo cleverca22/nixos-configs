@@ -13,11 +13,17 @@ let
     magicOrExtension = ''\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\xb7\x00'';
     mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
   };
+  riscv64 = {
+    interpreter = "${pkgs.qemu-riscv}/bin/qemu-riscv64";
+    magicOrExtension = ''\x7fELF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf3\x00'';
+    mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
+  };
 in {
   options = {
     qemu-user = {
       arm = mkEnableOption "enable 32bit arm emulation";
       aarch64 = mkEnableOption "enable 64bit arm emulation";
+      riscv64 = mkEnableOption "enable 64bit riscv emulation";
     };
     nix.supportedPlatforms = mkOption {
       type = types.listOf types.str;
@@ -31,8 +37,10 @@ in {
     };
     boot.binfmtMiscRegistrations =
       optionalAttrs cfg.arm { inherit arm; } //
-      optionalAttrs cfg.aarch64 { inherit aarch64; };
-    nix.supportedPlatforms = (optionals cfg.arm [ "armv6l-linux" "armv7l-linux" ]) ++ (optional cfg.aarch64 "aarch64-linux");
+      optionalAttrs cfg.aarch64 { inherit aarch64; } //
+      optionalAttrs cfg.riscv64 { inherit riscv64; };
+    nix.supportedPlatforms = (optionals cfg.arm [ "armv6l-linux" "armv7l-linux" ])
+      ++ (optional cfg.aarch64 "aarch64-linux");
     nix.package = pkgs.patchedNix;
     nix.extraOptions = ''
       build-extra-platforms = ${toString config.nix.supportedPlatforms}
