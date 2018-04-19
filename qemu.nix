@@ -3,8 +3,11 @@
 with lib;
 let
   cfg = config.qemu-user;
+  qemuUserArm = if pkgs.stdenv.system == "x86_64-linux"
+    then (import <nixpkgs> { system="i686-linux"; }).pkgs.callPackage ./overlays/qemu { user_arch="arm"; }
+    else pkgs.qemu-user-arm;
   arm = {
-    interpreter = "${pkgs.qemu-user-arm}/bin/qemu-arm";
+    interpreter = "${qemuUserArm}/bin/qemu-arm";
     magicOrExtension = ''\x7fELF\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x28\x00'';
     mask = ''\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\x00\xff\xfe\xff\xff\xff'';
   };

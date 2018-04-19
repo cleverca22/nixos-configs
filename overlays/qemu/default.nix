@@ -14,7 +14,7 @@ let
 in
 stdenv.mkDerivation rec {
   name = "qemu-user-${user_arch}-${version}";
-  version = "2.7.0";
+  version = "2.11.1";
   src = if is_riscv then riscv_src else qemu.src;
   buildInputs = [ python pkgconfig zlib.static myglib flex bison glibc.static ];
   patches = [ ./qemu-stack.patch ];
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     "--static"
     "--disable-tools"
   ];
-  NIX_LDFLAGS = [ "-lglib-2.0" "-lssp" ];
+  NIX_LDFLAGS = [ "-lglib-2.0" ];
   enableParallelBuilding = true;
   postInstall = ''
     cc -static ${./qemu-wrap.c} -D QEMU_ARM_BIN="\"qemu-${user_arch}"\" -o $out/bin/qemu-wrap
