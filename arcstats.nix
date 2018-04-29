@@ -9,13 +9,11 @@ let
   }) {};
 in {
   systemd.services.arcstats = {
-    description = "net-snmp daemon";
+    description = "arcstats daemon";
     wantedBy = [ "multi-user.target" ];
     script = ''
       ${arcstats}/bin/arcstats
     '';
-    serviceConfig = {
-      After = [ "dd-agent.service" ];
-    };
+    after = [ "dd-agent.service" ];
   };
 }
