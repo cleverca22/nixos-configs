@@ -10,6 +10,7 @@ in {
     ./iscsi-boot.nix
     ./iscsi_module.nix
     ./qemu.nix
+    ./arcstats.nix
   ];
 
   environment.systemPackages = with pkgs; [

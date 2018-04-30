@@ -49,6 +49,7 @@ in {
   };
   sound.enable = false;
   services = {
+    arcstats = true;
     teamspeak3.enable = true;
     nix-serve = {
       secretKeyFile = "/etc/nix/nix-serve.sec";

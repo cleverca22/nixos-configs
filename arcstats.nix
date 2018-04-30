@@ -1,5 +1,6 @@
-{ pkgs, ... }:
+{ pkgs, lib, config, ... }:
 
+with lib;
 let
   arcstats = pkgs.callPackage (pkgs.fetchFromGitHub {
     owner = "cleverca22";
@@ -8,12 +9,15 @@ let
     sha256 = "1126685cjskf65jwd2jddr7wiknr9nw9afm4ajrf6ss292yicwsb";
   }) {};
 in {
-  systemd.services.arcstats = {
-    description = "arcstats daemon";
-    wantedBy = [ "multi-user.target" ];
-    script = ''
-      ${arcstats}/bin/arcstats
-    '';
-    after = [ "dd-agent.service" ];
+  options = {
+    services.arcstats = mkEnableOption "arcstats";
+  };
+  config = mkIf config.services.arcstats {
+    systemd.services.arcstats = {
+      description = "arcstats daemon";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "dd-agent.service" ];
+      serviceConfig.ExecStart = "${arcstats}/bin/arcstats";
+    };
   };
 }

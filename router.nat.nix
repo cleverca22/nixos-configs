@@ -38,8 +38,9 @@ in {
       ${WANMASTER}.useDHCP = false;
       ${WAN}.useDHCP = true;
       ${LAN} = {
-        ipAddress = "192.168.2.1";
-        prefixLength = 24;
+        ipv4.addresses = [
+          { address = "192.168.2.1"; prefixLength = 24; }
+        ];
       };
     };
     nat = {
@@ -104,7 +105,7 @@ in {
         }
       ];
     };
-    dhcpd = {
+    dhcpd4 = {
       interfaces = [ LAN ];
       enable = true;
       machines = [
