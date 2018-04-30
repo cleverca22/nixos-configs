@@ -124,7 +124,7 @@ in {
   nix = {
     maxJobs = 2;
     buildCores = 2;
-    buildMachines = with builders; [ amd rpi2 darwin ];
+    buildMachines = with builders; [ amd darwin notos ];
     extraOptions = ''
       gc-keep-derivations = true
       gc-keep-outputs = true

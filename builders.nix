@@ -1,6 +1,15 @@
 let
   key = "/etc/nixos/keys/distro";
 in {
+  notos = {
+    hostName = "192.168.2.142";
+    maxJobs = 1;
+    sshUser = "root";
+    system = "armv6l-linux,armv7l-linux";
+    sshKey = key;
+    speedFactor = 2;
+    supportedFeatures = [ "big-parallel" ];
+  };
   rpi2 = {
     hostName = "192.168.2.126";
     maxJobs = 1;
