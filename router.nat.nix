@@ -54,7 +54,7 @@ in {
         #{ destination = "192.168.2.15"; sourcePort = 22; }
         { destination = "192.168.2.61"; sourcePort = 6990; }	# rtorrent
         { destination = "192.168.2.61"; sourcePort = 11194; }	# openvpn
-        { sourcePort = 25565; destination = "192.168.2.11"; }	# minecraft
+        { sourcePort = 25565; destination = "192.168.2.32"; }	# minecraft
         { sourcePort = 45333; destination = "192.168.2.15"; } # mc test
         { sourcePort = 21025; destination = "192.168.2.11"; } # starbound
         { destination = "192.168.2.62:22"; sourcePort = 2222; }
