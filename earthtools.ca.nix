@@ -7,6 +7,8 @@
     enableModules = [ "mod_proxy" ];
     extraConfig = ''
       #server.bind = "[::1]"
+      server.bind = "0.0.0.0"
+      $SERVER["socket"] == "[::]:80" {  }
       server.use-ipv6 = "enable"
 
       # proxy.server  = ( "" => ( ( "host" => "192.168.2.62", "port" => 80 ) ) )
