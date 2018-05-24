@@ -3,6 +3,13 @@
 with lib;
 
 let
+  notPython = pkgs.writeScript "notPython" ''
+    #!${pkgs.stdenv.shell}
+    shift
+    shift
+    shift
+    wakatime "$@"
+  '';
   myVim = pkgs.vim_configurable.customize {
     name = "vim";
     vimrcConfig = {
@@ -20,16 +27,15 @@ let
         set softtabstop=2
         set shiftwidth=2
         set autoindent
-        call vundle#begin()
-        Plugin 'wakatime/vim-wakatime'
-        call vundle#end()
+
+        let g:wakatime_PythonBinary = '${notPython}'
       '';
       vam.pluginDictionaries = [
         {
           names = [
             "vim-nix"
             "Syntastic"
-            "vundle"
+            "vim-wakatime"
           ] ++ optional config.programs.vim.fat "youcompleteme";
         }
       ];
