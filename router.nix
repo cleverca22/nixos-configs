@@ -20,6 +20,7 @@ in {
     ./iohk-binary-cache.nix
     ./datadog.nix
     ./weechat.nix
+    ./ntp_fix.nix
   ];
   programs.vim.fat = false;
   boot = {
@@ -50,6 +51,7 @@ in {
   sound.enable = false;
   services = {
     arcstats = true;
+    extra-statsd = true;
     teamspeak3.enable = true;
     nix-serve = {
       secretKeyFile = "/etc/nix/nix-serve.sec";

@@ -11,6 +11,7 @@ in {
     ./iscsi_module.nix
     ./qemu.nix
     ./arcstats.nix
+    ./extra-statsd.nix
   ];
 
   environment.systemPackages = with pkgs; [
