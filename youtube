@@ -1,0 +1,12 @@
+$TTL 1H
+
+@     IN      SOA     ns.localnet. hostmaster (
+                        1
+                        8H
+                        2H
+                        4W
+                        1H)
+                     NS ns.localnet.
+www.youtube.com. IN  A  127.0.0.1
+reddit.com.      IN  A  127.0.0.1
+www.reddit.com.  IN  A  127.0.0.1

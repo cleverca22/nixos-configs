@@ -6,6 +6,16 @@ let
   WANMASTER = "enp4s2f0";
   WAN = "wan";
   LAN = "enp4s2f1";
+  youtube = {
+    name = "youtube.com";
+    slaves = [];
+    file = ./youtube;
+  };
+  reddit = {
+    name = "reddit.com";
+    slaves = [];
+    file = ./youtube;
+  };
 in {
   networking = {
     defaultMailServer = {
@@ -25,8 +35,9 @@ in {
 
         iptables -w -t nat -A nixos-nat-pre -i wan -p udp -m udp --dport 40189 -j DNAT --to-destination 192.168.2.15
         iptables -w -t nat -A nixos-nat-pre -i wan -p udp -m udp --dport 9990 -j DNAT --to-destination 192.168.2.11
-        iptables -w -t nat -A nixos-nat-pre -i tun0 -p udp -m udp --dport 34197 -j DNAT --to-destination 192.168.2.15
-        iptables -w -t nat -A nixos-nat-pre -i wan -p udp -m udp --dport 34197 -j DNAT --to-destination 192.168.2.15
+        # factorio
+        iptables -w -t nat -A nixos-nat-pre -i tun0 -p udp -m udp --dport 34197 -j DNAT --to-destination 192.168.2.32
+        iptables -w -t nat -A nixos-nat-pre -i wan -p udp -m udp --dport 34197 -j DNAT --to-destination 192.168.2.32
 
         iptables -w -t nat -A nixos-nat-pre -i wan -p udp -m udp --dport 162 -j DNAT --to-destination 192.168.2.2:161
         iptables -w -t nat -A nixos-nat-post -p udp -m udp --dport 161 -d 192.168.2.2 -j SNAT --to-source 192.168.2.1
@@ -83,6 +94,7 @@ in {
           slaves = [ ];
           file = ./localnet;
         }
+        #youtube reddit
         {
           name = "2.168.192.in-addr.arpa";
           slaves = [ ];
@@ -123,7 +135,7 @@ in {
           option subnet-mask 255.255.255.0;
           option broadcast-address 192.168.2.255;
           option routers 192.168.2.1;
-          option domain-name-servers 192.168.2.1, 8.8.8.8, 8.8.4.4;
+          option domain-name-servers 192.168.2.1;
           range 192.168.2.100 192.168.2.200;
           next-server 192.168.2.61;
           if exists user-class and option user-class = "iPXE" {
