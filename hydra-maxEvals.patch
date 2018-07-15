@@ -1,0 +1,12 @@
+diff -u -r source-orig/src/hydra-evaluator/hydra-evaluator.cc source/src/hydra-evaluator/hydra-evaluator.cc
+--- source-orig/src/hydra-evaluator/hydra-evaluator.cc	2018-03-11 18:18:13.687991922 -0300
++++ source/src/hydra-evaluator/hydra-evaluator.cc	2018-03-11 18:18:42.279240594 -0300
+@@ -30,7 +30,7 @@
+ 
+     std::experimental::optional<JobsetName> evalOne;
+ 
+-    size_t maxEvals = 4;
++    size_t maxEvals = 1;
+ 
+     struct State
+     {

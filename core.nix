@@ -35,10 +35,12 @@ in {
       defscrollback 5000
       caption always
       termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
-      term xterm-256color
       defbce "on"
     '';
     ssh = {
+      extraConfig = ''
+        ServerAliveInterval 60
+      '';
       knownHosts = [
         { hostNames = [ "192.168.2.1" "router.localnet" ]; publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSvyvC18BHfivZJDhWSm7VU3kEElfNfMIfeohkil614"; }
         { hostNames = [ "192.168.2.15" "amd.localnet" ]; publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhJRINrY5cFcqZ76GsAK7FU+wQhErlS6APdOIm7xcnW"; }
@@ -52,6 +54,7 @@ in {
         { hostNames = [ "ramboot.localnet" ]; publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEXgceb4J6/jhgp8C2JEeUJq2QB5GCXSQLOSgTck9M4"; }
         { hostNames = [ "192.168.2.142" ]; publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILK7lvb7j1bjsb0phCP7vHPVi5jfDcjPWRv94iA1Y8Xv"; }
         { hostNames = [ "du075.macincloud.com" ]; publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrJvUu+5o75C8Sf27LWf0GNyb96iBQ6znoy8YmPeoVecpsEgj1KoW+NyZSkEgB1PQA/SBYpHVQRGFfxP0WI8H0kVfJX2wf89oY5m3XJDj/B6JnFo0tpJFhdnidSehFAPm5eja93osKpJDMgtt9F31PjmuOiYS/sTtZsyz/KzoUd2mekdlowvyQA5Fw93sC2lNrKyGsD6y7O5ft9YmyNn43s7g+2f2qBLF4miPgYECJ0AaNq1NBzrmxeDBxCvrMAZe4ZFnHx/g8oy+D4eZm+J2kc8ZMIa57dqua4Y3rm9o+Uej/8sBPcp7Kczf5eAS5f9+lLaATuLDTyFKLNLItU5kX"; }
+        { hostNames = [ "system76" "system76.localnet" ]; publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGtWMQ3F30gczudsr38Tw9yARsUMZbmvD4llnZq3K68u"; }
       ];
     };
   };
