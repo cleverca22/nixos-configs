@@ -4,7 +4,7 @@ let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [ ./hydra-maxEvals.patch ./chomp.patch ];
   });
-  passwords = import ./secrets.nix;
+  passwords = import ./load-secrets.nix;
 in {
   systemd.services.hydra-evaluator.path = [ pkgs.jq ];
   services = {

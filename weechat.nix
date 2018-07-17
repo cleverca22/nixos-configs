@@ -48,7 +48,7 @@ let
       isNormalUser = true;
     };
   };
-  secrets = import ./secrets.nix;
+  secrets = import ./load-secrets.nix;
   configs = secrets.weechats;
 in {
   systemd.services = lib.foldl' (state: name: state // (mkService name)) {} configs;

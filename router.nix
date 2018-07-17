@@ -3,7 +3,7 @@
 let
   keys = import ./keys.nix;
   builders = import ./builders.nix;
-  secrets = import ./secrets.nix;
+  secrets = import ./load-secrets.nix;
 in {
   # TODO move into deployment file
   fileSystems."/" = {

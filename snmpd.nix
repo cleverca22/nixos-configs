@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  secrets = import ./secrets.nix;
+  secrets = import ./load-secrets.nix;
 in
 {
   systemd.services.snmpd = let

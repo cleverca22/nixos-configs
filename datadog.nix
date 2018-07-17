@@ -3,7 +3,7 @@
 {
   services.dd-agent = {
     enable = true;
-    api_key = (import ./secrets.nix).datadogKey;
+    api_key = (import ./load-secrets.nix).datadogKey;
     hostname = config.networking.hostName;
   };
 }

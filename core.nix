@@ -1,7 +1,7 @@
 { pkgs, config, ... }:
 
 let
-  secrets = import ./secrets.nix;
+  secrets = import ./load-secrets.nix;
   keys = import ./keys.nix;
   util = pkgs.callPackage ./util.nix {};
 in {

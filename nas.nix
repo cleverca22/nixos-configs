@@ -2,7 +2,7 @@
 
 with lib;
 let
-  passwords = import ./secrets.nix;
+  passwords = import ./load-secrets.nix;
   keys = import ./keys.nix;
   overlay1 = self: super: {
     ntp = super.ntp.overrideAttrs (drv: {
