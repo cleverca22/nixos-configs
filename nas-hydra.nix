@@ -6,7 +6,7 @@ let
   });
   passwords = import ./load-secrets.nix;
 in {
-  systemd.services.hydra-evaluator.path = [ pkgs.jq ];
+  systemd.services.hydra-evaluator.path = [ pkgs.jq pkgs.gawk ];
   services = {
     hydra = {
       useSubstitutes = true;
