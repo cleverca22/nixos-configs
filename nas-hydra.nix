@@ -2,7 +2,7 @@
 
 let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
-    patches = [ ./hydra-maxEvals.patch ./chomp.patch ];
+    patches = [ ./hydra-maxEvals.patch ./chomp.patch ./hydra-nix-prefetch-git.patch ];
   });
   passwords = import ./load-secrets.nix;
 in {
