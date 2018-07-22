@@ -107,6 +107,11 @@ in {
     };
   };
   nix = {
+    extraOptions = ''
+      min-free = ${toString (1024*1024*1024*3)}
+      max-free = ${toString (1024*1024*1024*6)}
+    '';
+
     distributedBuilds = true;
     trustedUsers = [ "builder" ];
     binaryCaches = [
