@@ -15,7 +15,7 @@ in {
   ];
 
   environment.systemPackages = with pkgs; [
-    sqlite-interactive screen nix-repl
+    sqlite-interactive screen
     util
     utillinuxCurses psmisc
     (if config.services.xserver.enable then gitAndTools.gitFull else git)

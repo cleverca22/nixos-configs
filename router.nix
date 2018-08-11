@@ -105,7 +105,6 @@ in {
     lshw
     lsof
     nmap
-    nix-repl
     socat
     ncdu
   ];
