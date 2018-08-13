@@ -89,7 +89,7 @@ in {
             if exists user-class and option user-class = "iPXE" {
               filename "http://192.168.3.1/boot.php?mac=''${net0/mac}&asset=''${asset:uristring}&version=''${builtin/version}";
             } else {
-              if option arch = 00:07 or option arch = 00:09 {
+              if option arch = 00:09 {
                 filename = "x86_64-ipxe.efi";
               } else {
                 filename = "undionly.kpxe";

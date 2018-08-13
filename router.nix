@@ -22,7 +22,10 @@ in {
     ./weechat.nix
     ./ntp_fix.nix
   ];
-  programs.vim.fat = false;
+  programs = {
+    vim.fat = false;
+    info.enable = false;
+  };
   boot = {
     initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ata_piix" "usbhid" "usb_storage" ];
     loader.grub = {
@@ -106,7 +109,6 @@ in {
     lshw
     lsof
     nmap
-    nix-repl
     socat
     ncdu
   ];
