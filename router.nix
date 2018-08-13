@@ -49,6 +49,7 @@ in {
     fsType = "nfs";
   };
   sound.enable = false;
+  qemu-user.arm = true;
   services = {
     arcstats = true;
     extra-statsd = true;
