@@ -24,8 +24,8 @@ in {
   ];
   programs = {
     vim.fat = false;
-    info.enable = false;
   };
+  documentation.info.enable = false;
   boot = {
     initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ata_piix" "usbhid" "usb_storage" ];
     loader.grub = {
