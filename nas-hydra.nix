@@ -4,7 +4,6 @@ let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [
       ./hydra-maxEvals.patch
-      ./chomp.patch
       ./hydra-nix-prefetch-git.patch
       ./extra-debug.patch
     ];
