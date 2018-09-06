@@ -3,7 +3,6 @@
 let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [
-      ./hydra-nix-prefetch-git.patch
       ./extra-debug.patch
     ];
   });
