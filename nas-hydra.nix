@@ -3,7 +3,6 @@
 let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [
-      ./hydra-maxEvals.patch
       ./hydra-nix-prefetch-git.patch
       ./extra-debug.patch
     ];
@@ -29,6 +28,7 @@ in {
       port = 3001;
       extraConfig = with passwords; ''
         max_output_size = ${toString (1024*1024*1024*3)} # 3gig
+        max_concurrent_evals = 1
         <github_authorization>
           input-output-hk = ${token1}
           cleverca22 = ${token1}
