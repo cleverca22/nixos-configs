@@ -11,10 +11,29 @@ index 70329a9e..862dbf7b 100644
                  throw SysError("cannot start hydra-notify");
              });
 diff --git a/src/lib/Hydra/Plugin/GithubStatus.pm b/src/lib/Hydra/Plugin/GithubStatus.pm
-index 08ba25bb..f164cdda 100644
+index 08ba25bb..08d770e3 100644
 --- a/src/lib/Hydra/Plugin/GithubStatus.pm
 +++ b/src/lib/Hydra/Plugin/GithubStatus.pm
-@@ -58,13 +58,15 @@ sub common {
+@@ -31,6 +31,7 @@ sub common {
+         my $ua = LWP::UserAgent->new();
+ 
+         foreach my $conf (@config) {
++            print STDERR "GithubStatus_Debug job name $jobName\n";
+             next unless $jobName =~ /^$conf->{jobs}$/;
+             # Don't send out "pending" status updates if the build is already finished
+             next if !$finished && $b->finished == 1;
+@@ -47,7 +48,10 @@ sub common {
+             my @inputs = defined $inputs_cfg ? ref $inputs_cfg eq "ARRAY" ? @$inputs_cfg : ($inputs_cfg) : ();
+             my %seen = map { $_ => {} } @inputs;
+             while (my $eval = $evals->next) {
++                print STDERR "GithubStatus_Debug eval $eval\n";
+                 foreach my $input (@inputs) {
++                    print STDERR "GithubStatus_Debug input $input\n";
++
+                     my $i = $eval->jobsetevalinputs->find({ name => $input, altnr => 0 });
+                     next unless defined $i;
+                     my $uri = $i->uri;
+@@ -58,13 +62,16 @@ sub common {
                      $uri =~ m![:/]([^/]+)/([^/]+?)(?:.git)?$!;
                      my $owner = $1;
                      my $repo = $2;
@@ -28,6 +47,7 @@ index 08ba25bb..f164cdda 100644
                      $req->content($body);
                      my $res = $ua->request($req);
 -                    print STDERR $res->status_line, ": ", $res->decoded_content, "\n" unless $res->is_success;
++                    print STDERR "GithubStatus_Debug ", $res->status_line, ": ", $res->decoded_content, "\n";
 +                    print STDERR "GithubStatus_Error ", $res->status_line, ": ", $res->decoded_content, "\n" unless $res->is_success;
                  }
              }
