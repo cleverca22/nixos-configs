@@ -1,0 +1,34 @@
+diff --git a/src/hydra-queue-runner/hydra-queue-runner.cc b/src/hydra-queue-runner/hydra-queue-runner.cc
+index 70329a9e..862dbf7b 100644
+--- a/src/hydra-queue-runner/hydra-queue-runner.cc
++++ b/src/hydra-queue-runner/hydra-queue-runner.cc
+@@ -487,6 +487,7 @@ void State::notificationSender()
+                         argv = {"hydra-notify", "step-finished", std::to_string(item.id), std::to_string(item.stepNr), item.logPath};
+                         break;
+                 };
++                printMsg(lvlChatty, "hydra-notify " + concatStringsSep(" ", argv));
+                 execvp("hydra-notify", (char * *) stringsToCharPtrs(argv).data()); // FIXME: remove cast
+                 throw SysError("cannot start hydra-notify");
+             });
+diff --git a/src/lib/Hydra/Plugin/GithubStatus.pm b/src/lib/Hydra/Plugin/GithubStatus.pm
+index 08ba25bb..f164cdda 100644
+--- a/src/lib/Hydra/Plugin/GithubStatus.pm
++++ b/src/lib/Hydra/Plugin/GithubStatus.pm
+@@ -58,13 +58,15 @@ sub common {
+                     $uri =~ m![:/]([^/]+)/([^/]+?)(?:.git)?$!;
+                     my $owner = $1;
+                     my $repo = $2;
+-                    my $req = HTTP::Request->new('POST', "https://api.github.com/repos/$owner/$repo/statuses/$rev");
++                    my $url = "https://api.github.com/repos/$owner/$repo/statuses/$rev";
++                    print STDERR "GithubStatus_Debug ", $url, "\n";
++                    my $req = HTTP::Request->new('POST', $url);
+                     $req->header('Content-Type' => 'application/json');
+                     $req->header('Accept' => 'application/vnd.github.v3+json');
+                     $req->header('Authorization' => ($self->{config}->{github_authorization}->{$owner} // $conf->{authorization}));
+                     $req->content($body);
+                     my $res = $ua->request($req);
+-                    print STDERR $res->status_line, ": ", $res->decoded_content, "\n" unless $res->is_success;
++                    print STDERR "GithubStatus_Error ", $res->status_line, ": ", $res->decoded_content, "\n" unless $res->is_success;
+                 }
+             }
+         }

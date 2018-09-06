@@ -1,11 +1,21 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 let
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
-    patches = [ ./hydra-maxEvals.patch ./chomp.patch ./hydra-nix-prefetch-git.patch ];
+    patches = [
+      ./hydra-maxEvals.patch
+      ./chomp.patch
+      ./hydra-nix-prefetch-git.patch
+      ./extra-debug.patch
+    ];
   });
   passwords = import ./load-secrets.nix;
 in {
+  systemd.services.hydra-queue-runner = {
+    serviceConfig = {
+      ExecStart = lib.mkForce "@${patched-hydra}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
+    };
+  };
   systemd.services.hydra-evaluator.path = [ pkgs.jq pkgs.gawk ];
   services = {
     hydra = {
