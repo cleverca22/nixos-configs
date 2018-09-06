@@ -13,13 +13,13 @@ let
   };
   grubFragment = writeText "grub.cfg" (builtins.unsafeDiscardStringContext ''
     menuentry "Nixos Installer" {
-      linux ($drive1)/rescue-kernel init=${netboot.config.system.build.toplevel}/init ${toString netboot.config.boot.kernelParams}
-      initrd ($drive1)/rescue-initrd
+      linux ($drive1)/nixos-kernel init=${netboot.config.system.build.toplevel}/init ${toString netboot.config.boot.kernelParams}
+      initrd ($drive1)/nixos-initrd
     }
   '');
 in runCommand "multi-boot-helper" {} ''
   mkdir $out
-  cp -L ${netboot.config.system.build.kernel}/bzImage $out/
-  cp -L ${netboot.config.system.build.netbootRamdisk}/initrd $out/
+  cp -L ${netboot.config.system.build.kernel}/bzImage $out/nixos-kernel
+  cp -L ${netboot.config.system.build.netbootRamdisk}/initrd $out/nixos-initrd
   cp ${grubFragment} $out/grub-fragment.cfg
 ''
