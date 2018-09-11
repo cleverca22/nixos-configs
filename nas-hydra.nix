@@ -1,6 +1,19 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
+  hydraRev = "a4469f8b0fedbac6764778c4c3426656b44c29a1";
+  hydraSrc = pkgs.fetchFromGitHub {
+    owner = "cleverca22";
+    repo = "hydra";
+    sha256 = "0zx19macxah6b69nzgqc34fm9vl8md4sbp07p0pnqniallnmf6gg";
+    rev = hydraRev;
+  };
+  hydraSrc' = {
+    outPath = hydraSrc;
+    rev = hydraRev;
+    revCount = 1234;
+  };
+  hydra-fork = (import (hydraSrc + "/release.nix") { nixpkgs = pkgs.path; hydraSrc = hydraSrc'; }).build.x86_64-linux;
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [
       ./extra-debug.patch
@@ -10,14 +23,14 @@ let
 in {
   systemd.services.hydra-queue-runner = {
     serviceConfig = {
-      ExecStart = lib.mkForce "@${patched-hydra}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
+      ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
     };
   };
   systemd.services.hydra-evaluator.path = [ pkgs.jq pkgs.gawk ];
   services = {
     hydra = {
       useSubstitutes = true;
-      package = patched-hydra;
+      package = hydra-fork;
       enable = true;
       hydraURL = "https://hydra.angeldsis.com";
       notificationSender = "cleverca22@gmail.com";

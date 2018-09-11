@@ -51,7 +51,6 @@ in {
       device = "c2d:/media/videos/4tb";
       fsType = "nfs";
     };
-    "/nas" = { device = "naspool/nas"; fsType = "zfs"; };
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
   };
   swapDevices = [
@@ -93,6 +92,11 @@ in {
     ];
   };
   services = {
+    locate.enable = true;
+    plex = {
+      enable = true;
+      openFirewall = true;
+    };
     arcstats = true;
     openssh = {
       enable = true;
@@ -148,7 +152,7 @@ in {
     ];
   };
   nix = {
-    package = pkgs.nixUnstable;
+    #package = pkgs.nixUnstable;
     gc = {
       automatic = true;
       dates = "0:00:00";
@@ -158,7 +162,7 @@ in {
       key = "/etc/nixos/keys/distro";
     in [
       { hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
-      { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" "kvm" ];}
+      { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" ];}
       { hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
       { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 8; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
     ];
@@ -167,7 +171,7 @@ in {
     extraOptions = mkOrder 1 ''
       gc-keep-derivations = true
       gc-keep-outputs = true
-      auto-optimise-store = true
+      auto-optimise-store = false
       secret-key-files = /etc/nix/keys/secret-key-file
     '';
   };
