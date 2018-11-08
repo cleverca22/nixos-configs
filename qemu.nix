@@ -41,9 +41,8 @@ in {
       optionalAttrs cfg.riscv64 { inherit riscv64; };
     nix.supportedPlatforms = (optionals cfg.arm [ "armv6l-linux" "armv7l-linux" ])
       ++ (optional cfg.aarch64 "aarch64-linux");
-    nix.package = pkgs.patchedNix;
     nix.extraOptions = ''
-      build-extra-platforms = ${toString config.nix.supportedPlatforms}
+      extra-platforms = ${toString config.nix.supportedPlatforms} i686-linux
     '';
     nix.sandboxPaths = [ "/run/binfmt" ] ++ (optional cfg.arm "${pkgs.qemu-user-arm}") ++ (optional cfg.aarch64 "${pkgs.qemu-user-arm64}");
   };
