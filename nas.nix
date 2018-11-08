@@ -148,7 +148,7 @@ in {
       allowUnfree = true;
     };
     overlays = [
-      overlay1
+      #overlay1
     ];
   };
   nix = {
