@@ -19,6 +19,7 @@ in {
     ./snmpd.nix
     ./datadog.nix
     ./clevers_machines.nix
+    ./cachecache.nix
   ];
   boot = {
     initrd.availableKernelModules = mkOrder 1 [ "xhci_pci" "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" "sd_mod" ];
@@ -92,6 +93,7 @@ in {
     ];
   };
   services = {
+    cachecache.enable = true;
     locate.enable = true;
     plex = {
       enable = true;
@@ -152,6 +154,7 @@ in {
     ];
   };
   nix = {
+    binaryCaches = lib.mkForce [ "http://nas.localnet:8081" ];
     #package = pkgs.nixUnstable;
     gc = {
       automatic = true;
