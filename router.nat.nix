@@ -65,6 +65,7 @@ in {
         #{ destination = "192.168.2.61:22"; sourcePort = 2222; } # ssh to laptop
         #{ destination = "192.168.2.15"; sourcePort = 22; }
         { destination = "192.168.2.61"; sourcePort = 6990; }	# rtorrent
+        { destination = "192.168.2.11"; sourcePort = 6991; }	# rtorrent
         { destination = "192.168.2.61"; sourcePort = 11194; }	# openvpn
         { sourcePort = 25565; destination = "192.168.2.32"; }	# minecraft
         { sourcePort = 45333; destination = "192.168.2.15"; } # mc test
@@ -80,6 +81,7 @@ in {
         { destination = "192.168.2.11"; sourcePort = 10012; }
         { destination = "192.168.2.11"; sourcePort = 30034; }
         { destination = "192.168.2.11"; sourcePort = 1935; }
+        { destination = "192.168.2.11"; sourcePort = 32400; }
       ];
     };
   };
