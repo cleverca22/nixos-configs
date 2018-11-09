@@ -75,6 +75,7 @@ in {
           router_distro
           clever.nix2
           clever.amd_distro
+          clever.nas_distro
           clever.hydra
         ];
       };
