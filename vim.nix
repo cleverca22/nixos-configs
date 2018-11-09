@@ -27,8 +27,22 @@ let
         set softtabstop=2
         set shiftwidth=2
         set autoindent
+        set statusline+=col:\ %c,
+        set background=dark
+
+        " remove trailing whitespace upon save
+        au BufWritePre * %s/\s\+$//e
+
+        " highlight all trailing whitespace
+        highlight ExtraWhitespace ctermbg=red guibg=red
+        au ColorScheme * highlight ExtraWhitespace guibg=red
+        au BufEnter * match ExtraWhitespace /\s\+$/
+        au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+        au InsertLeave * match ExtraWhiteSpace /\s\+$/
+
 
         let g:wakatime_PythonBinary = '${notPython}'
+        autocmd Filetype haskell set foldmethod=indent foldcolumn=2 softtabstop=2 shiftwidth=2
       '';
       vam.pluginDictionaries = [
         {
@@ -51,7 +65,7 @@ in
     };
   };
   config = {
-    environment.systemPackages = [ myVim ];
+    environment.systemPackages = [ myVim pkgs.wakatime ];
     environment.shellAliases.vi = "vim";
     environment.variables.EDITOR = "vim";
     programs.bash.shellAliases = {
