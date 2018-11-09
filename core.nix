@@ -59,7 +59,7 @@ in {
     };
   };
   users = {
-    extraUsers = {
+    users = {
       root.openssh.authorizedKeys.keys = with keys; [
         dual.distro
         clever.amd
@@ -88,9 +88,6 @@ in {
         ];
         extraGroups = [ "wheel" "wireshark" "vboxusers" ];
       };
-    };
-    extraGroups = {
-      wireshark.gid = 500;
     };
   };
   services = {
