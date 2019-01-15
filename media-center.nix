@@ -10,11 +10,15 @@
         defaultUser = "media";
       };
       sessionCommands = ''
-        plexmediaplayer --fullscreen --tv
+        ratpoison &
+        exec plexmediaplayer --fullscreen --tv
       '';
     };
   };
-  environment.systemPackages = [ pkgs.plex-media-player ];
+  hardware.pulseaudio = {
+    enable = true;
+  };
+  environment.systemPackages = with pkgs; [ plex-media-player ratpoison pavucontrol ];
   users.extraUsers.media = {
     isNormalUser = true;
     uid = 1100;
