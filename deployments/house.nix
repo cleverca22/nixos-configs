@@ -4,6 +4,9 @@
     enableRollback = true;
     description = "house deployment";
   };
+  defaults = {
+    documentation.enable = false;
+  };
   nas = {
     imports = [ ../nas.nix ];
     deployment.targetHost = "192.168.2.11";
