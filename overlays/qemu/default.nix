@@ -3,7 +3,9 @@ makeStaticLibraries, glibc, qemu, fetchFromGitHub }:
 
 let
   env2 = makeStaticLibraries stdenv;
-  myglib = glib.override { stdenv = env2; };
+  myglib = (glib.override { stdenv = env2; }).overrideAttrs (drv: {
+    mesonFlags = (drv.mesonFlags or []) ++ [ "--default-library both" ];
+  });
   riscv_src = fetchFromGitHub {
     owner = "riscv";
     repo = "riscv-qemu";
@@ -25,6 +27,7 @@ stdenv.mkDerivation rec {
     "--disable-bluez" "--disable-kvm"
     "--static"
     "--disable-tools"
+    "--cpu=x86_64"
   ];
   NIX_LDFLAGS = [ "-lglib-2.0" ];
   enableParallelBuilding = true;
