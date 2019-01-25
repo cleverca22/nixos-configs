@@ -13,10 +13,14 @@ let
     sha256 = "16an7ifi2ifzqnlz0218rmbxq9vid434j98g14141qvlcl7gzsy2";
   };
   is_riscv = (user_arch == "riscv32") || (user_arch == "riscv64");
+  arch_map = {
+    arm = "i386";
+    aarch64 = "x86_64";
+  };
 in
 stdenv.mkDerivation rec {
   name = "qemu-user-${user_arch}-${version}";
-  version = "2.11.1";
+  version = "3.1.0";
   src = if is_riscv then riscv_src else qemu.src;
   buildInputs = [ python pkgconfig zlib.static myglib flex bison glibc.static ];
   patches = [ ./qemu-stack.patch ];
@@ -27,7 +31,7 @@ stdenv.mkDerivation rec {
     "--disable-bluez" "--disable-kvm"
     "--static"
     "--disable-tools"
-    "--cpu=x86_64"
+    "--cpu=${arch_map.${user_arch}}"
   ];
   NIX_LDFLAGS = [ "-lglib-2.0" ];
   enableParallelBuilding = true;
