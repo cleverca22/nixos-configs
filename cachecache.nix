@@ -7,8 +7,8 @@ let
   cachecacheSrc = pkgs.fetchFromGitHub {
     owner = "cleverca22";
     repo = "cachecache";
-    rev = "bc47c1ba7f81277d539f9c81bb0dbee6ad58b01f";
-    sha256 = "1rmzrr7ffb4i03qgd7rqkqfblxdr97ji5jcqxyrvldqwxpba0l42";
+    rev = "09e6d02cd4cf9b9554df92e0be9552686dd1827d";
+    sha256 = "1ldyz5m72agdkwybdiclp701s8fyla5kdnqgwma4jzbb2ln3n17p";
   };
 in {
   options = {
@@ -17,7 +17,7 @@ in {
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
       (super: self: {
-        cachecache = import cachecacheSrc;
+        cachecache = pkgs.callPackage cachecacheSrc {};
       })
     ];
     users.users.cachecache = {
