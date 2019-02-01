@@ -7,7 +7,7 @@ let
 in {
   imports = [
     ./vim.nix
-    ./iscsi-boot.nix
+    #./iscsi-boot.nix
     ./iscsi_module.nix
     ./qemu.nix
     ./arcstats.nix
@@ -113,7 +113,6 @@ in {
     distributedBuilds = true;
     trustedUsers = [ "builder" ];
     binaryCaches = [
-      "http://cache.earthtools.ca"
       "http://nixcache.localnet"
       "https://cache.nixos.org"
     ];
