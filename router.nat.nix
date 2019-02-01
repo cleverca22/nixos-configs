@@ -82,6 +82,8 @@ in {
         { destination = "192.168.2.11"; sourcePort = 30034; }
         { destination = "192.168.2.11"; sourcePort = 1935; }
         { destination = "192.168.2.11"; sourcePort = 32400; }
+        { destination = "192.168.2.11"; sourcePort = 1337; } # syncplay
+        { destination = "192.168.2.11"; sourcePort = 3000; } # carano
       ];
     };
   };
