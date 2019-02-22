@@ -21,6 +21,7 @@ in {
     ./datadog.nix
     ./weechat.nix
     ./ntp_fix.nix
+    ./nixops-managed.nix
   ];
   programs = {
     vim.fat = false;
