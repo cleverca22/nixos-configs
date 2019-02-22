@@ -49,8 +49,7 @@ in
       };
       targets = mkOption {
         default = [];
-        type = types.loaOf types.optionSet;
-        options = targetOpts;
+        type = types.loaOf (types.submodule targetOpts);
       };
     };
   };
