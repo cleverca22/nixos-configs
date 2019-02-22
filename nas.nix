@@ -20,20 +20,22 @@ in {
     ./datadog.nix
     ./clevers_machines.nix
     ./cachecache.nix
-    ./emby.nix
     ./media-center.nix
     ./tgt_service.nix
     ./cardano-relay.nix
     ./nixops-managed.nix
   ];
   boot = {
-    initrd.availableKernelModules = mkOrder 1 [ "xhci_pci" "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" "sd_mod" ];
+    initrd.availableKernelModules = [ "xhci_pci" "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" "sd_mod" "nvme" ];
     loader.grub = {
       device = "/dev/sde";
       configurationLimit = 5;
     };
-    kernelModules = [ "tcp_bbr" "kvm-amd" ];
+    kernelModules = [ "tcp_bbr" "kvm-amd" "netconsole" ];
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
+    extraModprobeConfig = ''
+      options netconsole netconsole=6665@192.168.2.11/enp4s0,6666@192.168.2.61/00:1c:c4:6e:00:46
+    '';
   };
   environment = {
     systemPackages = with pkgs; [
@@ -73,6 +75,8 @@ in {
         58846 8112 # deluge
         8081
         8333 # bitcoin
+        6991 # rtorrent
+        1337
       ];
       allowedUDPPorts = mkOrder 1 [
         161
@@ -98,6 +102,15 @@ in {
     ];
   };
   services = {
+    tgtd = {
+      enable = true;
+      targets = {
+        "iqn.2019-01.amd-steam" = {
+          backingStore = "/dev/naspool/amd-steam";
+          index = 1;
+        };
+      };
+    };
     cachecache.enable = true;
     locate.enable = true;
     plex = {
@@ -146,7 +159,6 @@ in {
     zfs = {
       autoSnapshot = {
         enable = true;
-        hourly = 2;
       };
     };
   };
@@ -173,6 +185,7 @@ in {
       { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" ];}
       { hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
       { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 8; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
+      { hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = []; }
     ];
     maxJobs = 2;
     buildCores = 2;

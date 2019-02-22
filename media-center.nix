@@ -26,7 +26,7 @@ in {
   hardware.pulseaudio = {
     enable = true;
   };
-  environment.systemPackages = with pkgs; [ plex-media-player ratpoison pavucontrol syncplay mpv ];
+  environment.systemPackages = with pkgs; [ plex-media-player ratpoison pavucontrol syncplay mpv teamspeak_client ];
   nixpkgs.overlays = [ overlay ];
   users.extraUsers.media = {
     isNormalUser = true;

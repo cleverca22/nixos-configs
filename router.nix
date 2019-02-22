@@ -42,7 +42,7 @@ in {
     firewall = {
       enable = true;
       allowPing = true;
-      allowedTCPPorts = [ 5201 33445 config.services.teamspeak3.fileTransferPort config.services.teamspeak3.queryPort 80 ];
+      allowedTCPPorts = [ 5201 33445 config.services.teamspeak3.fileTransferPort config.services.teamspeak3.queryPort 80 443 ];
       allowedUDPPorts = [ 123 161 33445 config.services.teamspeak3.defaultVoicePort 53 162 ];
       trustedInterfaces = [ "tox_master0" ];
     };
@@ -53,7 +53,7 @@ in {
     fsType = "nfs";
   };
   sound.enable = false;
-  qemu-user.arm = true;
+  #qemu-user.arm = true;
   services = {
     arcstats = true;
     extra-statsd = true;
@@ -63,7 +63,7 @@ in {
       enable = true;
     };
     radvd = {
-      enable = true;
+      enable = false;
       config = ''
         interface enp4s2f1 {
           AdvSendAdvert on;

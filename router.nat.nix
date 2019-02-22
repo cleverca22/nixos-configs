@@ -4,7 +4,6 @@ with lib;
 
 let
   WANMASTER = "enp4s2f0";
-  WAN = "wan";
   LAN = "enp4s2f1";
   youtube = {
     name = "youtube.com";
@@ -21,10 +20,6 @@ in {
     defaultMailServer = {
       directDelivery = true;
       hostName = "c2d.localnet";
-    };
-    vlans.wan = {
-      interface = WANMASTER;
-      id = 35;
     };
     firewall = {
       enable = true;
@@ -45,9 +40,20 @@ in {
         iptables -w -t nat -A nixos-nat-post -s 192.168.2.0/24 -o tun0 -j MASQUERADE
       '') ];
     };
+    vlans = {
+      wan = {
+        interface = WANMASTER;
+        id = 35;
+      };
+      iptv = {
+        interface = WANMASTER;
+        id = 34;
+      };
+    };
     interfaces = {
       ${WANMASTER}.useDHCP = false;
-      ${WAN}.useDHCP = true;
+      iptv.useDHCP = false;
+      wan.useDHCP = true;
       ${LAN} = {
         ipv4.addresses = [
           { address = "192.168.2.1"; prefixLength = 24; }
@@ -56,7 +62,7 @@ in {
     };
     nat = {
       enable = true;
-      externalInterface = WAN;
+      externalInterface = "wan";
       internalIPs = [ "192.168.2.0/24" "10.67.15.0/24" ];
       internalInterfaces = [ LAN ];
       forwardPorts = [
@@ -75,7 +81,7 @@ in {
         { destination = "192.168.2.15"; sourcePort = 38009; } # temp minecraft
         { destination = "192.168.2.15"; sourcePort = 40189; } # skype
         { destination = "192.168.2.11:443"; sourcePort = 4433; }
-        { destination = "192.168.2.11"; sourcePort = 443; }
+        #{ destination = "192.168.2.11"; sourcePort = 443; }
         { destination = "192.168.2.15"; sourcePort = 1234; }
         # 2nd teamspeak server
         { destination = "192.168.2.11"; sourcePort = 10012; }
