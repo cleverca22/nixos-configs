@@ -16,6 +16,7 @@ let
   arch_map = {
     arm = "i386";
     aarch64 = "x86_64";
+    riscv64 = "x86_64";
     x86_64 = "x86_64";
   };
 in
