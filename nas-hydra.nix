@@ -22,8 +22,6 @@ let
   });
   passwords = import ./load-secrets.nix;
 in {
-  imports = [ ./hydra-fixups.nix ];
-
   systemd.services.hydra-queue-runner = {
     serviceConfig = {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
