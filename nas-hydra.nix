@@ -1,19 +1,20 @@
 { config, pkgs, lib, ... }:
 
 let
-  hydraRev = "a4469f8b0fedbac6764778c4c3426656b44c29a1";
+  hydraRev = "19912e15b14a153346ed21256434a47a0b1a0926";
   hydraSrc = pkgs.fetchFromGitHub {
     owner = "cleverca22";
     repo = "hydra";
-    sha256 = "0zx19macxah6b69nzgqc34fm9vl8md4sbp07p0pnqniallnmf6gg";
+    sha256 = "1b59dc2akclhryzrsb3pgwz1f80vhyr9hgglgy6xmzzwnln4dw5g";
     rev = hydraRev;
   };
+  hydraSrc-local = /home/clever/iohk/hydra;
   hydraSrc' = {
     outPath = hydraSrc;
     rev = hydraRev;
     revCount = 1234;
   };
-  hydra-fork = (import (hydraSrc + "/release.nix") { nixpkgs = pkgs.path; hydraSrc = hydraSrc'; }).build.x86_64-linux;
+  hydra-fork = (import (hydraSrc + "/release.nix") { hydraSrc = hydraSrc'; nixpkgs = pkgs.path; }).build.x86_64-linux;
   patched-hydra = pkgs.hydra.overrideDerivation (drv: {
     patches = [
       ./extra-debug.patch
@@ -21,13 +22,23 @@ let
   });
   passwords = import ./load-secrets.nix;
 in {
+  imports = [ ./hydra-fixups.nix ];
+
   systemd.services.hydra-queue-runner = {
     serviceConfig = {
-      ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
+      #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
     };
   };
   systemd.services.hydra-evaluator.path = [ pkgs.jq pkgs.gawk ];
+  nix.extraOptions = ''
+    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/
+  '';
   services = {
+    postgresql = {
+      identMap = ''
+        hydra-users clever clever
+      '';
+    };
     hydra = {
       useSubstitutes = true;
       package = hydra-fork;
@@ -72,12 +83,12 @@ in {
     nginx = {
       virtualHosts = {
         "hydra.angeldsis.com" = {
-          enableACME = true;
-          forceSSL = true;
+          enableACME = false;
+          forceSSL = false;
           locations."/".extraConfig = ''
             proxy_pass http://localhost:3001;
             proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Proto "https";
             proxy_set_header  X-Real-IP         $remote_addr;
             proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
           '';
