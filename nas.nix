@@ -109,6 +109,10 @@ in {
           backingStore = "/dev/naspool/amd-steam";
           index = 1;
         };
+        "iqn.2019-03.vm-example" = {
+          backingStore = "/dev/naspool/vm-example";
+          index = 2;
+        };
       };
     };
     cachecache.enable = true;
@@ -151,7 +155,7 @@ in {
       server = {
         enable = true;
         exports = ''
-          /nas c2d(rw,async,subtree_check,no_root_squash) 192.168.2.15(rw,sync,subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) ramboot(rw,async,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash) router(ro,async,subtree_check,root_squash)
+          /nas c2d(rw,async,no_subtree_check,no_root_squash) 192.168.2.15(rw,sync,no_subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) ramboot(rw,async,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash) router(ro,async,no_subtree_check,root_squash)
           /naspool/amd-nixos amd(rw,sync,subtree_check,no_root_squash)
         '';
       };
@@ -183,9 +187,9 @@ in {
     in [
       { hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
       { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" ];}
-      { hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      #{ hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
       { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 8; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
-      { hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = []; }
+      { hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
     ];
     maxJobs = 2;
     buildCores = 2;
