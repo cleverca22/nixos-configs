@@ -27,6 +27,7 @@ in {
     config = {
       sqlite.interactive = true;
       allowUnfree = true;
+      allowBroken = true;
       vim.ruby = false;
     };
   };
