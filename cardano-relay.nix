@@ -27,6 +27,7 @@ let
         kademlia: false
         public: true
   '';
+  myip = "108.175.85.156";
 in {
   config = lib.mkIf true {
     users.users.cardano = {
@@ -43,7 +44,7 @@ in {
         WorkingDirectory = "/var/lib/cardano";
       };
       script = ''
-        cardano-node-simple --configuration-key mainnet_full --configuration-file ${cardano.cardano-sl-config}/lib/configuration.yaml --topology ${topofile2} --node-id relay1 --listen 0.0.0.0:3000 --address 47.54.162.149:3000 --statsd-server 127.0.0.1:8125 --metrics +RTS -T -RTS
+        cardano-node-simple --configuration-key mainnet_full --configuration-file ${cardano.cardano-sl-config}/lib/configuration.yaml --topology ${topofile2} --node-id relay1 --listen 0.0.0.0:3000 --address ${myip}:3000 --statsd-server 127.0.0.1:8125 --metrics +RTS -T -RTS
       '';
     };
   };
