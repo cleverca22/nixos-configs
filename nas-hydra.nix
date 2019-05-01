@@ -22,6 +22,7 @@ let
   });
   passwords = import ./load-secrets.nix;
 in {
+  users.users.hydra-www.extraGroups = [ "hydra" ];
   systemd.services.hydra-queue-runner = {
     serviceConfig = {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
@@ -39,7 +40,7 @@ in {
     };
     hydra = {
       useSubstitutes = true;
-      package = hydra-fork;
+      # package = hydra-fork;
       enable = true;
       hydraURL = "https://hydra.angeldsis.com";
       notificationSender = "cleverca22@gmail.com";
@@ -48,6 +49,8 @@ in {
       listenHost = "localhost";
       port = 3001;
       extraConfig = with passwords; ''
+        binary_cache_secret_key_file = /etc/nix/keys/secret-key-file
+        store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
         max_output_size = ${toString (1024*1024*1024*3)} # 3gig
         max_concurrent_evals = 1
         <github_authorization>
