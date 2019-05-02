@@ -7,8 +7,8 @@ let
   cachecacheSrc = pkgs.fetchFromGitHub {
     owner = "cleverca22";
     repo = "cachecache";
-    rev = "09e6d02cd4cf9b9554df92e0be9552686dd1827d";
-    sha256 = "1ldyz5m72agdkwybdiclp701s8fyla5kdnqgwma4jzbb2ln3n17p";
+    rev = "37959a2dcce5c93bf424da899d3d5eaf2b3f1768";
+    sha256 = "1d92agrsgs1g05ps3l7wbbib9knq86gq335k5kakzl9rlzdaj4z0";
   };
 in {
   options = {
