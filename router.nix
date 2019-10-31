@@ -20,7 +20,7 @@ in {
     ./iohk-binary-cache.nix
     ./datadog.nix
     ./weechat.nix
-    ./ntp_fix.nix
+    #./ntp_fix.nix
     ./nixops-managed.nix
   ];
   programs = {
