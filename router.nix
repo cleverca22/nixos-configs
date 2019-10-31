@@ -97,7 +97,7 @@ in {
     };
     postgresql = {
       enable = true;
-      package = pkgs.postgresql94;
+      package = pkgs.postgresql_11;
     };
     openssh.passwordAuthentication = false;
   };
