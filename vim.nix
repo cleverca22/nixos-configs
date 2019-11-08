@@ -17,8 +17,9 @@ let
         syntax on
         set nu
         set foldmethod=syntax
-        set listchars=tab:->
+        set listchars=tab:->,trail:·
         set list
+        set ruler
         set backspace=indent,eol,start
         nmap <F3> :!nix-build -A default <enter>
         map <F7> :tabp<enter>
@@ -27,11 +28,10 @@ let
         set softtabstop=2
         set shiftwidth=2
         set autoindent
-        set statusline+=col:\ %c,
         set background=dark
 
         " remove trailing whitespace upon save
-        au BufWritePre * %s/\s\+$//e
+        " au BufWritePre * %s/\s\+$//e
 
         " highlight all trailing whitespace
         highlight ExtraWhitespace ctermbg=red guibg=red
@@ -43,6 +43,9 @@ let
 
         let g:wakatime_PythonBinary = '${notPython}'
         autocmd Filetype haskell set foldmethod=indent foldcolumn=2 softtabstop=2 shiftwidth=2
+
+        let g:ycm_semantic_triggers = {'haskell' : ['.']}
+        let g:ycm_server_python_interpreter='${pkgs.python3.interpreter}'
       '';
       vam.pluginDictionaries = [
         {
