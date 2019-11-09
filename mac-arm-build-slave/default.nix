@@ -22,6 +22,6 @@ in lib.fix (self: {
       -append "init=${builtins.unsafeDiscardStringContext self.config.system.build.toplevel}/init ${toString self.config.boot.kernelParams}" \
       -m 2048 \
       -net nic,netdev=user.0,model=virtio \
-      -netdev user,id=user.0, hostfwd=tcp:127.0.0.1:2200-:22
+      -netdev user,id=user.0,hostfwd=tcp:127.0.0.1:2200-:22
   '';
 })
