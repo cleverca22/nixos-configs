@@ -4,6 +4,8 @@ let
   keys = import ./keys.nix;
   builders = import ./builders.nix;
   secrets = import ./load-secrets.nix;
+  sources = import ./nix/sources.nix;
+  iohk-ops = sources.iohk-ops;
 in {
   # TODO move into deployment file
   fileSystems."/" = {
@@ -22,7 +24,7 @@ in {
     ./weechat.nix
     #./ntp_fix.nix
     ./nixops-managed.nix
-    ./iohk-ops/modules/monitoring-exporters.nix
+    (iohk-ops +"/modules/monitoring-exporters.nix")
     #./jormungandr.nix
     ./murmur.nix
   ];
