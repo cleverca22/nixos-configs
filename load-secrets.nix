@@ -8,4 +8,8 @@ if builtins.pathExists ./secrets.nix then import ./secrets.nix else {
   weechats = [];
   publicIpv6Prefix = "";
   wifiPassword = "";
+  grafanaCreds = {
+    user = "admin";
+    password = "admin";
+  };
 }
