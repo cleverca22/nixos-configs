@@ -9,6 +9,8 @@ let
       patches = drv.patches or [] ++ [ ./openat.patch ];
     });
   };
+  sources = import ./nix/sources.nix;
+  iohk-ops = sources.iohk-ops;
 in {
   imports = [
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
@@ -17,13 +19,16 @@ in {
     ./nas-websites.nix
     ./iohk-binary-cache.nix
     ./snmpd.nix
-    ./datadog.nix
+    #./datadog.nix
     ./clevers_machines.nix
     ./cachecache.nix
     ./media-center.nix
     ./tgt_service.nix
-    ./cardano-relay.nix
+    #./cardano-relay.nix
     ./nixops-managed.nix
+    ./nas-monitoring.nix
+    (iohk-ops + "/modules/monitoring-exporters.nix")
+    ./nas-wifi.nix
   ];
   boot = {
     initrd.availableKernelModules = [ "xhci_pci" "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" "sd_mod" "nvme" ];
@@ -48,6 +53,8 @@ in {
       lsof
       iotop
       nvme-cli
+      pciutils usbutils # lsusb and lspci
+      ethtool
     ];
   };
   fileSystems = {
@@ -75,19 +82,22 @@ in {
   networking = {
     firewall = {
       allowedTCPPorts = mkOrder 1 [
+        80 443
+        1337
         1935
         1936
-        80 443
-        3260 2049
+        111 2049 # nfs
+        3260
         10011 30033 30034 # ts3
         58846 8112 # deluge
         8081
         8333 # bitcoin
         6991 # rtorrent
-        1337
+        20048 # nfs
       ];
       allowedUDPPorts = mkOrder 1 [
         161
+        111 2049 # nfs
         9987 # ts3
         9990 # ts3 2nd
         33445
@@ -102,17 +112,26 @@ in {
       directDelivery = true;
       hostName = "c2d.localnet";
     };
-    interfaces.enp3s0.ipv4.addresses = [
+    interfaces.enp4s0.ipv4.addresses = [
       {
         address = "192.168.2.11";
         prefixLength = 24;
       }
     ];
   };
+  security.audit.enable = false;
   services = {
+    monitoring-exporters = {
+      enable = true;
+      metrics = true;
+      logging = false;
+      papertrail.enable = false;
+      ownIp = "127.0.0.1";
+    };
     tgtd = {
       enable = true;
       targets = {
+        "iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 2; };
         "iqn.2019-01.amd-steam" = {
           backingStore = "/dev/naspool/amd-steam";
           index = 1;
@@ -196,14 +215,20 @@ in {
       { hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
       { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" ];}
       #{ hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
-      { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 8; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
+      { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
       { hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      {
+        hostName = "localhost";
+        mandatoryFeatures = [ "local" ];
+        systems = [ "x86_64-linux" "i686-linux" ];
+        maxJobs = 4;
+      }
     ];
     maxJobs = 2;
     buildCores = 2;
     extraOptions = mkOrder 1 ''
-      gc-keep-derivations = true
-      gc-keep-outputs = true
+      # gc-keep-derivations = true
+      # gc-keep-outputs = true
       auto-optimise-store = false
       secret-key-files = /etc/nix/keys/secret-key-file
     '';
@@ -217,4 +242,5 @@ in {
     };
   };
   system.stateVersion = "16.03";
+  programs.vim.fat = false;
 }
