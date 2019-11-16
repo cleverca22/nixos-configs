@@ -1,7 +1,9 @@
 let
   secrets = import ./load-secrets.nix;
+  sources = import ./nix/sources.nix;
+  iohk-ops = sources.iohk-ops;
 in {
-  imports = [ ./iohk-ops/modules/monitoring-services.nix ];
+  imports = [ (iohk-ops +"/modules/monitoring-services.nix") ];
   services.prometheus2.scrapeConfigs = [
     {
       job_name = "node-test";
