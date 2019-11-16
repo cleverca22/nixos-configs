@@ -18,10 +18,13 @@ in {
     ./earthtools.ca.nix
     ./core.nix
     ./iohk-binary-cache.nix
-    ./datadog.nix
+    #./datadog.nix
     ./weechat.nix
     #./ntp_fix.nix
     ./nixops-managed.nix
+    ./iohk-ops/modules/monitoring-exporters.nix
+    #./jormungandr.nix
+    ./murmur.nix
   ];
   programs = {
     vim.fat = false;
@@ -51,19 +54,27 @@ in {
   fileSystems."/media/videos/4tb/" = {
     device = "c2d:/media/videos/4tb";
     fsType = "nfs";
+    options = [ "soft" ];
   };
   sound.enable = false;
   #qemu-user.arm = true;
   services = {
+    monitoring-exporters = {
+      enable = true;
+      metrics = true;
+      logging = false;
+      papertrail.enable = false;
+      ownIp = "192.168.2.1";
+    };
     arcstats = true;
-    extra-statsd = true;
+    extra-statsd = false;
     teamspeak3.enable = true;
     nix-serve = {
       secretKeyFile = "/etc/nix/nix-serve.sec";
       enable = true;
     };
     radvd = {
-      enable = false;
+      enable = true;
       config = ''
         interface enp4s2f1 {
           AdvSendAdvert on;
