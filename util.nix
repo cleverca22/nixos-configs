@@ -37,4 +37,9 @@ in runCommand "util-1" {} ''
   nix-instantiate --eval -E "\"\''${(import <nixpkgs> {}).pkgs.$1}\"" | sed 's:"::g'
   EOF
   chmod +x $out/bin/nix-lookup
+
+  cat << EOF > $out/bin/nix-unpack
+  nix-shell --run 'phases=unpackPhase genericBuild' "$@"
+  EOF
+  chmod +x $out/bin/nix-unpack
 ''
