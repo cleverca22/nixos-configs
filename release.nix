@@ -6,6 +6,6 @@ in {
   router = (nixosFunc { configuration = ./router.nix; }).system;
   nix-tar.arm = linuxPkgs.callPackage ./arm-tar.nix {};
   software = { # things used by several machines
-    inherit (linuxPkgs) plex-media-player;
+    inherit (linuxPkgs) plex-media-player rtorrent;
   };
 }

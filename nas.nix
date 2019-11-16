@@ -39,6 +39,7 @@ in {
   };
   environment = {
     systemPackages = with pkgs; [
+      rtorrent
       socat
     ];
   };
