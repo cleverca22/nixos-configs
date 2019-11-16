@@ -41,6 +41,13 @@ in {
     systemPackages = with pkgs; [
       rtorrent
       socat
+      sysstat
+      tcpdump
+      vnstat
+      smartmontools
+      lsof
+      iotop
+      nvme-cli
     ];
   };
   fileSystems = {
