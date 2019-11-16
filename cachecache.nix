@@ -4,12 +4,7 @@ with lib;
 
 let
   cfg = config.services.cachecache;
-  cachecacheSrc = pkgs.fetchFromGitHub {
-    owner = "cleverca22";
-    repo = "cachecache";
-    rev = "37959a2dcce5c93bf424da899d3d5eaf2b3f1768";
-    sha256 = "1d92agrsgs1g05ps3l7wbbib9knq86gq335k5kakzl9rlzdaj4z0";
-  };
+  sources = import ./nix/sources.nix;
 in {
   options = {
     services.cachecache.enable = mkEnableOption "enable cachecache";
@@ -17,7 +12,7 @@ in {
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
       (super: self: {
-        cachecache = pkgs.callPackage cachecacheSrc {};
+        cachecache = pkgs.callPackage sources.cachecache {};
       })
     ];
     users.users.cachecache = {
