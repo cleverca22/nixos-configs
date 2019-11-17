@@ -28,6 +28,8 @@ let
         set softtabstop=2
         set shiftwidth=2
         set autoindent
+        "set statusline+=col:\ %c,
+        set ruler
         set background=dark
 
         " remove trailing whitespace upon save
@@ -46,6 +48,7 @@ let
 
         let g:ycm_semantic_triggers = {'haskell' : ['.']}
         let g:ycm_server_python_interpreter='${pkgs.python3.interpreter}'
+        let g:ycm_max_diagnostics_to_display=1000
       '';
       vam.pluginDictionaries = [
         {

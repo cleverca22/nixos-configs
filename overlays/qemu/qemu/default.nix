@@ -4,7 +4,7 @@ makeStaticLibraries, glibc, qemu, fetchFromGitHub }:
 let
   env2 = makeStaticLibraries stdenv;
   myglib = (glib.override { stdenv = env2; }).overrideAttrs (drv: {
-    mesonFlags = (drv.mesonFlags or []) ++ [ "--default-library both" ];
+    mesonFlags = (drv.mesonFlags or []) ++ [ "-Ddefault_library=both" ];
   });
   riscv_src = fetchFromGitHub {
     owner = "riscv";
