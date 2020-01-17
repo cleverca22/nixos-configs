@@ -12,10 +12,12 @@ in {
   services.xserver = {
     enable = true;
     displayManager = {
-      slim = {
+      sddm = {
         enable = true;
-        autoLogin = true;
-        defaultUser = "media";
+        autoLogin = {
+          enable = true;
+          user = "media";
+        };
       };
       sessionCommands = ''
         ratpoison &
@@ -32,4 +34,5 @@ in {
     isNormalUser = true;
     uid = 1100;
   };
+  networking.firewall.allowedTCPPorts = [ 8060 ]; # the plex frontend does upnp things
 }
