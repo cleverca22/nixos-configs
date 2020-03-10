@@ -35,8 +35,7 @@ in {
     screen.screenrc = ''
       defscrollback 5000
       caption always
-      termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
-      defbce "on"
+      maptimeout 5
     '';
     ssh = {
       extraConfig = ''
@@ -127,4 +126,6 @@ in {
   system.extraSystemBuilderCmds = ''
     ln -sv ${./.} $out/nixcfg
   '';
+  security.acme.email = "cleverca22@gmail.com";
+  security.acme.acceptTerms = true;
 }
