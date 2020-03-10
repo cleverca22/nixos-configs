@@ -33,7 +33,7 @@ in {
   };
   config = mkIf (cfg.arm || cfg.aarch64) {
     nixpkgs = {
-      overlays = [ (import ./overlays/qemu) ];
+      overlays = [ (import ./overlays-foo/qemu) ];
     };
     boot.binfmt.registrations =
       optionalAttrs cfg.arm { inherit arm; } //
