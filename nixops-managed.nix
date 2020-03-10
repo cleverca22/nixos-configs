@@ -6,7 +6,7 @@ let
     {}
   '';
 in {
-  nixpkgs.overlays = [ (import ./overlays/qemu) ];
+  #nixpkgs.overlays = [ (import ./overlays/qemu) ];
   nix.nixPath = [
     "nixos-config=${cfg}"
     "nixpkgs=/run/current-system/nixpkgs"
