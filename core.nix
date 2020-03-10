@@ -9,7 +9,7 @@ in {
     ./vim.nix
     #./iscsi-boot.nix
     ./iscsi_module.nix
-    ./qemu.nix
+    #./qemu.nix
     ./arcstats.nix
     ./extra-statsd.nix
   ];
