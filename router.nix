@@ -26,7 +26,6 @@ in {
     ./nixops-managed.nix
     (iohk-ops +"/modules/monitoring-exporters.nix")
     #./jormungandr.nix
-    ./murmur.nix
   ];
   programs = {
     vim.fat = false;
