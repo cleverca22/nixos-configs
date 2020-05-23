@@ -5,10 +5,10 @@
         "homepage": null,
         "owner": "cleverca22",
         "repo": "arcstats",
-        "rev": "0f84957053bbbd62b753189b779767c5fd863e98",
-        "sha256": "1126685cjskf65jwd2jddr7wiknr9nw9afm4ajrf6ss292yicwsb",
+        "rev": "b5a588b633c11d54c5d7e75b43642fff590dc84e",
+        "sha256": "1xf5hxjryyfvwwm0hmjzij39d8f6mb4qnl9zxy4q62sd3ba21x2f",
         "type": "tarball",
-        "url": "https://github.com/cleverca22/arcstats/archive/0f84957053bbbd62b753189b779767c5fd863e98.tar.gz",
+        "url": "https://github.com/cleverca22/arcstats/archive/b5a588b633c11d54c5d7e75b43642fff590dc84e.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "cachecache": {
