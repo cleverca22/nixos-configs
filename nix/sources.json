@@ -1,4 +1,16 @@
 {
+    "arcstats": {
+        "branch": "master",
+        "description": null,
+        "homepage": null,
+        "owner": "cleverca22",
+        "repo": "arcstats",
+        "rev": "0f84957053bbbd62b753189b779767c5fd863e98",
+        "sha256": "1126685cjskf65jwd2jddr7wiknr9nw9afm4ajrf6ss292yicwsb",
+        "type": "tarball",
+        "url": "https://github.com/cleverca22/arcstats/archive/0f84957053bbbd62b753189b779767c5fd863e98.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "cachecache": {
         "branch": "master",
         "description": null,
