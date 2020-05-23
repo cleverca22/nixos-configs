@@ -12,4 +12,9 @@ if builtins.pathExists ./secrets.nix then import ./secrets.nix else {
     user = "admin";
     password = "admin";
   };
+  oauth = {
+    clientID = "";
+    clientSecret = "";
+    cookie.secret = "";
+  };
 }

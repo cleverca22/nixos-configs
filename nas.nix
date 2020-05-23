@@ -108,10 +108,6 @@ in {
     defaultGateway = "192.168.2.1";
     hostId = "491ddec8";
     hostName = "nas";
-    defaultMailServer = {
-      directDelivery = true;
-      hostName = "c2d.localnet";
-    };
     interfaces.enp4s0.ipv4.addresses = [
       {
         address = "192.168.2.11";
@@ -121,6 +117,8 @@ in {
   };
   security.audit.enable = false;
   services = {
+    ssmtp.hostName = "c2d.localnet";
+    ssmtp.enable = true;
     monitoring-exporters = {
       enable = true;
       metrics = true;
