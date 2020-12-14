@@ -17,10 +17,6 @@ let
   };
 in {
   networking = {
-    defaultMailServer = {
-      directDelivery = true;
-      hostName = "c2d.localnet";
-    };
     firewall = {
       enable = true;
       extraCommands = lib.mkMerge [ (lib.mkAfter ''
@@ -94,6 +90,10 @@ in {
     };
   };
   services = {
+    ssmtp = {
+      enable = true;
+      hostName = "c2d.localnet";
+    };
     bind = {
       enable = true;
       forwarders = [ "47.55.55.55" "142.166.166.166" ];

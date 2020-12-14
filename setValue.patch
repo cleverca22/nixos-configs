@@ -1,0 +1,14 @@
+diff --git a/src/settings/SettingsComponent.cpp b/src/settings/SettingsComponent.cpp
+index d5e64fe..302e1b6 100644
+--- a/src/settings/SettingsComponent.cpp
++++ b/src/settings/SettingsComponent.cpp
+@@ -342,6 +342,9 @@ void SettingsComponent::setValue(const QString& sectionID, const QString &key, c
+     QLOG_ERROR() << "Section" << sectionID << "is unknown";
+     return;
+   }
++  QTextStream out(stdout);
++  out << QString("setValue(%1, %2)\n").arg(key).arg(value.toString());
++  out.flush();
+   section->setValue(key, value);
+   saveSection(section);
+ }
