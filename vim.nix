@@ -56,7 +56,7 @@ let
             "vim-nix"
             "Syntastic"
             "vim-wakatime"
-          ] ++ optional config.programs.vim.fat "youcompleteme";
+          ] ++ optional config.programs.vim.fat "YouCompleteMe";
         }
       ];
     };
