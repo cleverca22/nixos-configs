@@ -1,5 +1,3 @@
-{ ... }:
-
 {
   services.lighttpd = {
     enable = false;
