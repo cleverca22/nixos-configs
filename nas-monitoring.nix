@@ -121,39 +121,31 @@ in {
     {
       networking.firewall.allowedTCPPorts = [ 80 ];
       environment.systemPackages = with pkgs; [ goaccess ];
-      services.prometheus2.scrapeConfigs = [
-        {
-          job_name = "node-test";
-          scrape_interval = "10s";
-          metrics_path = "/";
-          static_configs = [
-            {
-              targets = [ "192.168.2.15:8000" ];
-            }
-          ];
-        }
-        {
-          job_name = "jormungandr";
-          scrape_interval = "10s";
-          metrics_path = "/metrics";
-          static_configs = [
-            { targets = [ "192.168.2.1:8000" ]; }
-          ];
-        }
-        {
-          job_name = "jormungandr-sam";
-          scrape_interval = "10s";
-          metrics_path = "/sam-metrics";
-          static_configs = [
-            { targets = [ "192.168.2.15:80" ]; }
-          ];
-        }
-        {
-          job_name = "exporter";
-          scrape_interval = "10s";
-          metrics_path = "/";
-          static_configs = [ { targets = [ "amd.localnet:8080" ]; } ];
-        }
+      services.prometheus.scrapeConfigs = [
+        #{
+        #  job_name = "node-test";
+        #  scrape_interval = "10s";
+        #  metrics_path = "/";
+        #  static_configs = [
+        #    {
+        #      targets = [ "192.168.2.15:8000" ];
+        #    }
+        #  ];
+        #}
+        #{
+        #  job_name = "jormungandr";
+        #  scrape_interval = "10s";
+        #  metrics_path = "/metrics";
+        #  static_configs = [
+        #    { targets = [ "192.168.2.1:8000" ]; }
+        #  ];
+        #}
+        #{
+        #  job_name = "exporter";
+        #  scrape_interval = "10s";
+        #  metrics_path = "/";
+        #  static_configs = [ { targets = [ "amd.localnet:8080" ]; } ];
+        #}
         {
           job_name = "cachecache";
           scrape_interval = "10s";
@@ -179,6 +171,9 @@ in {
             hasNginx = true;
           };
           "amd.localnet" = {};
+          #"pi3" = {};
+          #"pi4" = {};
+          system76 = {};
         };
       };
       services.nginx = {

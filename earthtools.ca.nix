@@ -40,16 +40,20 @@
       forceSSL = true;
       locations."/" = {
         proxyPass = target;
-        extraConfig = "proxy_set_header Host $host;";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
       };
     };
     nasProxy = mkProxy "http://192.168.2.11";
   in {
     enable = true;
     virtualHosts = {
-      "fuspr.net" = nasProxy;
-      "hydra.taktoa.me" = nasProxy;
-      "hydra.fuspr.net" = nasProxy;
+      #"fuspr.net" = nasProxy;
+      #"hydra.taktoa.me" = nasProxy;
+      #"hydra.fuspr.net" = nasProxy;
+      "monitoring.earthtools.ca" = nasProxy;
       "hydra.angeldsis.com" = nasProxy;
       "plex.earthtools.ca" = mkProxy "http://192.168.2.11:32400";
 
@@ -58,15 +62,19 @@
 
       "gallery.earthtools.ca" = mkProxy "http://192.168.2.61:82";
 
-      "hydra.earthtools.ca" = mkProxy "http://127.0.0.1:3000";
+      "hydra.earthtools.ca" = {
+        globalRedirect = "hydra.angeldsis.com";
+        enableACME = true;
+      };
 
       "cache.earthtools.ca" = mkProxy "http://127.0.0.1:5000";
 
       "ext.earthtools.ca" = {
         enableACME = true;
+        #enableSSL = false;
         forceSSL = true;
         locations = {
-          "/export".proxyPass = "http://192.168.2.61";
+          #"/export".proxyPass = "http://192.168.2.61";
           "/videos".proxyPass = "http://192.168.2.61";
           "/icons".proxyPass = "http://192.168.2.61";
           "/docs".proxyPass = "http://192.168.2.61";

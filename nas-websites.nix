@@ -16,10 +16,10 @@ in {
     '';
     virtualHosts = {
       "hydra.taktoa.me" = remy_hydra;
-      "hydra.fuspr.net" = remy_hydra;
-      "fuspr.net" = {
-        locations."/".root = "/var/www/fuspr";
-      };
+      #"hydra.fuspr.net" = remy_hydra;
+      #"fuspr.net" = {
+      #  locations."/".root = "/var/www/fuspr";
+      #};
     };
   };
 }

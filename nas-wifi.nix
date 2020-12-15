@@ -1,12 +1,13 @@
 let
   secrets = import ./load-secrets.nix;
+  WIFI = "wlp1s0";
 in {
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = true;
   };
   networking = {
     interfaces = {
-      wlp2s0 = {
+      ${WIFI} = {
         ipv4.addresses = [
           {
             address = "192.168.3.1";
@@ -19,13 +20,13 @@ in {
   services = {
     hostapd = {
       enable = true;
-      interface = "wlp2s0";
+      interface = WIFI;
       ssid = "Family-nas";
       wpaPassphrase = secrets.wifiPassword;
     };
     dhcpd4 = {
       enable = true;
-      interfaces = [ "wlp2s0" ];
+      interfaces = [ WIFI ];
       extraConfig = ''
         authoritative;
         subnet 192.168.3.0 netmask 255.255.255.0 {

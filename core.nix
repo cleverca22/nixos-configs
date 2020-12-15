@@ -9,9 +9,11 @@ in {
     ./vim.nix
     #./iscsi-boot.nix
     ./iscsi_module.nix
-    #./qemu.nix
+    ./qemu.nix
     ./arcstats.nix
     ./extra-statsd.nix
+    ./auto-gc.nix
+    ./coredump.nix
   ];
 
   environment.systemPackages = with pkgs; [
@@ -35,6 +37,8 @@ in {
     screen.screenrc = ''
       defscrollback 5000
       caption always
+      #termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+      #defbce "on"
       maptimeout 5
     '';
     ssh = {
@@ -108,11 +112,7 @@ in {
     };
   };
   nix = {
-    extraOptions = ''
-      min-free = ${toString (1024*1024*1024*3)}
-      max-free = ${toString (1024*1024*1024*6)}
-    '';
-
+    min-free-collection = true;
     distributedBuilds = true;
     trustedUsers = [ "builder" ];
     binaryCaches = [

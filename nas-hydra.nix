@@ -28,14 +28,21 @@ in {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
     };
   };
-  systemd.services.hydra-evaluator.path = [ pkgs.jq pkgs.gawk ];
+  systemd.services.hydra-evaluator = {
+    path = [ pkgs.jq pkgs.gawk ];
+    environment.TMPDIR = "/dev/shm";
+  };
   nix.extraOptions = ''
-    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/
+    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/NixOS https://github.com/input-output-hk
   '';
+  nix.min-free = 10;
+  nix.max-free = 15;
   services = {
     postgresql = {
+      superUser = "root";
       identMap = ''
         hydra-users clever clever
+        hydra-users root root
       '';
     };
     hydra = {
@@ -53,6 +60,7 @@ in {
         store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
         max_output_size = ${toString (1024*1024*1024*3)} # 3gig
         max_concurrent_evals = 1
+        evaluator_initial_heap_size = ${toString (1024*1024*1024)} # 1gig
         <github_authorization>
           input-output-hk = ${token1}
           cleverca22 = ${token1}

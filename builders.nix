@@ -19,6 +19,15 @@ in {
     speedFactor = 2;
     supportedFeatures = [ "big-parallel" ];
   };
+  rpi4 = {
+    hostName = "pi4";
+    maxJobs = 4;
+    sshUser = "pi";
+    sshKey = key;
+    speedFactor = 1;
+    supportedFeatures = [ "big-parallel" ];
+    systems = [ "armv7l-linux" "aarch64-linux" ];
+  };
   amd = {
     hostName = "192.168.2.15";
     maxJobs = 5;
@@ -34,5 +43,16 @@ in {
     sshUser = "clever";
     system = "x86_64-darwin";
     sshKey = key;
+  };
+  system76 = {
+    hostName = "builder@system76.localnet";
+    systems = [
+      "x86_64-linux" "i686-linux"
+      #"aarch64-linux"
+    ];
+    sshKey = key;
+    maxJobs = 4;
+    speedFactor = 1;
+    supportedFeatures = [ "big-parallel" "nixos-test" "kvm" ];
   };
 }
