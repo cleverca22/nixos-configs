@@ -10,7 +10,7 @@ let
     shift
     wakatime "$@"
   '';
-  myVim = pkgs.vim_configurable.customize {
+  myVim = (pkgs.vim_configurable.override { python = pkgs.python3; }).customize {
     name = "vim";
     vimrcConfig = {
       customRC = ''
@@ -21,6 +21,7 @@ let
         set list
         set ruler
         set backspace=indent,eol,start
+        set pastetoggle=<F2>
         nmap <F3> :!nix-build -A default <enter>
         map <F7> :tabp<enter>
         map <F8> :tabn<enter>
