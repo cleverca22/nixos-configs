@@ -39,7 +39,6 @@ in {
   nix.max-free = 15;
   services = {
     postgresql = {
-      superUser = "root";
       identMap = ''
         hydra-users clever clever
         hydra-users root root
