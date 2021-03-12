@@ -1,25 +1,6 @@
 { config, pkgs, lib, ... }:
 
 let
-  hydraRev = "19912e15b14a153346ed21256434a47a0b1a0926";
-  hydraSrc = pkgs.fetchFromGitHub {
-    owner = "cleverca22";
-    repo = "hydra";
-    sha256 = "1b59dc2akclhryzrsb3pgwz1f80vhyr9hgglgy6xmzzwnln4dw5g";
-    rev = hydraRev;
-  };
-  hydraSrc-local = /home/clever/iohk/hydra;
-  hydraSrc' = {
-    outPath = hydraSrc;
-    rev = hydraRev;
-    revCount = 1234;
-  };
-  hydra-fork = (import (hydraSrc + "/release.nix") { hydraSrc = hydraSrc'; nixpkgs = pkgs.path; }).build.x86_64-linux;
-  patched-hydra = pkgs.hydra.overrideDerivation (drv: {
-    patches = [
-      ./extra-debug.patch
-    ];
-  });
   passwords = import ./load-secrets.nix;
 in {
   users.users.hydra-www.extraGroups = [ "hydra" ];
