@@ -28,6 +28,15 @@ in {
     supportedFeatures = [ "big-parallel" ];
     systems = [ "armv7l-linux" "aarch64-linux" ];
   };
+  pi400 = {
+    hostName = "pi400";
+    maxJobs = 1;
+    sshUser = "pi";
+    sshKey = key;
+    speedFactor = 1;
+    supportedFeatures = [ "big-parallel" ];
+    systems = [ "armv7l-linux" "aarch64-linux" ];
+  };
   amd = {
     hostName = "192.168.2.15";
     maxJobs = 5;
