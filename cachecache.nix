@@ -4,7 +4,7 @@ with lib;
 
 let
   cfg = config.services.cachecache;
-  flake = import ./repl.nix;
+  sources = import ./nix/sources.nix;
 in {
   options = {
     services.cachecache.enable = mkEnableOption "enable cachecache";
@@ -12,7 +12,7 @@ in {
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
       (super: self: {
-        cachecache = flake.packages.${self.system}.cachecache;
+        cachecache = pkgs.callPackage sources.cachecache {};
       })
     ];
     users.users.cachecache = {
