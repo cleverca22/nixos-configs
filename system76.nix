@@ -5,7 +5,7 @@
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ./iohk-binary-cache.nix
     ./docker.nix
-    ./datadog.nix
+    #./datadog.nix
     ./gpg.nix
     ./bluetooth.nix
     ./clevers_machines.nix
@@ -34,7 +34,10 @@
   };
   networking = {
     hostId = "b790d302"; # required for zfs use
-    wireless.enable = true;
+    wireless = {
+      enable = true;
+      interfaces = [ "wlp3s0" ];
+    };
     hostName = "system76";
     #extraHosts = ''
       #192.168.2.11 fuspr.net
@@ -127,8 +130,8 @@
     xserver = {
       libinput = {
         enable = true;
-        accelSpeed = "20";
-        disableWhileTyping = true;
+        touchpad.accelSpeed = "20";
+        touchpad.disableWhileTyping = true;
       };
       enable = true;
       desktopManager.xfce.enable = true;
