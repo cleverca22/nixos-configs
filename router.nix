@@ -52,7 +52,7 @@ in {
     };
     search = [ "localnet" ];
   };
-  fileSystems."/media/videos/4tb/" = {
+  fileSystems."/media/videos/4tb" = {
     device = "c2d:/media/videos/4tb";
     fsType = "nfs";
     options = [ "soft" ];

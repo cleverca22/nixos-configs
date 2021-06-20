@@ -70,7 +70,7 @@ in {
       device = "naspool/home";
       fsType = "zfs";
     };
-    "/media/videos/4tb/" = {
+    "/media/videos/4tb" = {
       device = "c2d:/media/videos/4tb";
       fsType = "nfs";
     };
