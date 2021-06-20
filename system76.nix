@@ -30,7 +30,7 @@
     kernelModules = [ "kvm-intel" ];
     zfs.devNodes = "/dev"; # fixes some virtualmachine issues
     supportedFilesystems = ["nfs"];
-    kernelPackages = pkgs.linuxPackages_latest;
+    #kernelPackages = pkgs.linuxPackages_latest;
   };
   networking = {
     hostId = "b790d302"; # required for zfs use
