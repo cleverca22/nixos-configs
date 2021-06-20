@@ -94,7 +94,7 @@ in {
     avahi.enable = true;
     ntp.enable = true;
     fail2ban.enable = true;
-    mingetty.helpLine = "[9;0][14;0]";
+    getty.helpLine = "[9;0][14;0]";
     toxvpn = {
       enable = true;
       localip = "192.168.123.20";

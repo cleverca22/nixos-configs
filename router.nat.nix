@@ -103,27 +103,32 @@ in {
           name = "localnet";
           slaves = [ ];
           file = ./localnet;
+          master = true;
         }
         #youtube reddit
         {
           name = "2.168.192.in-addr.arpa";
           slaves = [ ];
           file = ./lan.reverse;
+          master = true;
         }
         {
           name = "0.8.e.f.ip6.arpa";
           slaves = [ ];
           file = ./ipv6.reverse;
+          master = true;
         }
         {
           name = "a.9.1.0.c.1.0.0.0.7.4.0.1.0.0.2.ip6.arpa";
           slaves = [ ];
           file = ./ipv6.reverse;
+          master = true;
         }
         {
           name = "a.9.1.0.d.1.0.0.0.7.4.0.1.0.0.2.ip6.arpa";
           slaves = [ ];
           file = ./ipv6.reverse;
+          master = true;
         }
       ];
     };
