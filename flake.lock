@@ -19,6 +19,34 @@
         "type": "github"
       }
     },
+    "firmware": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-2nqziFQHLMLJoSKx09RArEVl1wpnxFISAOiBcpuI90g=",
+        "path": "/home/clever/apps/rpi/firmware2",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/clever/apps/rpi/firmware2",
+        "type": "path"
+      }
+    },
+    "nixos-configs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1629880963,
+        "narHash": "sha256-Lfla5xnDrZ3Ygp8sA2ynt7CwTnjm3z/CBFK/H+e9zH0=",
+        "owner": "cleverca22",
+        "repo": "nixos-configs",
+        "rev": "38d4c65b03e6b6936ee2ac8e6601e03fa053bf80",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "nixos-configs",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1603729585,
@@ -33,28 +61,47 @@
         "type": "indirect"
       }
     },
-    "root": {
-      "inputs": {
-        "cachecache": "cachecache",
-        "utils": "utils_2"
-      }
-    },
-    "utils": {
+    "nixpkgs_2": {
       "locked": {
-        "lastModified": 1605370193,
-        "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "5021eac20303a61fafe17224c087f5519baed54d",
+        "lastModified": 1628706596,
+        "narHash": "sha256-MlVBWZ5cuuvu5bOc5GJqbq9vDHS9ji1nE9C45y7KCtQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "62ca1cc769207f3d64baad30cf73eacdddbfc4be",
         "type": "github"
       },
       "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "root": {
+      "inputs": {
+        "cachecache": "cachecache",
+        "firmware": "firmware",
+        "rpi-nixos": "rpi-nixos"
+      }
+    },
+    "rpi-nixos": {
+      "inputs": {
+        "nixos-configs": "nixos-configs",
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1630430629,
+        "narHash": "sha256-DM9shbV/JS0SeXyz668F9iK5jj+YTz2qwSfhfj1RBbA=",
+        "owner": "cleverca22",
+        "repo": "rpi-nixos",
+        "rev": "7dea0d95cfb31060b360833d5f60e0f5ebb4b84a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "rpi-nixos",
         "type": "github"
       }
     },
-    "utils_2": {
+    "utils": {
       "locked": {
         "lastModified": 1605370193,
         "narHash": "sha256-YyMTf3URDL/otKdKgtoMChu4vfVL3vCMkRqpGifhUn0=",

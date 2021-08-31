@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# example usage: ./deploy .#packages.aarch64-linux.netboot-1.system root@pi4
+nix build "$1" -o result -L
+nix-copy-closure --to "$2" ./result
+ssh "$2" -t nix-env --profile /nix/var/nix/profiles/system --set $(realpath ./result)
+ssh "$2" -t $(realpath ./result/bin/switch-to-configuration) switch
