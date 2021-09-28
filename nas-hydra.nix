@@ -14,7 +14,8 @@ in {
     environment.TMPDIR = "/dev/shm";
   };
   nix.extraOptions = ''
-    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/NixOS https://github.com/input-output-hk
+    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs
+    experimental-features = nix-command flakes ca-references
   '';
   nix.min-free = 10;
   nix.max-free = 15;
