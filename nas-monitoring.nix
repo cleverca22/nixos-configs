@@ -102,6 +102,8 @@ in {
         add_header Set-Cookie $auth_cookie;
       '';
     in {
+      users.users.oauth2_proxy.group = "oauth2_proxy";
+      users.groups.oauth2_proxy = {};
       services = {
         oauth2_proxy = {
           enable = true;
