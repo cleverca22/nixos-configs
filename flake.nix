@@ -91,15 +91,18 @@
       imports = [ arm64-config ];
       rpi-netboot.lun = "iqn.2021-08.com.example:netboot-2.img";
     };
+    arm64_images = {
+      netboot-1 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-1; };
+      netboot-2 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-2; };
+    };
   in
   utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
   {
     packages.cachecache = cachecache.outputs.packages.${system}.cachecache;
+    hydraJobs.cachecache = cachecache.outputs.packages.${system}.cachecache;
   } // lib.optionalAttrs (system == "aarch64-linux") {
-    packages = {
-      netboot-1 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-1; };
-      netboot-2 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-2; };
-    };
+    packages = arm64_images;
+    hydraJobs = arm64_images;
   }
   );
 }
