@@ -1,6 +1,7 @@
 {
   inputs = {
     cachecache.url = "github:cleverca22/cachecache";
+    utils.url = "github:numtide/flake-utils";
     rpi-nixos.url = "github:cleverca22/rpi-nixos";
     #rpi-nixos.url = "path:/home/clever/apps/rpi/rpi-nixos";
     firmware = {
@@ -9,8 +10,9 @@
       #url = "github:raspberrypi/firmware";
     };
   };
-  outputs = { rpi-nixos, firmware, cachecache, self }:
+  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs }:
   let
+    lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
     {
       imports = [
@@ -89,12 +91,15 @@
       imports = [ arm64-config ];
       rpi-netboot.lun = "iqn.2021-08.com.example:netboot-2.img";
     };
-  in {
+  in
+  utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
+  {
+    packages.cachecache = cachecache.outputs.packages.${system}.cachecache;
+  } // lib.optionalAttrs (system == "aarch64-linux") {
     packages = {
-      aarch64-linux = {
-        netboot-1 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-1; };
-        netboot-2 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-2; };
-      };
+      netboot-1 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-1; };
+      netboot-2 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-2; };
     };
-  };
+  }
+  );
 }
