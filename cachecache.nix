@@ -19,7 +19,9 @@ in {
       home = "/var/lib/cachecache";
       isSystemUser = true;
       createHome = true;
+      group = "cachecache";
     };
+    users.groups.cachecache = {};
     systemd.services.cachecache = {
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.cachecache ];
