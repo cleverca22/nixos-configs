@@ -15,7 +15,7 @@ in {
   };
   nix.extraOptions = ''
     allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs
-    experimental-features = nix-command flakes ca-references
+    experimental-features = nix-command flakes
   '';
   nix.min-free = 10;
   nix.max-free = 15;
