@@ -2,13 +2,14 @@
   inputs = {
     cachecache.url = "github:cleverca22/cachecache";
     utils.url = "github:numtide/flake-utils";
-    rpi-nixos.url = "github:cleverca22/rpi-nixos";
+    rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
     #rpi-nixos.url = "path:/home/clever/apps/rpi/rpi-nixos";
     firmware = {
       flake = false;
       url = "path:/home/clever/apps/rpi/firmware2";
       #url = "github:raspberrypi/firmware";
     };
+    #nix.url = "path:/home/clever/apps/nix-master";
   };
   outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs }:
   let
@@ -35,6 +36,8 @@
           });
         })
       ];
+      #nix.package = nix.packages.aarch64-linux.nix;
+      networking.firewall.enable = false;
       environment.systemPackages = with pkgs; [
         screen libraspberrypi
         ncdu
@@ -86,6 +89,7 @@
     netboot-1 = { pkgs, ... }: {
       imports = [ arm64-config ];
       rpi-netboot.lun = "iqn.2021-08.com.example:pi400.img";
+      networking.hostName = "netboot-1";
     };
     netboot-2 = { pkgs, ... }: {
       imports = [ arm64-config ];
