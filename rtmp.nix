@@ -1,20 +1,26 @@
 { pkgs, ... }:
 
 let
-  nginxWithModules = modules: pkgs.nginx.override { inherit modules; };
-  nginxWithRTMP = with pkgs.nginxModules; nginxWithModules [ rtmp ];
+  rtmpOverlay = self: super: {
+    nginxMainline = super.nginxMainline.override (oldAttrs: {
+      modules = oldAttrs.modules ++ [ super.nginxModules.rtmp ];
+    });
+    #nginxStable = super.nginxStable.override (oldAttrs: {
+    #  modules = oldAttrs.modules ++ [ super.nginxModules.rtmp ];
+    #});
+  };
 in {
   config = {
+    nixpkgs.overlays = [ rtmpOverlay ];
     systemd.services.nginx.preStart = ''
-      mkdir -p /tmp/streaming/{hls,dash}
+      mkdir -p /tmp/{hls,dash}
     '';
     services.nginx = {
-      package = nginxWithRTMP;
       virtualHosts = let
         common = {
           locations = {
             "/hls" = {
-              root = "/tmp/streaming";
+              root = "/tmp";
             };
           };
         };
@@ -31,11 +37,11 @@ in {
               live on;
               record off;
               hls on;
-              hls_path /tmp/streaming/hls;
+              hls_path /tmp/hls;
               # hls_fragment 3;
               # hls_playlist_length 60;
               dash on;
-              dash_path /tmp/streaming/dash;
+              dash_path /tmp/dash;
             }
           }
         }
@@ -51,12 +57,12 @@ in {
               application/vnd.apple.mpegurl m3u8;
               video/mp2t ts;
             }
-            root /tmp/streaming;
+            root /tmp;
             add_header Cache-Control no-cache;
             add_header Access-Control-Allow-Origin *;
           }
           location /dash {
-            root /tmp/streaming;
+            root /tmp;
             add_header Cache-Control no-cache;
             add_header Access-Control-Allow-Origin *;
           }

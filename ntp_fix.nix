@@ -7,6 +7,7 @@ let
     #});
     ntp = super.ntp.overrideAttrs (old: {
       configureFlags = old.configureFlags ++ [ "--disable-libseccomp" ];
+      patches = old.patches or [] ++ [ ./openat.patch ];
     });
   };
 in {

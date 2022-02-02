@@ -2,11 +2,18 @@ $TTL 3D
 @	IN	SOA	ns.localnet. hostmaster (1 8H 4H 4W 1D)
 		NS	ns.localnet.
 
-1	IN	PTR	router.localnet.
+1       IN      PTR     router.localnet.
 15	IN	PTR	amd.localnet.
 10	IN	PTR	ramboot.localnet.
 11	IN	PTR	nas.localnet.
 30	IN	PTR	nix1.localnet.
 31	IN	PTR	nix2.localnet.
 32	IN	PTR	system76.localnet.
-61	IN	PTR	c2d.localnet.
+43      IN      PTR     neo
+50      IN      PTR     pi0.localnet.
+51      IN      PTR     pi1a
+53      IN      PTR     pi3
+55      IN      PTR     pi4
+56      IN      PTR     pi400.localnet.
+57      IN      PTR     pi400e.localnet.
+61      IN      PTR     c2d.localnet.
