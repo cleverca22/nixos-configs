@@ -18,7 +18,7 @@ in {
 
   environment.systemPackages = with pkgs; [
     (if config.services.xserver.enable then gitAndTools.gitFull else git)
-    (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = "System;TerminalEmulator;"; })
+    (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
     ncdu
     psmisc
     sqlite-interactive screen
