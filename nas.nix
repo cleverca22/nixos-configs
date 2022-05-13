@@ -117,8 +117,6 @@ in {
   };
   security.audit.enable = false;
   services = {
-    ssmtp.hostName = "c2d.localnet";
-    #ssmtp.enable = true;
     monitoring-exporters = {
       enable = true;
       metrics = true;
