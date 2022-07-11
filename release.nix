@@ -9,6 +9,6 @@ in {
   nix-tar.arm = linuxPkgs.callPackage ./arm-tar.nix {};
   software = { # things used by several machines
     inherit (linuxPkgs) plex-media-player rtorrent;
-    arcstats = linuxPkgs.callPackage sources.arcstats {};
+    #arcstats = linuxPkgs.callPackage sources.arcstats {};
   };
 }

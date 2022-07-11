@@ -111,10 +111,6 @@ in {
     };
   };
   services = {
-    ssmtp = {
-      enable = true;
-      hostName = "c2d.localnet";
-    };
     bind = {
       enable = true;
       forwarders = [ "47.55.55.55" "142.166.166.166" "8.8.8.8" ];

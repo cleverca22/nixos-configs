@@ -10,7 +10,9 @@ let
     shift
     wakatime "$@"
   '';
-  myVim = (pkgs.vim_configurable.override { python = pkgs.python3; }).customize {
+  myVim = (pkgs.vim_configurable.override {
+    #python = pkgs.python3;
+  }).customize {
     name = "vim";
     vimrcConfig = {
       customRC = ''
