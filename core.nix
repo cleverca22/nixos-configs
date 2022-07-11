@@ -18,6 +18,13 @@ in {
 
   environment.systemPackages = with pkgs; [
     (if config.services.xserver.enable then gitAndTools.gitFull else git)
+    sqlite-interactive screen
+    util
+    #utillinuxCurses
+    psmisc
+    #(if config.services.xserver.enable then gitAndTools.gitFull else git)
+    git
+    ncdu
     (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = "System;TerminalEmulator;"; })
     ncdu
     psmisc
@@ -117,17 +124,18 @@ in {
     distributedBuilds = true;
     trustedUsers = [ "builder" ];
     binaryCaches = [
-      "http://nixcache.localnet"
-      "https://cache.nixos.org"
+      #"http://nixcache.localnet"
+      #"https://cache.nixos.org"
     ];
     binaryCachePublicKeys = [
       "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
-      "hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
+      #"hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
+      "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
     ];
   };
-  system.extraSystemBuilderCmds = ''
-    ln -sv ${./.} $out/nixcfg
-  '';
+  #system.extraSystemBuilderCmds = ''
+  #  ln -sv ${./.} $out/nixcfg
+  #'';
   security.acme.email = "cleverca22@gmail.com";
   security.acme.acceptTerms = true;
 }

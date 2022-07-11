@@ -11,6 +11,10 @@ let
   };
   sources = import ./nix/sources.nix;
   iohk-ops = sources.iohk-ops;
+  nix-src = builtins.fetchTarball "https://github.com/cleverca22/nix/archive/374fe49ff78c13457c6cfe396f9ed0cb986c903b.tar.gz";
+  #nix-flake = builtins.getFlake "github.com:cleverca22/nix?rev=374fe49ff78c13457c6cfe396f9ed0cb986c903b";
+  nix-flake = builtins.getFlake (builtins.unsafeDiscardStringContext nix-src);
+  nix = nix-flake.defaultPackage.x86_64-linux;
 in {
   imports = [
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
@@ -27,20 +31,40 @@ in {
     #./cardano-relay.nix
     ./nixops-managed.nix
     ./nas-monitoring.nix
+    ./nas-monitoring-rewrite.nix
     (iohk-ops + "/modules/monitoring-exporters.nix")
     ./nas-wifi.nix
+    ./exporter.nix
+    ./home-assistant.nix
   ];
   boot = {
-    initrd.availableKernelModules = [ "xhci_pci" "ahci" "ohci_pci" "ehci_pci" "pata_atiixp" "usb_storage" "usbhid" "sd_mod" "nvme" ];
+    initrd.availableKernelModules = [
+      "ahci"
+      "ehci_pci"
+      "nvme"
+      "ohci_pci"
+      "pata_atiixp"
+      "rr3740a"
+      "sd_mod"
+      "usb_storage"
+      "usbhid"
+      "xhci_pci"
+    ];
     loader.grub = {
       device = "/dev/sde";
-      configurationLimit = 5;
+      configurationLimit = 1;
     };
     kernelModules = [ "tcp_bbr" "kvm-amd" "netconsole" ];
     kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
     extraModprobeConfig = ''
-      options netconsole netconsole=6665@192.168.2.11/enp4s0,6666@192.168.2.61/00:1c:c4:6e:00:46
+      options netconsole netconsole=6665@192.168.2.11/enp3s0,6666@192.168.2.61/00:1c:c4:6e:00:46
     '';
+    kernelParams = [
+      "maxcpus=1"
+    ];
+    extraModulePackages = [
+      config.boot.kernelPackages.rr3740a
+    ];
   };
   environment = {
     systemPackages = with pkgs; [
@@ -62,6 +86,10 @@ in {
       device = "naspool/root";
       fsType = "zfs";
     };
+    "/nix" = {
+      device = "naspool/nix";
+      fsType = "zfs";
+    };
     "/boot" = {
       device = "UUID=f5c56a8b-edcd-44ca-8814-490bf43ab576";
       fsType = "ext4";
@@ -70,9 +98,14 @@ in {
       device = "naspool/home";
       fsType = "zfs";
     };
+    "/home/clever/downloading" = {
+      device = "naspool/downloading";
+      fsType = "zfs";
+    };
     "/media/videos/4tb" = {
       device = "c2d:/media/videos/4tb";
       fsType = "nfs";
+      options = [ "soft" ];
     };
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
   };
@@ -81,11 +114,10 @@ in {
   ];
   networking = {
     firewall = {
-      allowedTCPPorts = mkOrder 1 [
+      allowedTCPPorts = [
         80 443
         1337
-        1935
-        1936
+        1935 1936 # rtmp.nix
         111 2049 # nfs
         3260
         10011 30033 30034 # ts3
@@ -95,7 +127,7 @@ in {
         6991 # rtorrent
         20048 # nfs
       ];
-      allowedUDPPorts = mkOrder 1 [
+      allowedUDPPorts = [
         161
         111 2049 # nfs
         9987 # ts3
@@ -129,19 +161,18 @@ in {
     tgtd = {
       enable = true;
       targets = {
-        "iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 2; };
-        "iqn.2019-01.amd-steam" = {
-          backingStore = "/dev/naspool/amd-steam";
-          index = 1;
-        };
-        "iqn.2019-03.vm-example" = {
-          backingStore = "/dev/naspool/vm-example";
-          index = 2;
-        };
+        #"iqn.2019-01.amd-steam" = { backingStore = "/dev/naspool/amd-steam"; index = 1; };
+        "iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/naspool/amd-steam-xfs"; index = 2; };
+        "iqn.2021-08.com.example:pi400.img" = { backingStore = "/dev/naspool/rpi/netboot-1"; index=3; };
+        #"iqn.2019-03.vm-example" = {
+        #  backingStore = "/dev/naspool/vm-example";
+        #  index = 2;
+        #};
+        "iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 4; };
       };
     };
     cachecache.enable = true;
-    locate.enable = true;
+    locate.enable = false;
     plex = {
       enable = true;
       openFirewall = true;
@@ -164,6 +195,23 @@ in {
     nginx = {
       enable = true;
       statusPage = true;
+      appendHttpConfig = ''
+        charset UTF-8;
+      '';
+      virtualHosts = {
+        "nas.localnet" = {
+          locations = {
+            "/private/" = {
+              alias = "/nas/private/";
+              index = "index.htm";
+              extraConfig = ''
+                autoindex on;
+                autoindex_exact_size off;
+              '';
+            };
+          };
+        };
+      };
     };
     toxvpn = {
       enable = true;
@@ -196,12 +244,16 @@ in {
       allowUnfree = true;
     };
     overlays = [
-      #overlay1
+      overlay1
     ];
   };
   nix = {
-    binaryCaches = lib.mkForce [ "http://nas.localnet:8081" ];
+    binaryCaches = lib.mkForce [
+      "http://nas.localnet:8081"
+      "ssh://nix-ssh@amd"
+    ];
     #package = pkgs.nixUnstable;
+    package = nix;
     gc = {
       automatic = true;
       dates = "0:00:00";
@@ -209,24 +261,22 @@ in {
     };
     buildMachines = let
       key = "/etc/nixos/keys/distro";
+      builders = import ./builders.nix;
     in [
       { hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
-      { hostName = "builder@system76.localnet"; systems = [ "armv6l-linux" "armv7l-linux" "x86_64-linux" "i686-linux" ]; sshKey = key; maxJobs = 4; speedFactor = 1; supportedFeatures = [ "big-parallel" "nixos-test" ];}
-      #{ hostName = "root@192.168.2.142"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
-      { hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
-      { hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
-      {
-        hostName = "localhost";
-        mandatoryFeatures = [ "local" ];
-        systems = [ "x86_64-linux" "i686-linux" ];
-        maxJobs = 4;
-      }
+      #{ hostName = "root@192.168.2.140"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      #{ hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
+      #{ hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      { hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
+      builders.rpi4
+      #builders.pi400
+      builders.system76
     ];
     maxJobs = 2;
     buildCores = 2;
-    extraOptions = mkOrder 1 ''
-      # gc-keep-derivations = true
-      # gc-keep-outputs = true
+    extraOptions = mkAfter ''
+      gc-keep-derivations = true
+      keep-outputs = true
       auto-optimise-store = false
       secret-key-files = /etc/nix/keys/secret-key-file
     '';
