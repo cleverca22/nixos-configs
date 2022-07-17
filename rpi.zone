@@ -1,0 +1,12 @@
+$TTL 3D
+@       IN      SOA     ns.localnet. hostmaster (
+      1  ; serial
+      8H ; refresh
+      2H ; retry
+      4W ; expire
+      1D) ; min ttl
+
+              NS    ns.localnet.
+
+@     IN      A     185.101.97.131
+@     IN      AAAA  2a06:1c80:3:44::1
