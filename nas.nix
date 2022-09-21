@@ -183,13 +183,6 @@ in {
       enable = true;
       relayHost = "c2d.localnet";
     };
-    dd-agent = {
-      nginxConfig = ''
-        init_config:
-        instances:
-          - nginx_status_url: http://localhost/nginx_status/
-      '';
-    };
     nginx = {
       enable = true;
       statusPage = true;

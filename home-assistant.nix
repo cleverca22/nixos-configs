@@ -25,17 +25,20 @@ in {
   ];
   services.mosquitto = {
     enable = true;
-    host = "0.0.0.0";
-    users = {
-      full_access = {
-        password = "hunter2";
-        acl = [
-          "topic readwrite homeassistant/#"
-          "topic readwrite home/#"
-          "topic readwrite $SYS/#"
-        ];
-      };
-    };
+    listeners = [
+      {
+        users = {
+          full_access = {
+            password = "hunter2";
+            acl = [
+              "topic readwrite homeassistant/#"
+              "topic readwrite home/#"
+              "topic readwrite $SYS/#"
+            ];
+          };
+        };
+      }
+    ];
     logType = "all";
   };
   services.home-assistant = {
