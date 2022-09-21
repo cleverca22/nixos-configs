@@ -65,11 +65,6 @@
     { device = "/dev/disk/by-uuid/68bce3d2-cfc5-4400-ad8c-ddb751441beb"; }
   ];
   nix = {
-    binaryCachePublicKeys = [
-      "amd-nixos-1:3gYz9vAPzXyqhLNdKbmF24ARp9Iy09ixR4pQAvHJGV8="
-      "hydra.mcwhirter.io:l38v9uAAXM2uasBTmarp3rWA9iSHzMYMQSrMCpiVJmQ="
-      "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
-    ];
     distributedBuilds = true;
     extraOptions = ''
       builders-use-substitutes = true
@@ -81,6 +76,11 @@
       extra-sandbox-paths = [ "/etc/nsswitch.conf" "/etc/protocols" "/usr/bin/env=${pkgs.coreutils}/bin/env" ];
       max-jobs = lib.mkDefault 4;
       substituters = lib.mkForce [ "http://nas.localnet:8081/" ]; #"file:///tmp/cache" "https://hydra.angeldsis.com" ];
+      trusted-public-keys = [
+        "amd-nixos-1:3gYz9vAPzXyqhLNdKbmF24ARp9Iy09ixR4pQAvHJGV8="
+        "hydra.mcwhirter.io:l38v9uAAXM2uasBTmarp3rWA9iSHzMYMQSrMCpiVJmQ="
+        "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
+      ];
     };
   };
   nixpkgs.config = {
