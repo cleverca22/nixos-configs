@@ -1,5 +1,5 @@
 let
-  nixpkgsfix = builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/pull/152462/head.tar.gz";
+  nixpkgsfix = builtins.fetchTarball "https://github.com/nixos/nixpkgs/archive/pull/152462/head.tar.gz";
   fixed_pkgs = import nixpkgsfix { config = {}; overlays = []; };
   mkYoutubeAction = video: {
     service = "media_player.play_media";
