@@ -44,7 +44,7 @@ in {
       "nvme"
       "ohci_pci"
       "pata_atiixp"
-      "rr3740a"
+      #"rr3740a"
       "sd_mod"
       "usb_storage"
       "usbhid"
@@ -63,7 +63,7 @@ in {
       "maxcpus=1"
     ];
     extraModulePackages = [
-      config.boot.kernelPackages.rr3740a
+      #config.boot.kernelPackages.rr3740a
     ];
   };
   environment = {

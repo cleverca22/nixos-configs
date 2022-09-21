@@ -70,16 +70,18 @@
       "hydra.mcwhirter.io:l38v9uAAXM2uasBTmarp3rWA9iSHzMYMQSrMCpiVJmQ="
       "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
     ];
-    binaryCaches = lib.mkForce [ "http://nas.localnet:8081/" ]; #"file:///tmp/cache" "https://hydra.angeldsis.com" ];
-    buildCores = 8;
     distributedBuilds = true;
     extraOptions = ''
       builders-use-substitutes = true
       secret-key-files = /etc/nix/secret-key-file
       #repeat = 2
     '';
-    maxJobs = lib.mkDefault 4;
-    sandboxPaths = [ "/etc/nsswitch.conf" "/etc/protocols" "/usr/bin/env=${pkgs.coreutils}/bin/env" ];
+    settings = {
+      cores = 8;
+      extra-sandbox-paths = [ "/etc/nsswitch.conf" "/etc/protocols" "/usr/bin/env=${pkgs.coreutils}/bin/env" ];
+      max-jobs = lib.mkDefault 4;
+      substituters = lib.mkForce [ "http://nas.localnet:8081/" ]; #"file:///tmp/cache" "https://hydra.angeldsis.com" ];
+    };
   };
   nixpkgs.config = {
     allowUnfree = true;

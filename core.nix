@@ -116,16 +116,18 @@ in {
   nix = {
     min-free-collection = true;
     distributedBuilds = true;
-    trustedUsers = [ "builder" ];
     binaryCaches = [
       #"http://nixcache.localnet"
       #"https://cache.nixos.org"
     ];
-    binaryCachePublicKeys = [
-      "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
-      #"hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
-      "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
-    ];
+    settings = {
+      trusted-public-keys = [
+        "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
+        #"hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
+        "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
+      ];
+      trusted-users = [ "builder" ];
+    };
   };
   #system.extraSystemBuilderCmds = ''
   #  ln -sv ${./.} $out/nixcfg
