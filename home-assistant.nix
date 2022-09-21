@@ -26,7 +26,6 @@ in {
   services.mosquitto = {
     enable = true;
     host = "0.0.0.0";
-    checkPasswords = true;
     users = {
       full_access = {
         password = "hunter2";
