@@ -39,7 +39,7 @@ in {
         };
       }
     ];
-    logType = "all";
+    logType = [ "all" ];
   };
   services.home-assistant = {
     enable = true;
