@@ -36,9 +36,7 @@ in {
         ];
       };
     };
-    extraConf = ''
-      log_type all
-    '';
+    logType = "all";
   };
   services.home-assistant = {
     enable = true;
