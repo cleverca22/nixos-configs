@@ -11,7 +11,7 @@ let
   };
   sources = import ./nix/sources.nix;
   iohk-ops = sources.iohk-ops;
-  nix-src = builtins.fetchTarball "https://github.com/cleverca22/nix/archive/374fe49ff78c13457c6cfe396f9ed0cb986c903b.tar.gz";
+  nix-src = builtins.fetchTarball "https://github.com/nixos/nix/archive/374fe49ff78c13457c6cfe396f9ed0cb986c903b.tar.gz";
   #nix-flake = builtins.getFlake "github.com:cleverca22/nix?rev=374fe49ff78c13457c6cfe396f9ed0cb986c903b";
   nix-flake = builtins.getFlake (builtins.unsafeDiscardStringContext nix-src);
   nix = nix-flake.defaultPackage.x86_64-linux;
