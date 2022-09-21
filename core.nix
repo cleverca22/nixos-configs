@@ -116,10 +116,10 @@ in {
   nix = {
     min-free-collection = true;
     distributedBuilds = true;
-    binaryCaches = [
+    #binaryCaches = [
       #"http://nixcache.localnet"
       #"https://cache.nixos.org"
-    ];
+    #];
     settings = {
       trusted-public-keys = [
         "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="

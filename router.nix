@@ -141,8 +141,6 @@ in {
   };
   nixpkgs.config.allowUnfree = true;
   nix = {
-    maxJobs = 2;
-    buildCores = 2;
     buildMachines = with builders; [ amd darwin notos ];
     extraOptions = ''
       gc-keep-derivations = true
@@ -153,6 +151,10 @@ in {
       automatic = true;
       dates = "*:00:00";
       options = ''--max-freed "$((10 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))"'';
+    };
+    settings = {
+      max-jobs = 2;
+      cores = 2;
     };
   };
   system.stateVersion = "16.03";

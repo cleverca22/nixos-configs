@@ -239,10 +239,6 @@ in {
     ];
   };
   nix = {
-    binaryCaches = lib.mkForce [
-      "http://nas.localnet:8081"
-      "ssh://nix-ssh@amd"
-    ];
     #package = pkgs.nixUnstable;
     package = nix;
     gc = {
@@ -263,8 +259,14 @@ in {
       #builders.pi400
       builders.system76
     ];
-    maxJobs = 2;
-    buildCores = 2;
+    settings = {
+      max-jobs = 2;
+      cores = 2;
+      substituters = lib.mkForce [
+        "http://nas.localnet:8081"
+        "ssh://nix-ssh@amd"
+      ];
+    };
     extraOptions = mkAfter ''
       gc-keep-derivations = true
       keep-outputs = true
