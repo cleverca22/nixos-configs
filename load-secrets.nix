@@ -17,4 +17,5 @@ if builtins.pathExists ./secrets.nix then import ./secrets.nix else {
     clientSecret = "";
     cookie.secret = "";
   };
+  hass_token = "";
 }
