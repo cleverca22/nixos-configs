@@ -55,7 +55,10 @@ in {
       configurationLimit = 1;
     };
     kernelModules = [ "tcp_bbr" "kvm-amd" "netconsole" ];
-    kernel.sysctl."net.ipv4.tcp_congestion_control" = "bbr";
+    kernel.sysctl = {
+      "net.ipv4.tcp_congestion_control" = "bbr";
+      "fs.inotify.max_user_watches" = "100000";
+    };
     extraModprobeConfig = ''
       options netconsole netconsole=6665@192.168.2.11/enp3s0,6666@192.168.2.61/00:1c:c4:6e:00:46
     '';
@@ -175,7 +178,7 @@ in {
       enable = true;
       openFirewall = true;
     };
-    arcstats = true;
+    arcstats = false;
     openssh = {
       enable = true;
     };
