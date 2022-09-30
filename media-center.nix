@@ -33,10 +33,10 @@ in {
     plex-media-player ratpoison pavucontrol
     #syncplay
     mpv teamspeak_client ];
-  nixpkgs.overlays = [ overlay (import ./overlays/plex) ];
   users.extraUsers.media = {
     isNormalUser = true;
     uid = 1100;
+    extraGroups = [ "audio" ];
   };
   networking.firewall.allowedTCPPorts = [
     8060 # the plex frontend does upnp things

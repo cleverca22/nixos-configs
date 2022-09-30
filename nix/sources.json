@@ -58,17 +58,5 @@
         "type": "tarball",
         "url": "https://github.com/NixOS/nixpkgs-channels/archive/6c08aa0d57e12209d199445a9fe569875f9d5887.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "plex-media-player": {
-        "branch": "master",
-        "description": "Next generation Plex Desktop/Embedded Client",
-        "homepage": null,
-        "owner": "plexinc",
-        "repo": "plex-media-player",
-        "rev": "5d099a167ba44942a5da841a113f23b076b622a2",
-        "sha256": "01rga9pyavzp1b4xyxysaw93n8b8kn59hifqk3y6q7wagz3b8ahr",
-        "type": "tarball",
-        "url": "https://github.com/plexinc/plex-media-player/archive/5d099a167ba44942a5da841a113f23b076b622a2.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
