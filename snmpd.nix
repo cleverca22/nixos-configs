@@ -18,7 +18,7 @@ in
     description = "net-snmp daemon";
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      ExecStart = "${pkgs.net_snmp}/bin/snmpd -f -c ${snmpconfig}";
+      ExecStart = "${pkgs.net-snmp}/bin/snmpd -f -c ${snmpconfig}";
       KillMode = "process";
       Restart = "always";
     };
