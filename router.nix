@@ -67,7 +67,7 @@ in {
       papertrail.enable = false;
       ownIp = "192.168.2.1";
     };
-    arcstats = true;
+    #arcstats = true;
     extra-statsd = false;
     teamspeak3.enable = true;
     nix-serve = {
@@ -137,7 +137,7 @@ in {
     { device = "/var/db/swap"; priority = 10; size = 1024; }
   ];
   systemd.services = {
-    network-local-commands.path = with pkgs; [ iproute vlan ];
+    network-local-commands.path = with pkgs; [ iproute2 vlan ];
   };
   nixpkgs.config.allowUnfree = true;
   nix = {
