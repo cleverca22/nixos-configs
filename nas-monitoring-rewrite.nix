@@ -31,7 +31,7 @@ let
     #"pi3" = {};
     #"pi4" = {};
     #"pi400" = {};
-    "pi400e" = {};
+    #"pi400e" = {};
     system76 = {};
   };
 in {
@@ -146,6 +146,21 @@ in {
           ];
         }
         {
+          job_name = "fragmentation";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [
+            {
+              targets = [ "nas:9103" ];
+              labels.alias = "nas";
+            }
+            {
+              targets = [ "system76:9103" ];
+              labels.alias = "system76";
+            }
+          ];
+        }
+        {
           job_name = "hass";
           scrape_interval = "300s";
           metrics_path = "/api/prometheus";
@@ -162,7 +177,10 @@ in {
           scrape_interval = "60s";
           static_configs = let
             makeNodeConfig = key: value: {
-              targets = [ "${key}:9100" "${key}:9102" ];
+              targets = [
+                "${key}:9100"
+                "${key}:9102"
+              ];
               labels = {
                 alias = key;
               } // value.labels or {};
