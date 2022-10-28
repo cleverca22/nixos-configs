@@ -106,7 +106,7 @@ in {
         "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
       ];
     };
-    package = nixMaster;
+    #package = nixMaster;
     buildMachines = [
       { hostName = "clever@aarch64.nixos.community"; systems = [ "aarch64-linux" ]; sshKey = "/etc/nixos/keys/distro"; maxJobs = 10; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
       {
