@@ -16,7 +16,7 @@ with lib;
     systemd.services.iscsid = {
       description = "iscsid daemon";
       wantedBy = [ "basic.target" ];
-      preStart = "${config.system.sbin.modprobe}/bin/modprobe iscsi_tcp";
+      preStart = "${pkgs.kmod}/bin/modprobe iscsi_tcp";
       serviceConfig = {
         ExecStart = "${pkgs.openiscsi}/bin/iscsid -f -c ${pkgs.openiscsi}/etc/iscsi/iscsid.conf -i ${pkgs.openiscsi}/etc/iscsi/initiatorname.iscsi";
         KillMode = "process";
