@@ -1,12 +1,11 @@
 { pkgs, ... }:
 
-{
+let
+  zfs-utils = builtins.getFlake "github:cleverca22/zfs-utils";
+in {
   systemd = {
     services.zfs-fragmentation = {
-      script = ''
-        socat TCP-LISTEN:9103,reuseaddr,fork SYSTEM:"echo HTTP/1.0 200; echo Content-Type\: text/plain; echo; cat /proc/spl/kstat/zfs/{amdnew,naspool,tank}/fragmentation"
-      '';
-      path = [ pkgs.socat ];
+      serviceConfig.ExecStart = "${zfs-utils.packages.x86_64-linux.zfs-fragmentation}/bin/zfs-fragmentation";
       wantedBy = [ "multi-user.target" ];
     };
   };
