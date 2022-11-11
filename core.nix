@@ -40,6 +40,8 @@ in {
       defscrollback 5000
       caption always
       #termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+      # fixes terminfo bugs involing tsl=
+      termcapinfo xterm 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
       #defbce "on"
       maptimeout 5
     '';
