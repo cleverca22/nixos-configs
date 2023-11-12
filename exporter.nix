@@ -24,9 +24,7 @@
         "filefd"
         "filesystem"
         "interrupts"
-        "ksmd"
         "loadavg"
-        "logind"
         "meminfo"
         "netdev"
         "netstat"
@@ -37,6 +35,8 @@
         "timex"
         "vmstat"
         "wifi"
+        #"ksmd"
+        #"logind"
         #"processes"
         #"systemd"
       ];

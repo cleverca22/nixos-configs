@@ -26,7 +26,12 @@ in {
     util
     util-linuxCurses
   ];
-  boot.blacklistedKernelModules = [ "dccp" ];
+  boot = {
+    blacklistedKernelModules = [ "dccp" ];
+    kernelParams = [
+      "zfs.zfs_metaslab_try_hard_before_gang=1"
+    ];
+  };
   nixpkgs = {
     config = {
       sqlite.interactive = true;
