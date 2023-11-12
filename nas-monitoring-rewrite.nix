@@ -19,20 +19,25 @@ let
   '';
   webhost = "monitoring.earthtools.ca";
   monitoredNodes = {
-    "router.localnet" = {
+    "router" = {
       hasNginx = true;
     };
     "nas" = {
       hasNginx = true;
+      hasZfs = true;
     };
-    "amd.localnet" = {};
+    "amd" = {
+      hasZfs = true;
+    };
     #"pi0" = {};
     #"pi1a" = {};
     #"pi3" = {};
     #"pi4" = {};
-    #"pi400" = {};
+    "pi4w" = {};
     #"pi400e" = {};
-    system76 = {};
+    system76 = {
+      hasZfs = true;
+    };
   };
 in {
   networking.firewall.allowedTCPPorts = [ 80 ];
@@ -43,23 +48,32 @@ in {
       addr = "";
       domain = "${webhost}";
       rootUrl = "%(protocol)ss://%(domain)s/grafana/";
-      extraOptions = { # https://grafana.com/docs/auth/auth-proxy/
-        AUTH_PROXY_ENABLED = "true";
-        AUTH_PROXY_HEADER_NAME = "X-Email";
-        AUTH_PROXY_HEADER_PROPERTY = "email";
-        AUTH_PROXY_AUTO_SIGN_UP = "true";
-        AUTH_PROXY_WHITELIST = "127.0.0.1, ::1"; # only trust nginx to claim usernames
+      #extraOptions = { # https://grafana.com/docs/auth/auth-proxy/
+      #  AUTH_PROXY_ENABLED = "true";
+      #  AUTH_PROXY_HEADER_NAME = "X-Email";
+      #  AUTH_PROXY_HEADER_PROPERTY = "email";
+      #  AUTH_PROXY_AUTO_SIGN_UP = "true";
+      #  AUTH_PROXY_WHITELIST = "127.0.0.1, ::1"; # only trust nginx to claim usernames
+      #};
+      settings = {
+        "auth.proxy" = {
+          enabled = true;
+          header_name = "X-Email";
+          header_property = "email";
+          auto_sign_up = true;
+          whitelist = "127.0.0.1, ::1";
+        };
       };
       provision = {
         enable = true;
-        datasources = [
+        datasources.settings.datasources = [
           {
             type = "prometheus";
             name = "prometheus";
             url = "http://localhost:9090/prometheus";
           }
         ];
-        dashboards = [
+        dashboards.settings.providers = [
           {
             name = "generic";
             options.path = ./grafana/generic;
@@ -115,14 +129,15 @@ in {
       enable = true;
       webExternalUrl = "https://${webhost}/prometheus/";
       extraFlags = [
-        "--storage.tsdb.retention=${toString (365 * 24)}h"
+        "--storage.tsdb.retention=${toString (2 * 365 * 24)}h"
+        #"--log.level=debug"
       ];
       scrapeConfigs = [
         {
           job_name = "cachecache";
           scrape_interval = "60s";
           metrics_path = "/";
-          static_configs = [ { targets = [ "127.0.0.1:8080" ]; } ];
+          static_configs = [ { targets = [ "nas:8080" ]; } ];
         }
         {
           job_name = "prometheus";
@@ -149,14 +164,49 @@ in {
           job_name = "fragmentation";
           scrape_interval = "60s";
           metrics_path = "/metrics";
+          static_configs = let
+            makeFragConfig = host: obj: {
+              targets = [ "${host}:9103" ];
+              labels.alias = host;
+            };
+            onlyZfs = n: v: v.hasZfs or false;
+          in lib.mapAttrsToList makeFragConfig (lib.filterAttrs onlyZfs monitoredNodes);
+        }
+        {
+          job_name = "amdgpu";
+          scrape_interval = "10s";
+          metrics_path = "/metrics";
           static_configs = [
             {
-              targets = [ "nas:9103" ];
-              labels.alias = "nas";
+              targets = [ "amd:12913" ];
+              labels.alias = "amd";
+            }
+          ];
+        }
+        {
+          job_name = "faucet";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [
+            {
+              targets = [ "amd:8090" ];
+              labels.alias = "amd";
+              labels.namespace = "preview";
+            }
+          ];
+        }
+        {
+          job_name = "smartctl";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [
+            {
+              targets = [ "amd:9633" ];
+              labels.alias = "amd";
             }
             {
-              targets = [ "system76:9103" ];
-              labels.alias = "system76";
+              targets = [ "nas:9633" ];
+              labels.alias = "nas";
             }
           ];
         }
@@ -169,6 +219,22 @@ in {
           static_configs = [
             {
               targets = [ "localhost:8123" ];
+              labels.alias = "hass";
+            }
+          ];
+        }
+        {
+          job_name = "stationeers";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                #"amd:8000"
+                "system76:8000"
+              ];
+              labels.alias = "system76";
             }
           ];
         }
@@ -179,13 +245,23 @@ in {
             makeNodeConfig = key: value: {
               targets = [
                 "${key}:9100"
-                "${key}:9102"
               ];
               labels = {
                 alias = key;
               } // value.labels or {};
             };
           in lib.mapAttrsToList makeNodeConfig monitoredNodes;
+        }
+        {
+          # for hydra
+          job_name = "node_statd";
+          scrape_interval = "60s";
+          static_configs = [
+            {
+              targets = [ "nas:9102" ];
+              labels.alias = "nas";
+            }
+          ];
         }
         {
           job_name = "nginx";
