@@ -23,7 +23,7 @@ in {
   nix.settings.auto-optimise-store = true;
   services = {
     postgresql = {
-      package = pkgs.postgresql_11;
+      package = pkgs.postgresql_16;
       identMap = ''
         hydra-users clever clever
         hydra-users root root
