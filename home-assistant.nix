@@ -44,9 +44,9 @@ in {
   services.home-assistant = {
     enable = true;
     openFirewall = true;
-    package = (fixed_pkgs.home-assistant.override {
-      extraComponents = [ "cast" ];
-    }).overrideAttrs (oldAttrs: { doInstallCheck = false; });
+    #package = (fixed_pkgs.home-assistant.override {
+    #  extraComponents = [ "cast" ];
+    #}).overrideAttrs (oldAttrs: { doInstallCheck = false; });
     config = {
       automation = {
         alias = "lights out when playing";
