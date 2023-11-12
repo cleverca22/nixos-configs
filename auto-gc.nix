@@ -7,7 +7,7 @@ in {
   options.nix = {
     min-free = mkOption {
       type = types.int;
-      default = 3;
+      default = 1;
     };
     max-free = mkOption {
       type = types.int;
