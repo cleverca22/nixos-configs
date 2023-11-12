@@ -6,7 +6,7 @@ let
     hash = "sha256-3rFAMoEjnB+cHLHsLZMGFCzr2yY/63nAj9RpRO1FueQ=";
   };
 in {
-  boot.kernelPackages = pkgs.linuxPackages.extend (self: super: {
+  boot.kernelPackages = pkgs.linuxPackages_5_15.extend (self: super: {
     zfs = super.zfs.overrideAttrs (old: {
       src = zfs-src;
     });
