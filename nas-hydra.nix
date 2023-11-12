@@ -12,6 +12,7 @@ in {
   systemd.services.hydra-evaluator = {
     path = [ pkgs.jq pkgs.gawk ];
     environment.TMPDIR = "/dev/shm";
+    wantedBy = lib.mkForce [];
   };
   nix.extraOptions = ''
     allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs
@@ -19,6 +20,7 @@ in {
   '';
   nix.min-free = 10;
   nix.max-free = 15;
+  nix.settings.auto-optimise-store = true;
   services = {
     postgresql = {
       package = pkgs.postgresql_11;
@@ -76,13 +78,20 @@ in {
         "hydra.angeldsis.com" = {
           enableACME = false;
           forceSSL = false;
-          locations."/".extraConfig = ''
-            proxy_pass http://localhost:3001;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Proto "https";
-            proxy_set_header  X-Real-IP         $remote_addr;
-            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
-          '';
+          locations = {
+            "/".extraConfig = ''
+              proxy_pass http://localhost:3001;
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-Proto "https";
+              proxy_set_header  X-Real-IP         $remote_addr;
+              proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+              proxy_read_timeout 120;
+            '';
+            "/hydra-charter/" = {
+              alias = "/nas/private/hydra-charter/";
+              index = "index.htm";
+            };
+          };
         };
       };
     };
