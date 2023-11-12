@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   virtualisation = {
@@ -7,4 +7,5 @@
       storageDriver = "zfs";
     };
   };
+  environment.systemPackages = [ pkgs.docker-compose ];
 }
