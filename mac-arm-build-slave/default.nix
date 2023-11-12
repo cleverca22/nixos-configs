@@ -12,6 +12,7 @@ in lib.fix (self: {
       arm = true;
       aarch64 = true;
     };
+    systemd.services.sshd.wantedBy = lib.mkForce [ "multi-user.target" ];
     users.users.root.openssh.authorizedKeys.keys = [ (builtins.readFile ~/.ssh/id_rsa.pub) ];
   };
   config = (import <nixpkgs/nixos> { system = "x86_64-linux"; configuration = self.configuration; }).config;
