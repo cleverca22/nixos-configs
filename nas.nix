@@ -33,7 +33,7 @@ in {
     ./nas-monitoring.nix
     ./nas-monitoring-rewrite.nix
     (iohk-ops + "/modules/monitoring-exporters.nix")
-    ./nas-wifi.nix
+    #./nas-wifi.nix
     ./exporter.nix
     ./home-assistant.nix
   ];
