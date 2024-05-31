@@ -1,7 +1,8 @@
 { pkgs, ... }:
 
 let
-  zfs-utils = builtins.getFlake "github:cleverca22/zfs-utils";
+  flake = builtins.getFlake (toString ./.);
+  zfs-utils = flake.inputs.zfs-utils;
 in {
   systemd = {
     services.zfs-fragmentation = {
