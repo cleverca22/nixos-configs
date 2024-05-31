@@ -10,8 +10,12 @@
       #url = "github:raspberrypi/firmware";
     };
     #nix.url = "path:/home/clever/apps/nix-master";
+    zfs-utils = {
+      url = "github:cleverca22/zfs-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs }:
+  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs, zfs-utils }:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
