@@ -7,10 +7,22 @@ let
   sources = import ./nix/sources.nix;
   iohk-ops = sources.iohk-ops;
 in {
-  # TODO move into deployment file
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/3c21b4a1-bc19-449b-815f-60c66ba23bdf";
-    fsType = "ext4";
+  fileSystems = {
+    # TODO move into deployment file
+    "/" = {
+      device = "/dev/disk/by-uuid/3c21b4a1-bc19-449b-815f-60c66ba23bdf";
+      fsType = "ext4";
+    };
+    "/media/videos/4tb" = {
+      device = "c2d:/media/videos/4tb";
+      fsType = "nfs";
+      options = [ "soft" ];
+    };
+    "/nas" = {
+      device = "nas:/nas";
+      fsType = "nfs";
+      options = [ "soft" ];
+    };
   };
 
   imports = [
@@ -26,10 +38,14 @@ in {
     ./nixops-managed.nix
     (iohk-ops +"/modules/monitoring-exporters.nix")
     #./jormungandr.nix
+    ./exporter.nix
+    #./homeserver.nix
+    ./ntp_fix.nix
   ];
   programs = {
     vim.fat = false;
   };
+  time.timeZone = "America/Moncton";
   documentation.info.enable = false;
   boot = {
     initrd.availableKernelModules = [ "uhci_hcd" "ehci_pci" "ata_piix" "usbhid" "usb_storage" ];
@@ -41,21 +57,25 @@ in {
     };
   };
   networking = {
+    timeServers = lib.mkOptionDefault [
+      "nas"
+      "amd"
+      "system76"
+      "c2d"
+    ];
     hostName = "router";
     hostId = "136e6c46";
     firewall = {
       enable = true;
       allowPing = true;
-      allowedTCPPorts = [ 5201 33445 config.services.teamspeak3.fileTransferPort config.services.teamspeak3.queryPort 80 443 ];
-      allowedUDPPorts = [ 123 161 33445 config.services.teamspeak3.defaultVoicePort 53 162 ];
+      allowedTCPPorts = [ 5201 33445 config.services.teamspeak3.fileTransferPort config.services.teamspeak3.queryPort 80 443 8443 ];
+      allowedUDPPorts = [
+        123 161 33445 config.services.teamspeak3.defaultVoicePort 53 162
+        51820
+      ];
       trustedInterfaces = [ "tox_master0" ];
     };
     search = [ "localnet" ];
-  };
-  fileSystems."/media/videos/4tb" = {
-    device = "c2d:/media/videos/4tb";
-    fsType = "nfs";
-    options = [ "soft" ];
   };
   sound.enable = false;
   #qemu-user.arm = true;
@@ -72,10 +92,10 @@ in {
     teamspeak3.enable = true;
     nix-serve = {
       secretKeyFile = "/etc/nix/nix-serve.sec";
-      enable = true;
+      enable = false;
     };
     radvd = {
-      enable = true;
+      enable = false;
       config = ''
         interface enp4s2f1 {
           AdvSendAdvert on;
@@ -100,30 +120,31 @@ in {
       localip = "192.168.123.20";
     };
     hydra = {
-      enable = true;
+      enable = false;
       extraEnv.NIX_REMOTE_SYSTEMS = lib.concatStringsSep ":" [ "/etc/nix/machines" "/etc/nix/machines.provisioned" ];
-      hydraURL = "http://hydra.earthtools.ca/";
+      hydraURL = "https://hydra.earthtools.ca/";
       notificationSender = "clever@ext.earthtools.ca";
       minimumDiskFree = 5;
       minimumDiskFreeEvaluator = 1;
     };
     postgresql = {
-      enable = true;
-      package = pkgs.postgresql_11;
+      enable = false;
+      package = pkgs.postgresql_15;
     };
     openssh.passwordAuthentication = false;
   };
   environment.systemPackages = with pkgs; [
-    pciutils
-    nox
-    tcpdump
     file
     iperf
     lshw
     lsof
     nmap
+    nox
+    pciutils
     socat
-    ncdu
+    speedtest-cli
+    tcpdump
+    wireshark-cli
   ];
   users.extraUsers.gits = {
     isNormalUser = true;
@@ -143,8 +164,8 @@ in {
   nix = {
     buildMachines = with builders; [ amd darwin notos ];
     extraOptions = ''
-      gc-keep-derivations = true
-      gc-keep-outputs = true
+      #gc-keep-derivations = true
+      #gc-keep-outputs = true
       auto-optimise-store = true
     '';
     gc = {
@@ -157,5 +178,5 @@ in {
       cores = 2;
     };
   };
-  system.stateVersion = "16.03";
+  system.stateVersion = "20.03";
 }

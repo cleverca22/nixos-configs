@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   nixMasterSrc = pkgs.fetchFromGitHub {
@@ -11,19 +11,24 @@ let
 in {
   imports = [
     #./datadog.nix
+    #./docker.nix
     #./taktoa-hercules.nix
     ./bluetooth.nix
     ./clevers_machines.nix
     ./direnv.nix
-    #./docker.nix
     ./exporter.nix
     ./gpg.nix
     ./iohk-binary-cache.nix
     ./ntp_fix.nix
+    ./steam.nix
     ./wireshark-no-root.nix
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ./zfs-patch.nix
     ./zdb.nix
+    ./zfs-patch.nix
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    ./test.nix
+    ./stationeers.nix
+    #./pi-v6.nix
+    #./deluge.nix
   ];
   boot = {
     loader.grub = {
@@ -60,6 +65,7 @@ in {
       #192.168.123.51 hydra.angeldsis.com
     #'';
     firewall = {
+      enable = false;
       allowedTCPPorts = [
         8080 3000 25565 8082 8081
         32433 # plex-media-player
@@ -99,7 +105,7 @@ in {
       trusted-users = [ "clever" ];
       extra-sandbox-paths = [ "/etc/nsswitch.conf" "/etc/protocols" "/usr/bin/env=${pkgs.coreutils}/bin/env" ];
       max-jobs = lib.mkDefault 4;
-      substituters = lib.mkForce [ "http://nas.localnet:8081/" ]; #"file:///tmp/cache" "https://hydra.angeldsis.com" ];
+      #substituters = lib.mkForce [ "http://nas.localnet:8081/" ]; #"file:///tmp/cache" "https://hydra.angeldsis.com" ];
       trusted-public-keys = [
         "amd-nixos-1:3gYz9vAPzXyqhLNdKbmF24ARp9Iy09ixR4pQAvHJGV8="
         "hydra.mcwhirter.io:l38v9uAAXM2uasBTmarp3rWA9iSHzMYMQSrMCpiVJmQ="
@@ -121,7 +127,7 @@ in {
     pulseaudio = true;
   };
   programs = {
-    vim.fat = false;
+    vim.fat = true;
     screen.screenrc = ''
       termcapinfo xterm-256color 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
     '';
@@ -137,10 +143,12 @@ in {
     acpi
     chromium
     ddrescue
+    tcpdump
     dtc
     efibootmgr
     evince
     evtest
+    ffmpeg
     file
     gdb
     gist
@@ -149,6 +157,7 @@ in {
     iperf
     irssi
     jq
+    element-desktop
     lsof
     midori
     mosh
@@ -167,6 +176,7 @@ in {
     synergy
     sysstat
     teamspeak_client
+    unzip
     usbutils
     vlc
     wget
@@ -197,6 +207,7 @@ in {
     ntp.enable = true;
     openssh.enable = true;
     openssh.forwardX11 = true;
+    openssh.settings.X11Forwarding = true;
     openssh.passwordAuthentication = false;
     tcsd.enable = false;
     tftpd = { enable = true; path = "/home/clever/tftp"; };
@@ -230,4 +241,5 @@ in {
     enable = false;
     rules = [ "-a task,always" ];
   };
+  system.stateVersion = "23.05";
 }

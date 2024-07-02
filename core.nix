@@ -20,6 +20,7 @@ in {
     (if config.services.xserver.enable then gitAndTools.gitFull else git)
     #utillinuxCurses
     (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
+    bat
     ncdu
     psmisc
     sqlite-interactive screen
@@ -50,6 +51,7 @@ in {
       #defbce "on"
       maptimeout 5
     '';
+    screen.enable = true;
     ssh = {
       extraConfig = ''
         ServerAliveInterval 60
@@ -70,6 +72,7 @@ in {
         "github.com" = { publicKey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg="; };
         "du075.macincloud.com" = { publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrJvUu+5o75C8Sf27LWf0GNyb96iBQ6znoy8YmPeoVecpsEgj1KoW+NyZSkEgB1PQA/SBYpHVQRGFfxP0WI8H0kVfJX2wf89oY5m3XJDj/B6JnFo0tpJFhdnidSehFAPm5eja93osKpJDMgtt9F31PjmuOiYS/sTtZsyz/KzoUd2mekdlowvyQA5Fw93sC2lNrKyGsD6y7O5ft9YmyNn43s7g+2f2qBLF4miPgYECJ0AaNq1NBzrmxeDBxCvrMAZe4ZFnHx/g8oy+D4eZm+J2kc8ZMIa57dqua4Y3rm9o+Uej/8sBPcp7Kczf5eAS5f9+lLaATuLDTyFKLNLItU5kX"; };
         "aarch64.nixos.community" = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMUTz5i9u5H2FHNAmZJyoJfIGyUm/HfGhfwnc142L3ds"; };
+        "pi5w" = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBgqVYJn5wzz8bfVwWCtvUB6YsTNUlKzPA/IHhEJ78LF"; };
       };
     };
   };
