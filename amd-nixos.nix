@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   vc4_mesa = pkgs.mesa.override { galliumDrivers = [ "radeonsi" "vc4" "v3d" "swrast" ]; };
@@ -38,7 +38,7 @@ in {
       options snd_hda_intel enable=1,0
       install dccp /run/current-system/sw/bin/false
     '';
-    #extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+    extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
     initrd.availableKernelModules = [ "nvme" ];
     #kernelPackages = pkgs.linuxPackages_latest;
     kernelModules = [ "pcspkr" ];
@@ -57,6 +57,10 @@ in {
       "audit=0"
       "boot.shell_on_fail"
       "zfs.zfs_flags=0x10"
+      # drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+      # increases the timeout of GFX jobs
+      "amdgpu.lockup_timeout=5000"
+      #"amdgpu.ppfeaturemask=0xffffffff"
       #"amdgpu.cik_support=0"
       #"amdgpu.dpm=0"
       #"amdgpu.si_support=0"
@@ -99,6 +103,7 @@ in {
   };
   environment.systemPackages = with pkgs; [
     vulkan-tools
+    xsane
     renderdoc
     #audacity
     #diffoscope
@@ -109,8 +114,11 @@ in {
     acpi
     asciinema
     flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
+    flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
     bat
     bind.dnsutils
+    corectrl
+    git-crypt
     chromium
     ddd
     discord
@@ -127,14 +135,15 @@ in {
     gnome3.eog
     gnome3.file-roller
     #gnome3.gedit
-    #gnuradio
+    gnuradio
     graphviz
     #gtkwave
     hping
     iftop
     iperf
+    config.boot.kernelPackages.perf
     jq
-    #kgpg
+    kgpg
     (mcomix3.override { pdfSupport = false; })
     audacity
     obs-studio
@@ -190,6 +199,10 @@ in {
     #"/media/Music/" = { device = "192.168.123.32:/mnt/Music/"; fsType = "nfs"; };
   };
   hardware = {
+    sane = {
+      enable = true;
+      extraBackends = [ pkgs.sane-backends ];
+    };
     cpu.intel.updateMicrocode = true;
     bluetooth.enable = true;
     opengl = {
@@ -241,10 +254,10 @@ in {
     in {
       inherit tap0;
       enp8s0 = {
-        mtu = 9000;
+        mtu = 1500;
       };
       br0 = {
-        mtu = 9000;
+        mtu = 1500;
         ipv4.addresses = [
           {
             address = "10.0.0.15";
@@ -275,7 +288,7 @@ in {
       #{ sshUser = "clever"; hostName = "pi5e"; maxJobs = 3; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; }
       #{ sshUser = "root"; hostName = "pi4"; maxJobs = 4; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; supportedFeatures = [ "big-parallel" ]; }
       #{ sshUser = "root"; hostName = " 192.168.2.32"; maxJobs = 3; system = "x86_64-lunux"; sshKey = "/etc/nixos/keys/distro"; }
-      { sshUser = "clever"; hostName = "aarch64.nixos.community"; maxJobs = 32; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; }
+      #{ sshUser = "clever"; hostName = "aarch64.nixos.community"; maxJobs = 32; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; supportedFeatures = [ "big-parallel" ]; }
     ];
     sshServe = {
       enable = true;
@@ -300,7 +313,7 @@ in {
       max-jobs = 20;
       sandbox = "relaxed";
       substituters = [
-        "http://cache.earthtools.ca"
+        #"http://cache.earthtools.ca"
         "http://nas.localnet:8081"
         #"http://nixcache.localnet"
         #"https://cache.nixos.org"
@@ -389,6 +402,7 @@ in {
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d00", GROUP="wheel"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d01", GROUP="wheel"
         SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0003|000a", GROUP="wheel"
       '';
     };
     xserver = {
