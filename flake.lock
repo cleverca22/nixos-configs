@@ -172,11 +172,11 @@
         "utils": "utils_3"
       },
       "locked": {
-        "lastModified": 1724016345,
-        "narHash": "sha256-uvUY7RwzvCVWmbNVRBxwZjgYdOsntgs4dpm+RbT0AXQ=",
+        "lastModified": 1724017642,
+        "narHash": "sha256-h/ZKn+N3u0CO0pr9wPEMDasB4jt7+rlaNZpI9P5JNDM=",
         "owner": "cleverca22",
         "repo": "zfs-utils",
-        "rev": "b5fa61b201c9213c2b9cf96472969286f4f56949",
+        "rev": "fa0942759f2a79747d8e3d523167ee79088bb012",
         "type": "github"
       },
       "original": {
