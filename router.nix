@@ -77,7 +77,6 @@ in {
     };
     search = [ "localnet" ];
   };
-  sound.enable = false;
   #qemu-user.arm = true;
   services = {
     monitoring-exporters = {
