@@ -1,6 +1,21 @@
 { pkgs, lib, ... }:
 
-{
+let
+  buildGoModule = attrs: pkgs.buildGoModule (attrs // {
+    src = pkgs.fetchFromGitHub {
+      owner = "cleverca22";
+      repo = "node_exporter";
+      rev = "226ba290fafac9bad4d855dab53d3f8a35a45963";
+      sha256 = "sha256-j4l6ZN8ARIj8g9rcHEov6McbRXZ5vUhLkKrT/ly0iQE=";
+    };
+    vendorHash = "sha256-YvCYjaF6Jgkjxh80EIzxzkMjM9380/eAl1BnRBYmVsU=";
+  });
+in {
+  nixpkgs.overlays = [
+    (self: super: {
+      prometheus-node-exporter = super.prometheus-node-exporter.override { inherit buildGoModule; };
+    })
+  ];
   services = {
     nginx = {
       appendHttpConfig = lib.mkIf false ''
@@ -30,6 +45,8 @@
         "netstat"
         "ntp"
         "stat"
+        "systemd"
+        "systemd.network-metrics"
         "tcpstat"
         "time"
         "timex"
@@ -38,7 +55,6 @@
         #"ksmd"
         #"logind"
         #"processes"
-        #"systemd"
       ];
     };
   };
