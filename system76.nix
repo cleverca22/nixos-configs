@@ -124,7 +124,7 @@ in {
   };
   nixpkgs.config = {
     allowUnfree = true;
-    pulseaudio = true;
+    #pulseaudio = true;
   };
   programs = {
     vim.fat = true;
@@ -192,7 +192,7 @@ in {
       enable = true;
     };
   };
-  sound.enable = true;
+  #sound.enable = true;
   services = {
     arcstats = false;
     avahi.publish.addresses = true;
