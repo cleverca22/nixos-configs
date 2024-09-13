@@ -29,11 +29,15 @@ let
     "amd" = {
       hasZfs = true;
     };
+    "nixbox360" = {
+    };
     #"pi0" = {};
     #"pi1a" = {};
     #"pi3" = {};
     #"pi4" = {};
-    "pi4w" = {};
+    #"pi4w" = {};
+    "pi5w" = {};
+    #"pi5e" = {};
     #"pi400e" = {};
     system76 = {
       hasZfs = true;
@@ -44,10 +48,6 @@ in {
   services = {
     grafana = {
       enable = true;
-      users.allowSignUp = false;
-      addr = "";
-      domain = "${webhost}";
-      rootUrl = "%(protocol)ss://%(domain)s/grafana/";
       #extraOptions = { # https://grafana.com/docs/auth/auth-proxy/
       #  AUTH_PROXY_ENABLED = "true";
       #  AUTH_PROXY_HEADER_NAME = "X-Email";
@@ -63,6 +63,12 @@ in {
           auto_sign_up = true;
           whitelist = "127.0.0.1, ::1";
         };
+        server.domain = "${webhost}";
+        server.http_addr = "";
+        server.root_url = "%(protocol)ss://%(domain)s/grafana/";
+        security.admin_password = secrets.grafanaCreds.password;
+        security.admin_user = "admin";
+        users.allow_sign_up = false;
       };
       provision = {
         enable = true;
@@ -80,16 +86,19 @@ in {
           }
         ];
       };
-      security = {
-        adminUser = "admin";
-        adminPassword = secrets.grafanaCreds.password;
-      };
     };
-    oauth2_proxy = {
+    oauth2-proxy = {
+      cookie.refresh = "1h";
       email.domains = [ "iohk.io" ];
       enable = true;
-      inherit (secrets.oauth) clientID clientSecret cookie;
-      nginx.virtualHosts = [ webhost ];
+      keyFile = "/var/keys/oauth2_proxy";
+      nginx = {
+        domain = webhost;
+        virtualHosts = {
+          ${webhost} = {
+          };
+        };
+      };
       provider = "google";
       setXauthrequest = true;
     };
@@ -132,7 +141,22 @@ in {
         "--storage.tsdb.retention=${toString (2 * 365 * 24)}h"
         #"--log.level=debug"
       ];
-      scrapeConfigs = [
+      scrapeConfigs = let
+        pi5_voltage = {
+          job_name = "pi5_voltage";
+          scrape_interval = "10s";
+          static_configs = [
+            {
+              targets = [ "pi5w:9101" ];
+              labels.alias = "pi5w";
+            }
+            {
+              targets = [ "pi5e:9101" ];
+              labels.alias = "pi5e";
+            }
+          ];
+        };
+      in [
         {
           job_name = "cachecache";
           scrape_interval = "60s";
@@ -172,6 +196,7 @@ in {
             onlyZfs = n: v: v.hasZfs or false;
           in lib.mapAttrsToList makeFragConfig (lib.filterAttrs onlyZfs monitoredNodes);
         }
+        pi5_voltage
         {
           job_name = "amdgpu";
           scrape_interval = "10s";
@@ -188,11 +213,11 @@ in {
           scrape_interval = "60s";
           metrics_path = "/metrics";
           static_configs = [
-            {
-              targets = [ "amd:8090" ];
-              labels.alias = "amd";
-              labels.namespace = "preview";
-            }
+            #{
+            #  targets = [ "amd:8090" ];
+            #  labels.alias = "amd";
+            #  labels.namespace = "preview";
+            #}
           ];
         }
         {
@@ -212,7 +237,7 @@ in {
         }
         {
           job_name = "hass";
-          scrape_interval = "300s";
+          scrape_interval = "60s";
           metrics_path = "/api/prometheus";
           bearer_token = secrets.hass_token;
           scheme = "http";
@@ -231,16 +256,17 @@ in {
           static_configs = [
             {
               targets = [
-                #"amd:8000"
-                "system76:8000"
+                "amd:8000"
+                #"system76:8000"
               ];
-              labels.alias = "system76";
+              labels.alias = "amd";
             }
           ];
         }
         {
           job_name = "node";
           scrape_interval = "60s";
+          scrape_timeout = "50s";
           static_configs = let
             makeNodeConfig = key: value: {
               targets = [
@@ -280,6 +306,15 @@ in {
       ];
     };
   };
-  users.users.oauth2_proxy.group = "oauth2_proxy";
+  users.users.oauth2_proxy = {
+    group = "oauth2_proxy";
+    isSystemUser = true;
+  };
   users.groups.oauth2_proxy = {};
+  deployment.keys = {
+    oauth2_proxy = {
+      keyFile = ./secrets/oauth2_proxy;
+      destDir = "/var/keys";
+    };
+  };
 }

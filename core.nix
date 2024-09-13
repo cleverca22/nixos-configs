@@ -23,7 +23,7 @@ in {
     bat
     ncdu
     psmisc
-    sqlite-interactive screen
+    sqlite-interactive
     util
     util-linuxCurses
   ];
@@ -111,17 +111,22 @@ in {
   services = {
     openssh = {
       enable = true;
-      permitRootLogin = "yes";
+      settings.PermitRootLogin = "yes";
     };
     avahi = {
       enable = true;
-      nssmdns = true;
+      nssmdns4 = true;
       publish = {
         enable = true;
         addresses = true;
         workstation = true;
       };
     };
+  };
+  networking = {
+    extraHosts = ''
+      10.42.1.5 nixbox360
+    '';
   };
   nix = {
     min-free-collection = true;

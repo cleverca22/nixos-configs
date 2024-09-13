@@ -1,6 +1,6 @@
 let
   secrets = import ./load-secrets.nix;
-  WIFI = "wlp1s0";
+  WIFI = "wlan0";
 in {
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = true;

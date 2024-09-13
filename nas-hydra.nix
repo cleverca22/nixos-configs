@@ -8,6 +8,7 @@ in {
     serviceConfig = {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
     };
+    wantedBy = lib.mkForce [];
   };
   systemd.services.hydra-evaluator = {
     path = [ pkgs.jq pkgs.gawk ];

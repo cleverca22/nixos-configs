@@ -43,22 +43,21 @@ in {
   ];
   boot = {
     initrd.availableKernelModules = [
-      "ahci"
-      "ehci_pci"
+      "ahci"          # SATA
+      "ehci_pci"      # USB
       "nvme"
-      "ohci_pci"
-      "pata_atiixp"
-      #"rr3740a"
+      "ohci_pci"      # USB
       "sd_mod"
       "usb_storage"
       "usbhid"
-      "xhci_pci"
+      "xhci_pci"      # USB
+      #"rr3740a"
     ];
     loader.grub = {
-      device = "/dev/sde";
+      device = "/dev/sdf";
       configurationLimit = 1;
     };
-    kernelModules = [ "tcp_bbr" "kvm-amd" "netconsole" ];
+    kernelModules = [ "tcp_bbr" "kvm-amd" ];
     kernel.sysctl = {
       "net.ipv4.tcp_congestion_control" = "bbr";
       "fs.inotify.max_user_watches" = "100000";
@@ -77,10 +76,10 @@ in {
   environment = {
     systemPackages = with pkgs; [
       ethtool
+      file
       flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
       flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
       gdb
-      tgt
       iotop
       jq
       lsof
@@ -92,36 +91,19 @@ in {
       socat
       sysstat
       tcpdump
+      tgt
       vnstat
     ];
   };
   fileSystems = {
-    "/" = {
-      device = "naspool/root";
-      fsType = "zfs";
-    };
-    "/nix" = {
-      device = "naspool/nix";
-      fsType = "zfs";
-    };
-    "/boot" = {
-      device = "UUID=f5c56a8b-edcd-44ca-8814-490bf43ab576";
-      fsType = "ext4";
-    };
-    "/home" = {
-      device = "naspool/home";
-      fsType = "zfs";
-    };
-    "/home/clever/downloading" = {
-      device = "naspool/downloading";
-      fsType = "zfs";
-    };
-    "/media/videos/4tb" = {
-      device = "c2d:/media/videos/4tb";
-      fsType = "nfs";
-      options = [ "soft" ];
-    };
+    "/" = { device = "naspool/root"; fsType = "zfs"; };
+    "/boot" = { device = "UUID=f5c56a8b-edcd-44ca-8814-490bf43ab576"; fsType = "ext4"; };
+    "/home" = { device = "naspool/home"; fsType = "zfs"; };
+    "/home/clever/downloading" = { device = "naspool/downloading"; fsType = "zfs"; };
+    "/media/videos/4tb" = { device = "c2d:/media/videos/4tb"; fsType = "nfs"; options = [ "soft" ]; };
+    "/nix" = { device = "naspool/nix"; fsType = "zfs"; };
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
+    "/zfs-defrag" = { device = "/dev/media/zfs-defrag"; fsType = "ext4"; };
   };
   swapDevices = [
     { device = "/dev/media/swap"; }
@@ -188,26 +170,26 @@ in {
       enable = true;
       targets = {
         #"iqn.2019-01.amd-steam" = { backingStore = "/dev/naspool/amd-steam"; index = 1; };
-        "iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/naspool/amd-steam-xfs"; index = 2; };
-        "iqn.2021-08.com.example:pi400.img" = { backingStore = "/dev/naspool/rpi/netboot-1"; index=3; };
+        #"iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/naspool/amd-steam-xfs"; index = 2; };
+        #"iqn.2021-08.com.example:pi400.img" = { backingStore = "/dev/naspool/rpi/netboot-1"; index=3; };
         #"iqn.2019-03.vm-example" = {
         #  backingStore = "/dev/naspool/vm-example";
         #  index = 2;
         #};
-        "iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 4; };
+        #"iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 4; };
+        #"iqn.2022-10.huge" = { backingStore = "/dev/naspool/huge"; index = 5; blockSize = 4096; };
       };
     };
     locate.enable = false;
-    plex = {
-      enable = true;
-      openFirewall = true;
-    };
-    openssh = {
-      enable = true;
-    };
-    postfix = {
-      enable = true;
-      relayHost = "c2d.localnet";
+    nfs = {
+      server = {
+        enable = true;
+        exports = ''
+          /nas c2d(rw,async,no_subtree_check,no_root_squash) amd(rw,sync,no_subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash) router(ro,async,no_subtree_check,root_squash) pi5w(rw,async,subtree_check,no_root_squash)
+          /nas 10.0.0.106(rw,sync,subtree_check,root_squash)
+          /naspool/amd-nixos amd(rw,sync,subtree_check,no_root_squash)
+        '';
+      };
     };
     nginx = {
       enable = true;
@@ -230,6 +212,15 @@ in {
         };
       };
     };
+    ntp.enable = true;
+    plex = {
+      enable = true;
+      openFirewall = true;
+    };
+    postfix = {
+      enable = true;
+      relayHost = "c2d.localnet";
+    };
     toxvpn = {
       enable = true;
       localip = "192.168.123.51";
@@ -240,15 +231,11 @@ in {
       fileTransferPort = 30034;
       queryPort = 10012;
     };
-    ntp.enable = true;
-    nfs = {
-      server = {
+    prometheus.exporters = {
+      smartctl = {
         enable = true;
-        exports = ''
-          /nas c2d(rw,async,no_subtree_check,no_root_squash) amd(rw,sync,no_subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash) router(ro,async,no_subtree_check,root_squash) pi5w(rw,async,subtree_check,no_root_squash)
-          /nas 10.0.0.106(rw,sync,subtree_check,root_squash)
-          /naspool/amd-nixos amd(rw,sync,subtree_check,no_root_squash)
-        '';
+        port = 9633;
+        devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" "/dev/sde" "/dev/sdf" ];
       };
     };
     udev = {
@@ -263,21 +250,6 @@ in {
         enable = true;
       };
     };
-    prometheus.exporters = {
-      smartctl = {
-        enable = true;
-        port = 9633;
-        devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" "/dev/sde" "/dev/sdf" ];
-      };
-    };
-  };
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-    overlays = [
-      overlay1
-    ];
   };
   nix = {
     #package = pkgs.nixUnstable;
@@ -300,7 +272,9 @@ in {
       { hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
       { hostName = "clever@pi5w"; supportedFeatures = [ "big-parallel" ]; systems = [ "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
       builders.system76
-      builders.amd
+      #builders.amd
+      #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+      { hostName = "root@10.42.1.5"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
     ];
     settings = {
       max-jobs = 2;
@@ -317,6 +291,15 @@ in {
       secret-key-files = /etc/nix/keys/secret-key-file
     '';
   };
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+    };
+    overlays = [
+      overlay1
+    ];
+  };
+  programs.vim.fat = false;
   users = {
     extraUsers = {
       gits = {
@@ -326,5 +309,4 @@ in {
     };
   };
   system.stateVersion = "16.03";
-  programs.vim.fat = false;
 }
