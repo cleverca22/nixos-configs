@@ -25,7 +25,7 @@ in {
     ./zdb.nix
     ./zfs-patch.nix
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ./test.nix
+    #./test.nix
     ./stationeers.nix
     #./pi-v6.nix
     #./deluge.nix
