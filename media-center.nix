@@ -10,6 +10,7 @@ let
     });
   };
 in {
+  services.pipewire.enable = false;
   services.xserver = {
     enable = true;
     displayManager = {
