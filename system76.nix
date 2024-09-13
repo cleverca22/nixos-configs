@@ -124,7 +124,7 @@ in {
   };
   nixpkgs.config = {
     allowUnfree = true;
-    #pulseaudio = true;
+    pulseaudio = true;
   };
   programs = {
     vim.fat = true;
@@ -189,7 +189,7 @@ in {
   hardware = {
     cpu.intel.updateMicrocode = true;
     pulseaudio = {
-      enable = true;
+      #enable = true;
     };
   };
   #sound.enable = true;
