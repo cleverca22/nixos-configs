@@ -311,10 +311,4 @@ in {
     isSystemUser = true;
   };
   users.groups.oauth2_proxy = {};
-  deployment.keys = {
-    oauth2_proxy = {
-      keyFile = ./secrets/oauth2_proxy;
-      destDir = "/var/keys";
-    };
-  };
 }

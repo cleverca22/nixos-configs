@@ -9,10 +9,18 @@
   };
   nas = {
     imports = [ ../nas.nix ];
-    deployment.targetHost = "192.168.2.11";
+    deployment.targetHost = "nas-deploy";
+    deployment.hasFastConnection = true;
+    deployment.keys = {
+      oauth2_proxy = {
+        keyFile = ./secrets/oauth2_proxy;
+        destDir = "/var/keys";
+      };
+    };
   };
   router = {
     imports = [ ../router.nix ];
-    deployment.targetHost = "192.168.2.1";
+    deployment.targetHost = "10.0.0.1";
+    deployment.hasFastConnection = true;
   };
 }
