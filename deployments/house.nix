@@ -13,7 +13,7 @@
     deployment.hasFastConnection = true;
     deployment.keys = {
       oauth2_proxy = {
-        keyFile = ./secrets/oauth2_proxy;
+        keyFile = ../secrets/oauth2_proxy;
         destDir = "/var/keys";
       };
     };

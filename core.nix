@@ -126,6 +126,8 @@ in {
   networking = {
     extraHosts = ''
       10.42.1.5 nixbox360
+      #192.168.2.11 fuspr.net
+      #192.168.123.51 hydra.angeldsis.com
     '';
   };
   nix = {

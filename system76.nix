@@ -37,7 +37,6 @@ in {
       efiInstallAsRemovable = true;
       efiSupport = true;
       enable = true;
-      version = 2;
     };
     initrd = {
       luks.devices.root = {
@@ -60,10 +59,6 @@ in {
       interfaces = [ "wlp3s0" ];
     };
     hostName = "system76";
-    #extraHosts = ''
-      #192.168.2.11 fuspr.net
-      #192.168.123.51 hydra.angeldsis.com
-    #'';
     firewall = {
       enable = false;
       allowedTCPPorts = [
@@ -189,7 +184,7 @@ in {
   hardware = {
     cpu.intel.updateMicrocode = true;
     pulseaudio = {
-      #enable = true;
+      enable = false;
     };
   };
   #sound.enable = true;
@@ -198,22 +193,21 @@ in {
     avahi.publish.addresses = true;
     blueman.enable = true;
     iscsid.enable = true;
-    udev = {
-      extraRules = ''
-        SUBSYSTEMS=="usb", ATTRS{idVendor}=="0a5c", ATTRS{idProduct}=="2711|2764", GROUP="wheel"
-        SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
-      '';
-    };
     ntp.enable = true;
     openssh.enable = true;
-    openssh.forwardX11 = true;
-    openssh.settings.X11Forwarding = true;
     openssh.passwordAuthentication = false;
+    openssh.settings.X11Forwarding = true;
     tcsd.enable = false;
     tftpd = { enable = true; path = "/home/clever/tftp"; };
     toxvpn = {
       enable = true;
       localip = "192.168.123.12";
+    };
+    udev = {
+      extraRules = ''
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="0a5c", ATTRS{idProduct}=="2711|2764", GROUP="wheel"
+        SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
+      '';
     };
     xserver = {
       libinput = {
