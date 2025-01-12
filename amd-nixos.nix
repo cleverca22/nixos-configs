@@ -86,11 +86,19 @@ in {
         device = "nodev";
         enable = true;
         extraEntries = ''
-          menuentry "Windows 7" {
+          menuentry "Windows 7 - legacy chain" {
             insmod part_msdos
             insmod chain
             set root="hd1,msdos1"
             chainloader +1
+          }
+
+          menuentry "Windows 7 - NTLDR" {
+            insmod part_msdos
+            insmod ntfs
+            insmod ntldr
+            search --set=root --label "System Reserved" --hint hd1,msdos1
+            ntldr /bootmgr
           }
         '';
         memtest86.enable = true;
@@ -98,103 +106,127 @@ in {
       };
     };
     tmp.useTmpfs = false;
-    supportedFilesystems = [ "xfs" ];
+    supportedFilesystems = [
+      "xfs"
+      "cifs"
+    ];
     #zfs.enableUnstable = true;
   };
   environment.systemPackages = with pkgs; [
-    vulkan-tools
-    xsane
-    renderdoc
     #audacity
     #diffoscope
+    #gist
+    #gnome3.gedit
+    #gtkwave
     #lutris
+    #obs-studio
+    #remmina
+    #saleae-logic-2
+    stellarium
     #tigervnc
     #youtube-dl
     (hwloc.override { x11Support = true; })
+    (mcomix3.override { pdfSupport = false; })
+    (pkgs.callPackage ./syncplay-clients.nix {})
     acpi
+    adwaita-qt
+    adwaita-qt6
+    apktool
     asciinema
-    flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
-    flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
+    audacity
     bat
     bind.dnsutils
-    corectrl
-    git-crypt
+    cnping
     chromium
+    #config.boot.kernelPackages.perf
+    pkgs.linuxPackages.perf
+    gramps
+    corectrl
+    d-spy
     ddd
     discord
-    git-lfs
+    element-desktop
+    vesktop
     dos2unix
     efibootmgr
+    eog
     evince
     evtest
     file
+    file-roller
+    firefox
+    flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
+    flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
+    flashrom
     gimp
-    #gist
+    git-crypt
+    git-lfs
     gitAndTools.gitFull
     glxinfo
-    gnome3.eog
-    gnome3.file-roller
-    #gnome3.gedit
     gnuradio
+    gparted
     graphviz
-    #gtkwave
     hping
     iftop
     iperf
-    config.boot.kernelPackages.perf
     jq
     kgpg
-    (mcomix3.override { pdfSupport = false; })
-    audacity
-    obs-studio
+    lutris-free
     magic-wormhole
-    pulseview
     moreutils # ts
     mpv
     niv
     nix-diff
     nix-du
     nmap
-    #obs-studio
+    obs-studio
     paper-icon-theme
     pavucontrol gdb file psmisc
+    plex-desktop
     plex-media-player
+    prismlauncher
     psmisc
+    pulseview
     pv
     pwgen
     python3Packages.binwalk
-    #remmina
-    #saleae-logic-2
+    renderdoc
+    sloccount
     socat
-    #stellarium
-    (pkgs.callPackage ./syncplay.nix {})
     synergy
     sysstat pciutils vlc ffmpeg mkvtoolnix smartmontools
     tcpdump
     teamspeak_client
     valgrind
+    vulkan-tools
     wget usbutils nox rxvt_unicode polkit_gnome
-    xorg.xev vnstat unrar unzip openssl xrestop zip ntfs3g
+    xorg.xev unrar unzip openssl xrestop zip ntfs3g
+    xsane
     xscreensaver wireshark-qt ncdu
     yt-dlp
     zgrviewer
+    # qrcode scanning
+    zbar cobang qrscan
+    # import -silent -window root bmp:- | zbarimg -
+    # zbarcam
   ];
   fileSystems = {
     "/"     = { device = "amd/root"; fsType = "zfs"; };
+    "/160g" = { label = "160g-linux"; fsType = "ext4"; };
     "/boot" = { device = "UUID=5f5946ad-5d9c-42d9-97ef-adfae2e6cc20"; fsType = "ext4"; };
     "/home" = { device = "amd/home"; fsType = "zfs"; };
-    "/home/clever/dedup" = { device = "amd/dedup"; fsType = "zfs"; };
-    "/home/clever/iohk" = { device = "amd/iohk"; fsType = "zfs"; };
     "/home/clever/Games" = { device = "amd/games"; fsType = "zfs"; };
     "/home/clever/apps" = { device = "amd/clever-apps"; fsType = "zfs"; };
-    "/nix"  = { device = "amd/nix";  fsType = "zfs"; options = [ "noatime" ]; };
+    "/home/clever/dedup" = { device = "amd/dedup"; fsType = "zfs"; };
+    "/home/clever/iohk" = { device = "amd/iohk"; fsType = "zfs"; };
     "/media/videos/4tb" = { device="c2d:/media/videos/4tb"; fsType = "nfs"; options=[ "noauto" ]; };
-    "/var/lib/systemd/coredump" = { device = "amd/coredumps"; fsType = "zfs"; };
+    "/nix"  = { device = "amd/nix";  fsType = "zfs"; options = [ "noatime" ]; };
     "/nas" = {
       device = "nas:/nas";
       fsType = "nfs";
       options= [ "x-systemd.automount" "noauto" "soft" ];
     };
+    "/var/lib/systemd/coredump" = { device = "amd/coredumps"; fsType = "zfs"; };
     #"/boot/EFI" = { device = "UUID=0ECD-75E7"; fsType = "vfat"; };
     #"/media/Music/" = { device = "192.168.123.32:/mnt/Music/"; fsType = "nfs"; };
   };
@@ -203,11 +235,9 @@ in {
       enable = true;
       extraBackends = [ pkgs.sane-backends ];
     };
+    bluetooth.enable = false;
     cpu.intel.updateMicrocode = true;
-    bluetooth.enable = true;
     opengl = {
-      driSupport32Bit = true;
-
       #extraPackages = [ pkgs.libGL pkgs.amdappsdk ];
       #extraPackages32 = [ pkgs_i686.libGL ];
       #package32 = pkgs.buildEnv {
@@ -222,17 +252,9 @@ in {
       #  paths = [ vc4_mesa vc4_mesa.drivers ];
       #};
     };
+    pulseaudio.enable = true;
   };
   networking = {
-    timeServers = [
-      "router"
-      "nas"
-      "c2d"
-      "system76"
-    ];
-    firewall.enable = false;
-    hostId = "fe1f6cbf";
-    hostName = "amd-nixos";
     bridges = {
       br0 = {
         interfaces = [
@@ -242,8 +264,17 @@ in {
       };
     };
     defaultGateway = "10.0.0.1";
-    nameservers = [ "10.0.0.1" ];
-    search = [ "localnet" ];
+    dhcpcd.enable = false;
+    extraHosts = ''
+      192.168.2.11  hydra.taktoa.me deluge.earthtools.ca fuspr.net
+      127.0.0.1 cacti.earthtools.ca old.explorer.angeldsis.com
+      10.8.0.1  cert.root.vem
+      #192.168.2.1   ext.earthtools.ca reven.angeldsis.com repo.angeldsis.com gallery.earthtools.ca
+      #167.114.21.160 angeldsis.com
+    '';
+    firewall.enable = false;
+    hostId = "fe1f6cbf";
+    hostName = "amd-nixos";
     interfaces = let
       tap0 = {
         virtualType = "tap";
@@ -251,8 +282,15 @@ in {
         virtual = true;
         virtualOwner = "clever";
       };
+      tox_master0 = {
+        virtualType = "tun";
+        mtu = 1500;
+        virtual = true;
+        virtualOwner = "clever";
+      };
     in {
       inherit tap0;
+      #inherit tox_master0;
       enp8s0 = {
         mtu = 1500;
       };
@@ -266,6 +304,14 @@ in {
         ];
       };
     };
+    nameservers = [ "10.0.0.1" ];
+    search = [ "localnet" ];
+    timeServers = [
+      "router"
+      "nas"
+      "c2d"
+      "system76"
+    ];
   };
   nixpkgs = {
     config = {
@@ -315,6 +361,7 @@ in {
       substituters = [
         #"http://cache.earthtools.ca"
         "http://nas.localnet:8081"
+        "https://runner.blockfrost.io/bin-cache"
         #"http://nixcache.localnet"
         #"https://cache.nixos.org"
         #"https://hydra.mantis.ist/"
@@ -323,6 +370,7 @@ in {
       trusted-public-keys = [
         "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
         "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
+        "runner1:W6f2fUzWauzS9ruoN0WHFGtPJnqngUbqgD5oqCMsoJg=" # runner.blockfrost.io
         "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
         "hydra.iohk.io-1:chtUuea0mkt7j3Q3ESvfJUeqTNNPspSO//Yl6O00p/Y="
         "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
@@ -336,6 +384,7 @@ in {
     };
   };
   programs = {
+    bash.completion.enable = true;
     screen.screenrc = ''
       defscrollback 5000
       caption always
@@ -356,14 +405,51 @@ in {
         "system76" = system76;
         "system76.localnet" = system76;
       };
+      startAgent = false;
     };
     vim.fat = true;
   };
+  qemu-user = {
+    arm = false;
+    aarch64 = false;
+    #riscv64 = true;
+  };
   security = {
+    audit.enable = false;
+    pam = {
+      loginLimits = [
+        # https://github.com/lutris/docs/blob/master/HowToEsync.md
+        {
+          domain = "clever";
+          item = "nofile";
+          type = "hard";
+          value = "524288";
+        }
+      ];
+      services.hsdm = { allowNullPassword = true; startSession = true; };
+    };
     #rtkit.enable = lib.mkForce false;
   };
   services = {
+    i2pd = {
+      bandwidth = 1024;
+      enable = true;
+      proto.http.enable = true;
+      proto.i2cp.enable = true;
+    };
     iscsid.enable = true;
+    kmscon = {
+      enable = true;
+      extraConfig = ''
+        font-name=Inconsolata
+        font-engine=pango
+      '';
+    };
+    kubo = {
+      enable = false;
+      dataDir = "/var/lib/ipfs";
+      localDiscovery = true;
+    };
     locate = {
       enable = true;
       package = pkgs.mlocate;
@@ -376,6 +462,7 @@ in {
       enable = true;
       settings.PermitRootLogin = "yes";
     };
+    pipewire.enable = false;
     prometheus.exporters = {
       smartctl = {
         enable = true;
@@ -383,10 +470,6 @@ in {
         port = 9633;
       };
     };
-    #toxvpn.port = 33450;
-    toxvpn.enable = true;
-    toxvpn.localip = "192.168.123.11";
-    trezord.enable = true;
     tor = {
       enable = false;
       client = {
@@ -394,6 +477,12 @@ in {
         #privoxy.enable = true;
       };
     };
+    toxvpn = {
+      enable = true;
+      localip = "192.168.123.11";
+      #port = 33450;
+    };
+    trezord.enable = true;
     udev = {
       packages = [ pkgs.ledger-udev-rules pkgs.trezor-udev-rules ];
       extraRules = ''
@@ -403,6 +492,12 @@ in {
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d01", GROUP="wheel"
         SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0003|000a", GROUP="wheel"
+
+        # ftdi
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", GROUP="wheel"
+
+        # pico wifi jtag
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0009", SYMLINK+="tty-%E{ID_SERIAL_SHORT}-%E{ID_USB_INTERFACE_NUM}", GROUP="wheel"
       '';
     };
     xserver = {
@@ -421,6 +516,7 @@ in {
       #useGlamor = false;
       #deviceSection = ''Option "NoAccel" "true"'';
     };
+    vnstat.enable = true;
     zfs.autoSnapshot.enable = true;
   };
   swapDevices = [
