@@ -51,6 +51,9 @@ in {
     zfs.devNodes = "/dev"; # fixes some virtualmachine issues
     supportedFilesystems = ["nfs"];
     #kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = [
+      #"systemd.log_level=debug"
+    ];
   };
   networking = {
     hostId = "b790d302"; # required for zfs use
@@ -138,21 +141,21 @@ in {
     acpi
     chromium
     ddrescue
-    tcpdump
+    discord
     dtc
     efibootmgr
+    element-desktop
+    eog
     evince
     evtest
     ffmpeg
     file
     gdb
     gist
-    gnome.eog
     iftop
     iperf
     irssi
     jq
-    element-desktop
     lsof
     midori
     mosh
@@ -163,13 +166,14 @@ in {
     pavucontrol
     pciutils
     pigz
-    plex-media-player
+    #plex-media-player
     pv
     pwgen
     rtorrent
     socat
     synergy
     sysstat
+    tcpdump
     teamspeak_client
     unzip
     usbutils
@@ -194,11 +198,17 @@ in {
     blueman.enable = true;
     iscsid.enable = true;
     ntp.enable = true;
-    openssh.enable = true;
-    openssh.passwordAuthentication = false;
-    openssh.settings.X11Forwarding = true;
+    openssh = {
+      enable = true;
+      passwordAuthentication = false;
+      settings.X11Forwarding = true;
+    };
+    pipewire = {
+      enable = true;
+      pulse.enable = true;
+    };
     tcsd.enable = false;
-    tftpd = { enable = true; path = "/home/clever/tftp"; };
+    #tftpd = { enable = true; path = "/home/clever/tftp"; };
     toxvpn = {
       enable = true;
       localip = "192.168.123.12";
