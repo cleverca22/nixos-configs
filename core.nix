@@ -3,7 +3,6 @@
 let
   secrets = import ./load-secrets.nix;
   keys = import ./keys.nix;
-  util = pkgs.callPackage ./util.nix {};
 in {
   imports = [
     ./vim.nix
@@ -40,8 +39,16 @@ in {
       allowBroken = true;
       vim.ruby = false;
     };
+    overlays = [
+      (self: super: {
+        util = self.callPackage ./util.nix {};
+        mbrola-voices = super.mbrola-voices.override { languages = [ "en1" ]; };
+        toxvpn = (builtins.getFlake "github:cleverca22/toxvpn/1830f9b8c12b4c5ef36b1f60f7e600cd1ecf4ccf").packages.x86_64-linux.default;
+      })
+    ];
   };
   programs = {
+    screen.enable = true;
     screen.screenrc = ''
       defscrollback 5000
       caption always
@@ -51,7 +58,6 @@ in {
       #defbce "on"
       maptimeout 5
     '';
-    screen.enable = true;
     ssh = {
       extraConfig = ''
         ServerAliveInterval 60
@@ -104,14 +110,16 @@ in {
         openssh.authorizedKeys.keys = with keys; [
           clever.amd clever.ramboot clever.laptop
         ];
-        extraGroups = [ "wheel" "wireshark" "vboxusers" ];
+        extraGroups = [ "wheel" "wireshark" "vboxusers" "ipfs" ];
       };
     };
   };
   services = {
     openssh = {
       enable = true;
-      settings.PermitRootLogin = "yes";
+      settings = {
+        PermitRootLogin = "yes";
+      };
     };
     avahi = {
       enable = true;
@@ -126,18 +134,17 @@ in {
   networking = {
     extraHosts = ''
       10.42.1.5 nixbox360
-      #192.168.2.11 fuspr.net
-      #192.168.123.51 hydra.angeldsis.com
     '';
   };
   nix = {
     min-free-collection = true;
     distributedBuilds = true;
-    #binaryCaches = [
-      #"http://nixcache.localnet"
-      #"https://cache.nixos.org"
-    #];
     settings = {
+      substituters = [
+        #"http://nixcache.localnet"
+        #"https://cache.nixos.org"
+        "https://hydra.angeldsis.com"
+      ];
       trusted-public-keys = [
         "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
         #"hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
@@ -149,6 +156,6 @@ in {
   #system.extraSystemBuilderCmds = ''
   #  ln -sv ${./.} $out/nixcfg
   #'';
-  security.acme.email = "cleverca22@gmail.com";
+  security.acme.defaults.email = "cleverca22@gmail.com";
   security.acme.acceptTerms = true;
 }
