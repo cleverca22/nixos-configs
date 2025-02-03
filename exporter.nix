@@ -60,14 +60,14 @@ in {
   };
   networking.firewall.allowedTCPPorts = [ 9113 9100 9102 ];
   systemd.services = {
-    "statd-exporter" = {
-      wantedBy = [ "multi-user.target" ];
-      requires = [ "network.target" ];
-      after = [ "network.target" ];
-      script = ''
-        exec ${pkgs.prometheus-statsd-exporter}/bin/statsd_bridge -statsd.listen-address ":8125" -web.listen-address ":9102" -statsd.add-suffix=false || ${pkgs.prometheus-statsd-exporter}/bin/statsd_exporter --statsd.listen-udp=":8125" --web.listen-address=":9102"
-      '';
-    };
+  #  "statd-exporter" = {
+  #    wantedBy = [ "multi-user.target" ];
+  #    requires = [ "network.target" ];
+  #    after = [ "network.target" ];
+  #    script = ''
+  #      exec ${pkgs.prometheus-statsd-exporter}/bin/statsd_exporter -statsd.listen-address ":8125" -web.listen-address ":9102" -statsd.add-suffix=false || ${pkgs.prometheus-statsd-exporter}/bin/statsd_exporter --statsd.listen-udp=":8125" --web.listen-address=":9102"
+  #    '';
+  #  };
     "prometheus-node-exporter" = {
       serviceConfig.ProtectHome = lib.mkForce false;
     };

@@ -18,7 +18,7 @@ in {
       after = [ "dd-agent.service" ];
       script = ''
         sleep 30
-        exec ${extra-statsd.static}/bin/extra-statsd
+        exec ${extra-statsd.static}/bin/statsd-exporter
       '';
     };
   };

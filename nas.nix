@@ -51,6 +51,7 @@ in {
       "usb_storage"
       "usbhid"
       "xhci_pci"      # USB
+      "mpt3sas" "raid_class" "scsi_transport_sas" # SAS
       #"rr3740a"
     ];
     loader.grub = {
@@ -103,7 +104,10 @@ in {
     "/media/videos/4tb" = { device = "c2d:/media/videos/4tb"; fsType = "nfs"; options = [ "soft" ]; };
     "/nix" = { device = "naspool/nix"; fsType = "zfs"; };
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
-    "/zfs-defrag" = { device = "/dev/media/zfs-defrag"; fsType = "ext4"; };
+    #"/zfs-defrag" = { device = "/dev/media/zfs-defrag"; fsType = "ext4"; };
+  };
+  hardware = {
+    bluetooth.enable = false;
   };
   swapDevices = [
     { device = "/dev/media/swap"; }
@@ -170,14 +174,14 @@ in {
       enable = true;
       targets = {
         #"iqn.2019-01.amd-steam" = { backingStore = "/dev/naspool/amd-steam"; index = 1; };
-        #"iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/naspool/amd-steam-xfs"; index = 2; };
+        "iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/zvol/naspool/amd-steam-xfs"; index = 2; };
         #"iqn.2021-08.com.example:pi400.img" = { backingStore = "/dev/naspool/rpi/netboot-1"; index=3; };
         #"iqn.2019-03.vm-example" = {
         #  backingStore = "/dev/naspool/vm-example";
         #  index = 2;
         #};
         #"iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 4; };
-        #"iqn.2022-10.huge" = { backingStore = "/dev/naspool/huge"; index = 5; blockSize = 4096; };
+        "iqn.2022-10.huge" = { backingStore = "/dev/zvol/naspool/huge"; index = 5; blockSize = 4096; };
       };
     };
     locate.enable = false;
@@ -185,9 +189,14 @@ in {
       server = {
         enable = true;
         exports = ''
-          /nas c2d(rw,async,no_subtree_check,no_root_squash) amd(rw,sync,no_subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash) router(ro,async,no_subtree_check,root_squash) pi5w(rw,async,subtree_check,no_root_squash)
           /nas 10.0.0.106(rw,sync,subtree_check,root_squash)
+          /nas amd(insecure,rw,sync,no_subtree_check,no_root_squash)
+          /nas c2d(rw,async,no_subtree_check,no_root_squash) 192.168.2.126(rw,sync,subtree_check,no_root_squash) 192.168.144.3(rw,sync,subtree_check,no_root_squash) 192.168.2.100(rw,sync,no_root_squash,subtree_check) system76(rw,sync,subtree_check,root_squash) 192.168.2.162(rw,sync,subtree_check,root_squash)
+          /nas pi5w(rw,async,subtree_check,no_root_squash)
+          /nas router(rw,async,no_subtree_check,no_root_squash)
           /naspool/amd-nixos amd(rw,sync,subtree_check,no_root_squash)
+
+          /nas 10.0.0.110(rw,async,no_subtree_check,no_root_squash)
         '';
       };
     };
@@ -200,6 +209,13 @@ in {
       virtualHosts = {
         "nas.localnet" = {
           locations = {
+            "/RPC2" = {
+              extraConfig = ''
+                scgi_pass   127.0.0.1:5000;
+                #include     scgi_vars;
+                #scgi_var    SCRIPT_NAME  /RPC2;
+              '';
+            };
             "/private/" = {
               alias = "/nas/private/";
               index = "index.htm";
@@ -245,6 +261,7 @@ in {
         SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4", SYMLINK+="ttyzigbee", OWNER="hass"
       '';
     };
+    vnstat.enable = true;
     zfs = {
       autoSnapshot = {
         enable = true;
@@ -269,12 +286,13 @@ in {
       #{ hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
       #builders.rpi4
       #builders.pi400
-      { hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
+      #{ hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
       { hostName = "clever@pi5w"; supportedFeatures = [ "big-parallel" ]; systems = [ "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
       builders.system76
       #builders.amd
       #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
-      { hostName = "root@10.42.1.5"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+      { hostName = "root@10.42.1.5"; supportedFeatures = [ "big-parallel" ]; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+      #{ hostName = "root@10.42.1.6"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
     ];
     settings = {
       max-jobs = 2;
@@ -286,7 +304,7 @@ in {
     };
     extraOptions = mkAfter ''
       gc-keep-derivations = true
-      keep-outputs = true
+      keep-outputs = false
       auto-optimise-store = false
       secret-key-files = /etc/nix/keys/secret-key-file
     '';

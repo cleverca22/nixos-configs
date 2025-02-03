@@ -41,6 +41,7 @@ in {
     ./exporter.nix
     #./homeserver.nix
     ./ntp_fix.nix
+    ./caller-id.nix
   ];
   programs = {
     vim.fat = false;
@@ -79,6 +80,19 @@ in {
   };
   #qemu-user.arm = true;
   services = {
+    #arcstats = true;
+    avahi.enable = true;
+    extra-statsd = false;
+    fail2ban.enable = true;
+    getty.helpLine = "[9;0][14;0]";
+    hydra = {
+      enable = false;
+      extraEnv.NIX_REMOTE_SYSTEMS = lib.concatStringsSep ":" [ "/etc/nix/machines" "/etc/nix/machines.provisioned" ];
+      hydraURL = "https://hydra.earthtools.ca/";
+      notificationSender = "clever@ext.earthtools.ca";
+      minimumDiskFree = 5;
+      minimumDiskFreeEvaluator = 1;
+    };
     monitoring-exporters = {
       enable = true;
       metrics = true;
@@ -86,12 +100,16 @@ in {
       papertrail.enable = false;
       ownIp = "192.168.2.1";
     };
-    #arcstats = true;
-    extra-statsd = false;
     teamspeak3.enable = true;
     nix-serve = {
       secretKeyFile = "/etc/nix/nix-serve.sec";
       enable = false;
+    };
+    ntp.enable = true;
+    openssh.passwordAuthentication = false;
+    postgresql = {
+      enable = false;
+      package = pkgs.postgresql_15;
     };
     radvd = {
       enable = false;
@@ -110,31 +128,16 @@ in {
         };
       '';
     };
-    avahi.enable = true;
-    ntp.enable = true;
-    fail2ban.enable = true;
-    getty.helpLine = "[9;0][14;0]";
     toxvpn = {
       enable = true;
       localip = "192.168.123.20";
     };
-    hydra = {
-      enable = false;
-      extraEnv.NIX_REMOTE_SYSTEMS = lib.concatStringsSep ":" [ "/etc/nix/machines" "/etc/nix/machines.provisioned" ];
-      hydraURL = "https://hydra.earthtools.ca/";
-      notificationSender = "clever@ext.earthtools.ca";
-      minimumDiskFree = 5;
-      minimumDiskFreeEvaluator = 1;
-    };
-    postgresql = {
-      enable = false;
-      package = pkgs.postgresql_15;
-    };
-    openssh.passwordAuthentication = false;
+    vnstat.enable = true;
   };
   environment.systemPackages = with pkgs; [
     file
     iperf
+    irssi
     lshw
     lsof
     nmap

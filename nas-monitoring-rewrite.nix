@@ -29,6 +29,8 @@ let
     "amd" = {
       hasZfs = true;
     };
+    c2d = {
+    };
     "nixbox360" = {
     };
     #"pi0" = {};
@@ -36,13 +38,17 @@ let
     #"pi3" = {};
     #"pi4" = {};
     #"pi4w" = {};
-    "pi5w" = {};
-    #"pi5e" = {};
+    #"pi5w" = {};
+    #"pi5e" = { pi5_voltage = true; };
     #"pi400e" = {};
     system76 = {
       hasZfs = true;
     };
+    thinkpad = {
+      hasZfs = true;
+    };
   };
+  only_rpi = n: v: v.pi5_voltage or false;
 in {
   networking.firewall.allowedTCPPorts = [ 80 ];
   services = {
@@ -50,10 +56,7 @@ in {
       enable = true;
       #extraOptions = { # https://grafana.com/docs/auth/auth-proxy/
       #  AUTH_PROXY_ENABLED = "true";
-      #  AUTH_PROXY_HEADER_NAME = "X-Email";
-      #  AUTH_PROXY_HEADER_PROPERTY = "email";
       #  AUTH_PROXY_AUTO_SIGN_UP = "true";
-      #  AUTH_PROXY_WHITELIST = "127.0.0.1, ::1"; # only trust nginx to claim usernames
       #};
       settings = {
         "auth.proxy" = {
@@ -145,23 +148,40 @@ in {
         pi5_voltage = {
           job_name = "pi5_voltage";
           scrape_interval = "10s";
+          static_configs = let
+            mkPi5Voltage = host: obj: {
+              targets = [ "${host}:9101" ];
+              labels.alias = host;
+            };
+          in
+            lib.mapAttrsToList mkPi5Voltage (lib.filterAttrs only_rpi monitoredNodes);
+        };
+        mkMinecraft = name: {
+          job_name = "minecraft-${name}";
+          scrape_interval = "60s";
+          metrics_path = "/cc/hdd/0/${name}.txt";
           static_configs = [
             {
-              targets = [ "pi5w:9101" ];
-              labels.alias = "pi5w";
-            }
-            {
-              targets = [ "pi5e:9101" ];
-              labels.alias = "pi5e";
+              targets = [
+                "77.163.112.172:3876"
+              ];
             }
           ];
         };
       in [
+        (mkMinecraft "prom")
+        (mkMinecraft "prom2")
         {
           job_name = "cachecache";
           scrape_interval = "60s";
           metrics_path = "/";
           static_configs = [ { targets = [ "nas:8080" ]; } ];
+        }
+        {
+          job_name = "boiler";
+          scrape_interval = "60s";
+          metrics_path = "/";
+          static_configs = [ { targets = [ "10.0.0.91:9102" ]; } ];
         }
         {
           job_name = "prometheus";
@@ -256,7 +276,7 @@ in {
           static_configs = [
             {
               targets = [
-                "amd:8000"
+                #"amd:8000"
                 #"system76:8000"
               ];
               labels.alias = "amd";

@@ -19,13 +19,32 @@ in {
       virtualHosts = let
         common = {
           locations = {
+            # https://ext.earthtools.ca/hls/nixnothing.m3u8
+            # this url now works in cytube
             "/hls" = {
               root = "/tmp";
+              extraConfig = ''
+                add_header 'Access-Control-Allow-Origin' "https://cytu.be" always;
+                add_header Cache-Control no-cache;
+                add_header Access-Control-Allow-Origin *;
+              '';
+            };
+            "/dash" = {
+              root = "/tmp";
+              extraConfig = ''
+                types {
+                  application/vnd.apple.mpegurl m3u8;
+                  application/dash+xml mpd;
+                  video/mp2t ts;
+                }
+                add_header Cache-Control no-cache;
+                add_header Access-Control-Allow-Origin *;
+              '';
             };
           };
         };
       in {
-        "fuspr.net" = common;
+        "ext.earthtools.ca" = common;
         "nas.localnet" = common;
       };
       appendConfig = ''
@@ -33,6 +52,7 @@ in {
           server {
             listen 1935;
             chunk_size 4096;
+            on_connect http://c2d.localnet/rtmp_hook.php;
             application live {
               live on;
               record off;
@@ -42,6 +62,8 @@ in {
               # hls_playlist_length 60;
               dash on;
               dash_path /tmp/dash;
+              on_publish http://c2d.localnet/rtmp_hook.php;
+              on_done http://c2d.localnet/rtmp_hook.php;
             }
           }
         }
@@ -57,14 +79,6 @@ in {
               application/vnd.apple.mpegurl m3u8;
               video/mp2t ts;
             }
-            root /tmp;
-            add_header Cache-Control no-cache;
-            add_header Access-Control-Allow-Origin *;
-          }
-          location /dash {
-            root /tmp;
-            add_header Cache-Control no-cache;
-            add_header Access-Control-Allow-Origin *;
           }
         }
       '';

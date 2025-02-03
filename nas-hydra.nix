@@ -2,6 +2,21 @@
 
 let
   passwords = import ./load-secrets.nix;
+  hydraRev = "1ef6b5e7";
+  hydraSrc = pkgs.fetchFromGitHub {
+    owner = "cleverca22";
+    repo = "hydra";
+    rev = hydraRev;
+    hash = "sha256-Fj0QgY+lkuEoRsPxL/y4VLHs1QWeq+kPbnt4hq7j+/o=";
+  };
+  hydraFlake = builtins.getFlake "github:cleverca22/hydra/${hydraRev}";
+  hydra-fork = hydraFlake.packages.x86_64-linux.default;
+  hydraSrc' = {
+    outPath = hydraSrc;
+    rev = hydraRev;
+    revCount = 1234;
+  };
+  #hydra-fork = (import (hydraSrc + "/release.nix") { hydraSrc = hydraSrc'; nixpkgs = pkgs.path; }).build.x86_64-linux;
 in {
   users.users.hydra-www.extraGroups = [ "hydra" ];
   systemd.services.hydra-queue-runner = {
@@ -16,7 +31,7 @@ in {
     wantedBy = lib.mkForce [];
   };
   nix.extraOptions = ''
-    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs
+    allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs github:
     experimental-features = nix-command flakes
   '';
   nix.min-free = 10;
@@ -31,15 +46,8 @@ in {
       '';
     };
     hydra = {
-      useSubstitutes = true;
-      # package = hydra-fork;
+      package = hydra-fork;
       enable = true;
-      hydraURL = "https://hydra.angeldsis.com";
-      notificationSender = "cleverca22@gmail.com";
-      minimumDiskFree = 2;
-      minimumDiskFreeEvaluator = 1;
-      listenHost = "localhost";
-      port = 3001;
       extraConfig = with passwords; ''
         binary_cache_secret_key_file = /etc/nix/keys/secret-key-file
         store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
@@ -73,6 +81,16 @@ in {
           excludeBuildFromContext = 1
         </githubstatus>
       '';
+      hydraURL = "https://hydra.angeldsis.com";
+      listenHost = "localhost";
+      maxServers = 10;
+      maxSpareServers = 2;
+      minSpareServers = 1;
+      minimumDiskFree = 2;
+      minimumDiskFreeEvaluator = 1;
+      notificationSender = "cleverca22@gmail.com";
+      port = 3001;
+      useSubstitutes = true;
     };
     nginx = {
       virtualHosts = {

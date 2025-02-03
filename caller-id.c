@@ -92,9 +92,14 @@ int main(int argc, char **argv) {
   char *will = "disconnected";
   mosquitto_will_set(mqtt, "caller-id/status", strlen(will), will, 0, true);
 
-  if (mosquitto_connect(mqtt, mqtt_server, mqtt_port, 60) != MOSQ_ERR_SUCCESS) {
-    puts("unable to connect to mqtt server");
-    return 4;
+  int attempts = 10;
+  while (attempts-- > 0) {
+    if (mosquitto_connect(mqtt, mqtt_server, mqtt_port, 60) != MOSQ_ERR_SUCCESS) {
+      puts("unable to connect to mqtt server, retrying in 10");
+      sleep(10);
+    } else {
+      break;
+    }
   }
 
   if (publish(mqtt, "caller-id/status", "starting", 0, true) != MOSQ_ERR_SUCCESS) {

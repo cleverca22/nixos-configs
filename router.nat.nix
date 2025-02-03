@@ -5,7 +5,9 @@ with lib;
 # bind and dhcpd need to test config files at build time
 let
   WAN     = "enp4s2f0";
-  LAN     = "enp4s2f1";
+  LAN_A     = "enp4s2f1";
+  LAN_B     = "enp3s3";
+  LAN = "br0";
   loggers = [
     {
       name = "kea-dhcp6";
@@ -63,6 +65,15 @@ in {
         iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 443 -j DNAT --to-destination 10.0.0.1
         #iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 32400 -j DNAT --to-destination 10.0.0.1:80
       '') ];
+    };
+    bridges = {
+      br0 = {
+        interfaces = [
+          LAN_A
+          LAN_B
+        ];
+        rstp = true;
+      };
     };
     interfaces = {
       ${WAN} = {
@@ -217,6 +228,13 @@ in {
         renew-timer = 3600;
         #inherit loggers;
         valid-lifetime = 3600 * 24;
+        client-classes = [
+          {
+            name = "rpi_class";
+            boot-file-name = "bar.bin";
+            test = "substring(pkt4.mac, 0, 3) == 0xb827eb";
+          }
+        ];
         subnet4 = [
           {
             id = 1;
@@ -226,12 +244,21 @@ in {
                 pool = "10.0.0.100 - 10.0.0.200";
               }
             ];
-            next-server = "10.0.0.61";
+            next-server = "10.0.0.1";
             option-data = [
               {
                 name = "routers";
                 data = "10.0.0.1";
               }
+              {
+                name = "boot-file-name";
+                data = "test.bin";
+              }
+              #{
+              # bitfield, 1 means use filename from option-data, 2 means use sname from option data
+              #  name = "dhcp-option-overload";
+              #  data = "0";
+              #}
               {
                 name = "domain-name-servers";
                 data = "10.0.0.1";
@@ -239,6 +266,10 @@ in {
               {
                 name = "domain-search";
                 data = "localnet";
+              }
+              {
+                name = "rpiboot";
+                data = "Raspberry Pi Boot1337";
               }
             ];
             reservations = lib.mapAttrsFlatten mkReservation (import ./lan.nix);

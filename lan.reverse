@@ -12,8 +12,12 @@ $TTL 3D
 43      IN      PTR     neo
 50      IN      PTR     pi0.localnet.
 51      IN      PTR     pi1a
+52      IN      PTR     system76.localnet.
 53      IN      PTR     pi3
 55      IN      PTR     pi4
 56      IN      PTR     pi400.localnet.
 57      IN      PTR     pi400e.localnet.
 61      IN      PTR     c2d.localnet.
+
+90      IN      PTR     pi5w.localnet.
+91      IN      PTR     pi5e.localnet.

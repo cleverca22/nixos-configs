@@ -6,26 +6,34 @@ $TTL 3D
 			  4W	; expire
 			  1D)	; minimum ttl
 		NS	ns.localnet.
-localnet. IN    A       192.168.2.1
-router	IN	A	192.168.2.1
-ns	IN	A	192.168.2.1
-amd     IN      A       192.168.2.15
+localnet. IN    A       10.0.0.1
+router  IN      A       10.0.0.1
+ns      IN      A       10.0.0.1
 ramboot	IN	A	192.168.2.10
-nas     IN      A       192.168.2.11
+nas     IN      A       10.0.0.11
+amd     IN      A       10.0.0.15
+pi1a    IN      A       10.0.0.20
+pi400   IN      A       10.0.0.51
+system76 IN     A       10.0.0.52     ; lan wifi
+tablet  IN      A       10.0.0.53
+picow   IN      A       10.0.0.54
+;system76 IN     A       192.168.123.12   ; toxvpn
+pi4     IN      A       10.0.0.70
+pi400e  IN      A       10.0.0.71
+thinkpad IN     A       10.0.0.112
+pi4w    IN      A       10.0.0.80
 nix1	IN	A	192.168.2.30
 nix2	IN	A	192.168.2.31
-system76 IN     A       192.168.2.32     ; lan
-;system76 IN     A       192.168.123.12   ; toxvpn
 neo     IN      A       192.168.2.43
 
 pi0     IN      A       192.168.2.50
-pi1a    IN      A       192.168.2.51
 pi3     IN      A       192.168.2.53
-pi4     IN      A       192.168.2.55
-pi400   IN      A       192.168.2.56
-pi400e  IN      A       192.168.2.57
 
-c2d     IN      A       192.168.2.61
+pi5w    IN      A       10.0.0.90
+pi5e    IN      A       10.0.0.91
+pi02    IN      A       10.0.0.111
+
+c2d     IN      A       10.0.0.61
 
 nixcache IN     CNAME   c2d
 

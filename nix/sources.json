@@ -17,10 +17,10 @@
         "homepage": null,
         "owner": "cleverca22",
         "repo": "cachecache",
-        "rev": "342b890ee88d22432edcab452fe70a675ee2fb23",
-        "sha256": "09bkyb1i1jil8jjcibyfcpc4lj7x0xnkj2ai7vcsgld92vjkqnxh",
+        "rev": "6b5001c889874bc40a69d6a5f013322dec1b628a",
+        "sha256": "0p5zqpjsi71i413xg92avsfasl7g2758yqzsj9nv3zbjpg0v54nr",
         "type": "tarball",
-        "url": "https://github.com/cleverca22/cachecache/archive/342b890ee88d22432edcab452fe70a675ee2fb23.tar.gz",
+        "url": "https://github.com/cleverca22/cachecache/archive/6b5001c889874bc40a69d6a5f013322dec1b628a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "iohk-ops": {

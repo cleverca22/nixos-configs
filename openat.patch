@@ -1,19 +1,25 @@
 diff -ur --color ntp-4.2.8p13-orig/ntpd/ntpd.c ntp-4.2.8p13/ntpd/ntpd.c
 --- ntp-4.2.8p13-orig/ntpd/ntpd.c	2019-02-20 13:21:44.000000000 -0400
 +++ ntp-4.2.8p13/ntpd/ntpd.c	2020-01-27 03:16:17.567457171 -0400
-@@ -1292,6 +1292,7 @@
+@@ -1292,6 +1292,10 @@
  	SCMP_SYS(mmap),
  	SCMP_SYS(munmap),
  	SCMP_SYS(open),
 +	SCMP_SYS(openat),
++	SCMP_SYS(clock_adjtime),
++	SCMP_SYS(pselect6),
++	SCMP_SYS(newfstatat),
  	SCMP_SYS(poll),
  	SCMP_SYS(read),
  	SCMP_SYS(recvmsg),
-@@ -1327,6 +1328,7 @@
+@@ -1327,6 +1328,10 @@
  	SCMP_SYS(mmap2),
  	SCMP_SYS(munmap),
  	SCMP_SYS(open),
 +	SCMP_SYS(openat),
++	SCMP_SYS(clock_adjtime),
++	SCMP_SYS(pselect6),
++	SCMP_SYS(newfstatat),
  	SCMP_SYS(poll),
  	SCMP_SYS(read),
  	SCMP_SYS(rename),

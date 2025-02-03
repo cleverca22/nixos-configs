@@ -8,5 +8,7 @@ $TTL 3D
 
               NS    ns.localnet.
 
-@     IN      A     185.101.97.131
-@     IN      AAAA  2a06:1c80:3:44::1
+;@     IN      A     185.101.97.131
+;@     IN      AAAA  2a06:1c80:3:44::1
+
+boot    IN      A     10.1.2.3

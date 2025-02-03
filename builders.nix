@@ -22,7 +22,7 @@ in {
   rpi4 = {
     hostName = "pi4";
     maxJobs = 4;
-    sshUser = "pi";
+    sshUser = "root";
     sshKey = key;
     speedFactor = 1;
     supportedFeatures = [ "big-parallel" ];
@@ -38,11 +38,11 @@ in {
     systems = [ "armv7l-linux" "aarch64-linux" ];
   };
   amd = {
-    hostName = "192.168.2.15";
+    hostName = "amd";
     maxJobs = 5;
     speedFactor = 4;
     sshUser = "builder";
-    system = "i686-linux,x86_64-linux"; #,armv6l-linux,armv7l-linux";
+    system = "i686-linux,x86_64-linux,armv6l-linux,armv7l-linux";
     sshKey = key;
     supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ];
   };
@@ -54,13 +54,13 @@ in {
     sshKey = key;
   };
   system76 = {
-    hostName = "builder@system76.localnet";
+    hostName = "builder@system76";
     systems = [
       "x86_64-linux" "i686-linux"
       #"aarch64-linux"
     ];
     sshKey = key;
-    maxJobs = 4;
+    maxJobs = 2;
     speedFactor = 1;
     supportedFeatures = [ "big-parallel" "nixos-test" "kvm" ];
   };
