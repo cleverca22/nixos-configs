@@ -106,7 +106,13 @@
   in
   utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
   {
-    packages.cachecache = cachecache.outputs.packages.${system}.cachecache;
+    packages = {
+      cachecache = cachecache.outputs.packages.${system}.cachecache;
+      caller-id-client = nixpkgs.legacyPackages.${system}.callPackage ./caller-id-client.nix {};
+      ghidra = nixpkgs.legacyPackages.${system}.ghidra.overrideAttrs (old: {
+        patches = old.patches ++ [ ./ghidra-1147.patch ];
+      });
+    };
     hydraJobs.cachecache = cachecache.outputs.packages.${system}.cachecache;
   } // lib.optionalAttrs (system == "aarch64-linux") {
     packages = arm64_images;
