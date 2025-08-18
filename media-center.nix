@@ -1,15 +1,6 @@
 { pkgs, ... }:
 
-let
-  overlay = self: super: {
-    plex-media-player = super.plex-media-player.overrideAttrs (old: {
-      # the default mode is dbus, which supports shutdown/reboot/suspend via logind, but no dpms control
-      # x11 mode supports dpms control via xdg-screensaver
-      cmakeFlags = old.cmakeFlags ++ [ "-DLINUX_X11POWER=ON" ];
-      patches = [ ./setValue.patch ];
-    });
-  };
-in {
+{
   services.pipewire.enable = false;
   services.xserver = {
     enable = true;
@@ -31,7 +22,7 @@ in {
     enable = true;
   };
   environment.systemPackages = with pkgs; [
-    plex-media-player ratpoison pavucontrol
+    ratpoison pavucontrol
     #syncplay
     mpv teamspeak_client ];
   users.extraUsers.media = {

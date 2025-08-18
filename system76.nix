@@ -166,7 +166,7 @@ in {
     pavucontrol
     pciutils
     pigz
-    #plex-media-player
+    plex-desktop
     pv
     pwgen
     rtorrent

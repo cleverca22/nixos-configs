@@ -183,7 +183,7 @@ in {
     paper-icon-theme
     pavucontrol gdb file psmisc
     plex-desktop
-    plex-media-player
+    polkit_gnome
     prismlauncher
     psmisc
     pulseview
