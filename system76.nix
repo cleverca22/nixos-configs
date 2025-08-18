@@ -157,7 +157,6 @@ in {
     irssi
     jq
     lsof
-    midori
     mosh
     mpv
     niv
