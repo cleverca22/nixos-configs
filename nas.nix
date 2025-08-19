@@ -235,7 +235,7 @@ in {
     };
     postfix = {
       enable = true;
-      relayHost = "c2d.localnet";
+      settings.main.relayhost = "c2d.localnet:25";
     };
     toxvpn = {
       enable = true;
