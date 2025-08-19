@@ -8,7 +8,7 @@ in {
   system76 = (nixosFunc { configuration = ./system76.nix; }).system;
   nix-tar.arm = linuxPkgs.callPackage ./arm-tar.nix {};
   software = { # things used by several machines
-    inherit (linuxPkgs) plex-media-player rtorrent;
+    inherit (linuxPkgs) rtorrent;
     #arcstats = linuxPkgs.callPackage sources.arcstats {};
   };
 }
