@@ -94,15 +94,17 @@ in {
           "${cfg.webhost}" = {
             locations = {
               "/" = let
-                monitoringHtml = ''
-                   Monitoring<br>
-                  <span style=font-size:65%><a href=/grafana/ target=_blank class=cardano style="color: #ddc6f2">Grafana</a></span><br>
-                  <span style=font-size:65%><a href=/prometheus/ target=_blank class=cardano style="color: #ddc6f2">Prometheus</a></span><br>
-                '';
-                indexFile = pkgs.substituteAll {
-                    src = ./nginx/monitoring-index-template.html;
-                    inherit monitoringHtml;
-                  };
+                indexFile = pkgs.replaceVars ./nginx/monitoring-index-template.html {
+                  monitoringHtml = ''
+                    Monitoring<br>
+                    <span style=font-size:65%><a href=/grafana/ class=cardano style="color: #ddc6f2">Grafana</a></span><br>
+                    <span style=font-size:65%><a href=/prometheus/ class=cardano style="color: #ddc6f2">Prometheus</a></span><br>
+                  '';
+                  monitoringProject = "earthtools";
+                  monitoringLargeImg = null;
+                  monitoringSmallImg = null;
+                  monitoringProjectUrl = null;
+                };
                 rootDir = pkgs.runCommand "nginx-root-dir" {} ''
                   mkdir $out
                   cd $out
