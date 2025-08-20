@@ -31,6 +31,7 @@ let
         set softtabstop=2
         set shiftwidth=2
         set autoindent
+        set hlsearch
         "set statusline+=col:\ %c,
         set ruler
         set background=dark
@@ -49,8 +50,12 @@ let
         let g:wakatime_PythonBinary = '${notPython}'
         autocmd Filetype haskell set foldmethod=indent foldcolumn=2 softtabstop=2 shiftwidth=2
 
+        autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+        autocmd FileType c set expandtab shiftwidth=2 softtabstop=2
+        autocmd FileType cpp set expandtab shiftwidth=2 softtabstop=2
+
         let g:ycm_semantic_triggers = {'haskell' : ['.']}
-        let g:ycm_server_python_interpreter='${pkgs.python3.interpreter}'
+        let g:ycm_server_python_interpreter='${pkgs.python311.interpreter}'
         let g:ycm_max_diagnostics_to_display=1000
       '';
       vam.pluginDictionaries = [
@@ -80,5 +85,10 @@ in
     programs.bash.shellAliases = {
       vi = "vim";
     };
+    nixpkgs.overlays = [
+      (self: super: {
+        ycmd = super.ycmd.override { python3 = self.python311; };
+      })
+    ];
   };
 }
