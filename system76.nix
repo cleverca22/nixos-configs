@@ -173,7 +173,7 @@ in {
     synergy
     sysstat
     tcpdump
-    teamspeak_client
+    #teamspeak_client
     unzip
     usbutils
     vlc
