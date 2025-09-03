@@ -24,7 +24,9 @@
   environment.systemPackages = with pkgs; [
     ratpoison pavucontrol
     #syncplay
-    mpv teamspeak_client ];
+    mpv
+    #teamspeak_client
+  ];
   users.extraUsers.media = {
     isNormalUser = true;
     uid = 1100;
