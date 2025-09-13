@@ -3,7 +3,7 @@
 let
   zfs-src = pkgs.fetchurl {
     url = "https://github.com/openzfs/zfs/archive/pull/14013/head.tar.gz";
-    hash = "sha256-pQBkzpOe/Os7Rca5CbPmFmGLqY0Zb9v29tp7EA2Bla4=";
+    hash = "sha256-tGbk4m5G7jJjf3bSd01BZWq2PFnUwYDMKx17tQ23iSU=";
   };
 in {
   boot.kernelPackages = pkgs.linuxPackages.extend (self: super: {
