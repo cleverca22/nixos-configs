@@ -29,6 +29,7 @@ in {
   boot = {
     blacklistedKernelModules = [ "dccp" ];
     kernelParams = [
+      "sysrq_always_enabled"
       "zfs.zfs_metaslab_try_hard_before_gang=1"
     ];
   };
