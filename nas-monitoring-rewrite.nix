@@ -41,9 +41,9 @@ let
     #"pi5w" = {};
     #"pi5e" = { pi5_voltage = true; };
     #"pi400e" = {};
-    system76 = {
-      hasZfs = true;
-    };
+    #system76 = {
+    #  hasZfs = true;
+    #};
     thinkpad = {
       hasZfs = true;
     };
