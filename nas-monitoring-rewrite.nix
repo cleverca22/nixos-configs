@@ -1,10 +1,9 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 let
-  secrets = import ./load-secrets.nix;
   oauthProxyConfig = ''
     auth_request /oauth2/auth;
-    error_page 401 = /oauth2/sign_in;
+    error_page 401 = /oauth2/sign_in?rd=$request_uri;
 
     # pass information via X-User and X-Email headers to backend,
     # requires running with --set-xauthrequest flag
@@ -31,15 +30,15 @@ let
     };
     c2d = {
     };
-    "nixbox360" = {
-    };
+    #"nixbox360" = {
+    #};
     #"pi0" = {};
     #"pi1a" = {};
     #"pi3" = {};
     #"pi4" = {};
     #"pi4w" = {};
     #"pi5w" = {};
-    #"pi5e" = { pi5_voltage = true; };
+    "pi5e" = { pi5_voltage = true; };
     #"pi400e" = {};
     #system76 = {
     #  hasZfs = true;
@@ -47,11 +46,33 @@ let
     thinkpad = {
       hasZfs = true;
     };
+    shitzen-nixos = {
+    };
+    #pi500e = {
+    #};
+    "mail.fuckk.lol" = {
+    };
+    dadnas = {
+      hasZfs = false;
+    };
   };
   only_rpi = n: v: v.pi5_voltage or false;
 in {
-  networking.firewall.allowedTCPPorts = [ 80 ];
+  age.secrets = {
+    oauth2_proxy = {
+      file = ./secrets/oauth.age;
+      owner = "oauth2-proxy";
+    };
+    hass_token = {
+      file = ./secrets/hass_token.age;
+      owner = "prometheus";
+    };
+  };
+  networking.firewall.allowedTCPPorts = [ 80 8086 ];
   services = {
+    influxdb = {
+      enable = true;
+    };
     grafana = {
       enable = true;
       #extraOptions = { # https://grafana.com/docs/auth/auth-proxy/
@@ -66,11 +87,9 @@ in {
           auto_sign_up = true;
           whitelist = "127.0.0.1, ::1";
         };
-        server.domain = "${webhost}";
+        server.domain = webhost;
         server.http_addr = "";
         server.root_url = "%(protocol)ss://%(domain)s/grafana/";
-        security.admin_password = secrets.grafanaCreds.password;
-        security.admin_user = "admin";
         users.allow_sign_up = false;
       };
       provision = {
@@ -80,6 +99,14 @@ in {
             type = "prometheus";
             name = "prometheus";
             url = "http://localhost:9090/prometheus";
+          }
+          {
+            type = "influxdb";
+            name = "influxdb";
+            url = "http://localhost:8086/";
+            jsonData = {
+              dbName = "meters";
+            };
           }
         ];
         dashboards.settings.providers = [
@@ -94,7 +121,7 @@ in {
       cookie.refresh = "1h";
       email.domains = [ "iohk.io" ];
       enable = true;
-      keyFile = "/var/keys/oauth2_proxy";
+      keyFile = config.age.secrets.oauth2_proxy.path;
       nginx = {
         domain = webhost;
         virtualHosts = {
@@ -139,14 +166,17 @@ in {
     };
     prometheus = {
       enable = true;
+      checkConfig = "syntax-only";
+      enableReload = true;
       webExternalUrl = "https://${webhost}/prometheus/";
       extraFlags = [
-        "--storage.tsdb.retention=${toString (2 * 365 * 24)}h"
+        "--storage.tsdb.retention.time=10y"
         #"--log.level=debug"
       ];
       scrapeConfigs = let
         pi5_voltage = {
           job_name = "pi5_voltage";
+          fallback_scrape_protocol = "PrometheusText1.0.0";
           scrape_interval = "10s";
           static_configs = let
             mkPi5Voltage = host: obj: {
@@ -178,6 +208,18 @@ in {
           static_configs = [ { targets = [ "nas:8080" ]; } ];
         }
         {
+          job_name = "grafana";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [ { targets = [ "localhost:3000" ]; } ];
+        }
+        {
+          job_name = "rtorrent";
+          scrape_interval = "10s";
+          static_configs = [ { targets = [ "nas:9135" ]; } ];
+        }
+        {
+          fallback_scrape_protocol = "PrometheusText1.0.0";
           job_name = "boiler";
           scrape_interval = "60s";
           metrics_path = "/";
@@ -253,13 +295,21 @@ in {
               targets = [ "nas:9633" ];
               labels.alias = "nas";
             }
+            {
+              targets = [ "dadnas:9633" ];
+              labels.alias = "dadnas";
+            }
+            {
+              targets = [ "thinkpad:9633" ];
+              labels.alias = "thinkpad";
+            }
           ];
         }
         {
           job_name = "hass";
           scrape_interval = "60s";
           metrics_path = "/api/prometheus";
-          bearer_token = secrets.hass_token;
+          bearer_token_file = config.age.secrets.hass_token.path;
           scheme = "http";
           static_configs = [
             {

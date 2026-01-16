@@ -6,21 +6,19 @@
   };
   defaults = {
     documentation.enable = false;
+    _module.args.inputs = (builtins.getFlake (toString ../.)).inputs;
   };
   nas = {
     imports = [ ../nas.nix ];
-    deployment.targetHost = "nas-deploy";
+    #deployment.targetHost = "nas-deploy";
+    deployment.targetHost = "10.0.0.11";
+    #deployment.targetHost = "192.168.123.51";
     deployment.hasFastConnection = true;
-    deployment.keys = {
-      oauth2_proxy = {
-        keyFile = ../secrets/oauth2_proxy;
-        destDir = "/var/keys";
-      };
-    };
   };
   router = {
     imports = [ ../router.nix ];
     deployment.targetHost = "10.0.0.1";
+    #deployment.targetHost = "192.168.123.20";
     deployment.hasFastConnection = true;
   };
 }
