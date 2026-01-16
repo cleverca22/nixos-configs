@@ -10,7 +10,6 @@ let
   nixMaster = (import "${nixMasterSrc}").defaultPackage.x86_64-linux;
 in {
   imports = [
-    #./datadog.nix
     #./docker.nix
     #./taktoa-hercules.nix
     ./bluetooth.nix

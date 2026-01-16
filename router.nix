@@ -32,7 +32,6 @@ in {
     ./earthtools.ca.nix
     ./core.nix
     ./iohk-binary-cache.nix
-    #./datadog.nix
     ./weechat.nix
     #./ntp_fix.nix
     ./nixops-managed.nix

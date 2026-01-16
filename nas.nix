@@ -15,12 +15,10 @@ let
   #nix-flake = builtins.getFlake "github.com:cleverca22/nix?rev=374fe49ff78c13457c6cfe396f9ed0cb986c903b";
   #nix-flake = builtins.getFlake (builtins.unsafeDiscardStringContext nix-src);
   #nix = nix-flake.defaultPackage.x86_64-linux;
-  flake = builtins.getFlake (toString ./.);
+  flake = builtins.getFlake "github:cleverca22/nixos-configs";
 in {
   imports = [
     #./cardano-relay.nix
-    #./datadog.nix
-    #./nas-wifi.nix
     (iohk-ops + "/modules/monitoring-exporters.nix")
     ./cachecache.nix
     ./clevers_machines.nix
@@ -32,6 +30,7 @@ in {
     ./nas-monitoring-rewrite.nix
     ./nas-monitoring.nix
     ./nas-websites.nix
+    ./nas-wifi.nix
     ./nixops-managed.nix
     ./rtmp.nix
     ./snmpd.nix
@@ -40,6 +39,7 @@ in {
     ./zdb.nix
     ./zfs-patch.nix
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    flake.inputs.agenix.nixosModules.default
   ];
   boot = {
     initrd.availableKernelModules = [

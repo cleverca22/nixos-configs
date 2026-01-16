@@ -4,7 +4,6 @@ if builtins.pathExists ./secrets.nix then import ./secrets.nix else {
   token3 = "";
   snmp = "";
   hashedPw = "";
-  datadogKey = "";
   weechats = [];
   publicIpv6Prefix = "";
   wifiPassword = "";
