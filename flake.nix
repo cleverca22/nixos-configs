@@ -14,8 +14,10 @@
       url = "github:cleverca22/zfs-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixpkgs.url = "github:nixos/nixpkgs/7fd36ee82c0275fb545775cc5e4d30542899511d";
+    agenix.url = "github:ryantm/agenix";
   };
-  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs, zfs-utils }:
+  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs, zfs-utils, agenix }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
@@ -104,7 +106,7 @@
       netboot-2 = rpi-nixos.packages.aarch64-linux.net_image_pi4.override { configuration = netboot-2; };
     };
   in
-  utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
+  (utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
   {
     packages = {
       cachecache = cachecache.outputs.packages.${system}.cachecache;
@@ -118,5 +120,13 @@
     packages = arm64_images;
     hydraJobs = arm64_images;
   }
-  );
+  )) // {
+    nixosConfigurations = {
+      thinkpad = nixpkgs.lib.nixosSystem {
+        modules = [ ./thinkpad.nix ];
+        specialArgs.inputs = attrs;
+        system = "x86_64-linux";
+      };
+    };
+  };
 }
