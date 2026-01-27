@@ -10,17 +10,21 @@ let
   flake = builtins.getFlake (toString ./.);
 in {
   imports = [
+    #./radeon-exporter.nix
+    ./amd-wg.nix
+    ./amdgpu.nix
     ./auto-gc.nix
+    ./core.nix
     ./docker.nix
     ./exporter.nix
+    ./ipfs.nix
+    ./pipewire.nix
+    ./psql_test.nix
+    ./rpi-udev.nix
+    ./steam.nix
     ./wireshark-no-root.nix
     ./zdb.nix
-    ./zfs-patch.nix
-    #./radeon-exporter.nix
-    ./amdgpu.nix
-    ./rpi-udev.nix
-    ./core.nix
-    ./steam.nix
+    #./zfs-patch.nix
   ];
   boot = {
     binfmt = {
@@ -31,11 +35,11 @@ in {
     blacklistedKernelModules = [
       #"radeon"
       #"amdgpu"
+      "dvb_usb_rtl28xxu"
     ];
     #crashDump.enable = true;
     crashDump.reservedMemory = "1024M";
     extraModprobeConfig = ''
-      options snd_hda_intel enable=1,0
       install dccp /run/current-system/sw/bin/false
     '';
     extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
@@ -57,6 +61,7 @@ in {
       "audit=0"
       "boot.shell_on_fail"
       "zfs.zfs_flags=0x10"
+      "zfs.zfs_active_allocator=cursor"
       # drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
       # increases the timeout of GFX jobs
       "amdgpu.lockup_timeout=5000"
@@ -118,37 +123,48 @@ in {
     #gist
     #gnome3.gedit
     #gtkwave
-    #lutris
-    #obs-studio
     #remmina
     #saleae-logic-2
-    stellarium
+    #stellarium
     #tigervnc
     #youtube-dl
     (hwloc.override { x11Support = true; })
-    (mcomix3.override { pdfSupport = false; })
+    (mcomix.override { pdfSupport = false; })
     (pkgs.callPackage ./syncplay-clients.nix {})
     acpi
+    #config.boot.kernelPackages.perf
+    #(discord.override { withVencord = true; })
+    ((discord.override { withVencord = true; }).overrideAttrs {
+      src = fetchurl {
+        url = "https://stable.dl2.discordapp.net/apps/linux/0.0.106/discord-0.0.106.tar.gz";
+        hash = "sha256-FqY2O7EaEjV0O8//jIW1K4tTSPLApLxAbHmw4402ees=";
+      };
+    })
+    #apktool
+    #barrier
+    #ffmpeg
+    #lutris-free
+    #renderdoc
+    #synergy
+    #teamspeak_client
+    #xsane
     adwaita-qt
     adwaita-qt6
-    apktool
+    appimage-run
     asciinema
     audacity
     bat
     bind.dnsutils
-    cnping
+    binwalk
+    bustle
     chromium
-    #config.boot.kernelPackages.perf
-    pkgs.linuxPackages.perf
-    gramps
+    cnping
     corectrl
     d-spy
     ddd
-    discord
-    element-desktop
-    vesktop
     dos2unix
     efibootmgr
+    element-desktop
     eog
     evince
     evtest
@@ -161,20 +177,23 @@ in {
     gimp
     git-crypt
     git-lfs
-    gitAndTools.gitFull
-    glxinfo
-    gnuradio
     gparted
+    gramps
     graphviz
+    #handbrake
+    helvum
     hping
     iftop
     iperf
     jq
-    kgpg
-    lutris-free
+    kdePackages.kgpg
+    lshw
     magic-wormhole
+    mesa-demos
+    mkvtoolnix
     moreutils # ts
     mpv
+    nettools
     niv
     nix-diff
     nix-du
@@ -182,6 +201,8 @@ in {
     obs-studio
     paper-icon-theme
     pavucontrol gdb file psmisc
+    perf
+    perlPackages.AppClusterSSH
     plex-desktop
     polkit_gnome
     prismlauncher
@@ -189,30 +210,30 @@ in {
     pulseview
     pv
     pwgen
-    python3Packages.binwalk
-    renderdoc
-    sloccount
+    qview
+    rtl-sdr
+    rxvt-unicode-unwrapped
+    smartmontools
     socat
-    synergy
-    sysstat pciutils vlc ffmpeg mkvtoolnix smartmontools
+    sysstat pciutils vlc
     tcpdump
-    teamspeak_client
     valgrind
+    vesktop
     vulkan-tools
-    wget usbutils nox rxvt_unicode polkit_gnome
+    wget usbutils nox
     xorg.xev unrar unzip openssl xrestop zip ntfs3g
-    xsane
     xscreensaver wireshark-qt ncdu
     yt-dlp
     zgrviewer
-    # qrcode scanning
-    zbar cobang qrscan
+
     # import -silent -window root bmp:- | zbarimg -
+    # qrcode scanning
     # zbarcam
+    zbar cobang #qrscan
   ];
   fileSystems = {
     "/"     = { device = "amd/root"; fsType = "zfs"; };
-    "/160g" = { label = "160g-linux"; fsType = "ext4"; };
+    #"/160g" = { label = "160g-linux"; fsType = "ext4"; };
     "/boot" = { device = "UUID=5f5946ad-5d9c-42d9-97ef-adfae2e6cc20"; fsType = "ext4"; };
     "/home" = { device = "amd/home"; fsType = "zfs"; };
     "/home/clever/Games" = { device = "amd/games"; fsType = "zfs"; };
@@ -232,7 +253,7 @@ in {
   };
   hardware = {
     sane = {
-      enable = true;
+      #enable = true;
       extraBackends = [ pkgs.sane-backends ];
     };
     bluetooth.enable = false;
@@ -252,7 +273,7 @@ in {
       #  paths = [ vc4_mesa vc4_mesa.drivers ];
       #};
     };
-    pulseaudio.enable = true;
+    pulseaudio.enable = false;
   };
   networking = {
     bridges = {
@@ -293,6 +314,7 @@ in {
       #inherit tox_master0;
       enp8s0 = {
         mtu = 1500;
+        wakeOnLan.enable = true;
       };
       br0 = {
         mtu = 1500;
@@ -310,7 +332,6 @@ in {
       "router"
       "nas"
       "c2d"
-      "system76"
     ];
   };
   nixpkgs = {
@@ -323,15 +344,16 @@ in {
       (self: super: {
         tesseract = null;
         pymupdf = null;
+        caller-id-client = self.callPackage ./caller-id-client.nix {};
+        obs-studio = super.obs-studio.override { browserSupport = false; };
       })
-      #(import ./overlays/plex)
     ];
   };
   nix = {
     buildMachines = [
       #{ sshUser = "pi"; hostName = "192.168.2.178"; maxJobs = 3; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; }
       #{ sshUser = "pi"; hostName = "pi400e"; maxJobs = 3; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; }
-      #{ sshUser = "clever"; hostName = "pi5e"; maxJobs = 3; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; }
+      { sshUser = "clever"; hostName = "pi5e"; maxJobs = 3; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; supportedFeatures = [ "big-parallel" ]; }
       #{ sshUser = "root"; hostName = "pi4"; maxJobs = 4; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; supportedFeatures = [ "big-parallel" ]; }
       #{ sshUser = "root"; hostName = " 192.168.2.32"; maxJobs = 3; system = "x86_64-lunux"; sshKey = "/etc/nixos/keys/distro"; }
       #{ sshUser = "clever"; hostName = "aarch64.nixos.community"; maxJobs = 32; system = "aarch64-linux,armv7l-linux"; sshKey = "/etc/nixos/keys/distro"; supportedFeatures = [ "big-parallel" ]; }
@@ -355,8 +377,8 @@ in {
     min-free-collection = true;
     settings = {
       auto-optimise-store = true;
-      cores = 20;
-      max-jobs = 20;
+      cores = 10;
+      max-jobs = 4;
       sandbox = "relaxed";
       substituters = [
         #"http://cache.earthtools.ca"
@@ -428,12 +450,12 @@ in {
       ];
       services.hsdm = { allowNullPassword = true; startSession = true; };
     };
-    #rtkit.enable = lib.mkForce false;
+    rtkit.enable = lib.mkForce false;
   };
   services = {
     i2pd = {
       bandwidth = 1024;
-      enable = true;
+      enable = false;
       proto.http.enable = true;
       proto.i2cp.enable = true;
     };
@@ -445,15 +467,13 @@ in {
         font-engine=pango
       '';
     };
-    kubo = {
-      enable = false;
-      dataDir = "/var/lib/ipfs";
-      localDiscovery = true;
+    lact = {
+      enable = true;
     };
     locate = {
       enable = true;
       package = pkgs.mlocate;
-      localuser = null;
+      #localuser = null;
     };
     #mongodb.enable = true;
     memcached.enable = false;
@@ -462,7 +482,6 @@ in {
       enable = true;
       settings.PermitRootLogin = "yes";
     };
-    pipewire.enable = false;
     prometheus.exporters = {
       smartctl = {
         enable = true;
@@ -484,20 +503,30 @@ in {
     };
     trezord.enable = true;
     udev = {
-      packages = [ pkgs.ledger-udev-rules pkgs.trezor-udev-rules ];
+      packages = [
+        pkgs.ledger-udev-rules
+        pkgs.trezor-udev-rules
+        #(import /home/clever/apps/cnlohr/ch32v003fun/minichlink)
+      ];
       extraRules = ''
         SUBSYSTEM=="nvme", KERNEL=="nvme[0-9]*", GROUP="disk"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="0a5c", ATTRS{idProduct}=="2711|2763|2764", GROUP="wheel"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d00", GROUP="wheel"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d01", GROUP="wheel"
         SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
-        SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0003|000a", GROUP="wheel"
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0003|000a|000c", GROUP="wheel"
+
+        SUBSYSTEM=="usbmon", GROUP="wireshark", MODE="0660"
 
         # ftdi
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", GROUP="wheel"
 
         # pico wifi jtag
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0009", SYMLINK+="tty-%E{ID_SERIAL_SHORT}-%E{ID_USB_INTERFACE_NUM}", GROUP="wheel"
+        # https://github.com/BogdanTheGeek/ch32v003-daplink
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="1209", ATTRS{idProduct}=="d003", GROUP="wheel"
+        # 003 esp programmer
+        SUBSYSTEMS=="usb", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="4004", GROUP="wheel"
       '';
     };
     xserver = {
@@ -523,8 +552,8 @@ in {
     #{ device = "/dev/nvme0n1p3"; priority = 10; }
     #{ device = "/dev/disk/by-partlabel/swap1"; priority = 10; }
     #{ device = "/dev/disk/by-partlabel/swap2"; priority = 10; }
-    #{ device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
-    #{ device = "/dev/disk/by-uuid/3fdb005c-97e7-4dfb-9a3f-71748d714ae4"; priority = 9; }
+    { device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
+    { device = "/dev/disk/by-uuid/3fdb005c-97e7-4dfb-9a3f-71748d714ae4"; priority = 9; }
   ];
   system.stateVersion = "24.05";
   time = {
@@ -538,7 +567,7 @@ in {
     clever = {
       home = "/home/clever";
       isNormalUser = true;
-      extraGroups = [ "wheel" "wireshark" "vboxusers" "docker" ];
+      extraGroups = [ "wheel" "wireshark" "vboxusers" "docker" "dialout" ];
       uid = 1000;
     };
   };
@@ -549,14 +578,14 @@ in {
     packages = with pkgs; [
       unifont
       #noto-fonts
-      noto-fonts-cjk
+      noto-fonts-cjk-sans
       #nerdfonts
     ];
   };
   virtualisation = {
-    anbox.enable = false;
+    # anbox.enable = false;
     virtualbox.host = {
-      enable = false;
+      #enable = true;
     };
   };
   fileSystems."/home/clever/VirtualBox\\040VMs" = { fsType = "zfs"; device = "amd/vbox"; };
