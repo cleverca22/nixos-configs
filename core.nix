@@ -16,7 +16,7 @@ in {
   ];
 
   environment.systemPackages = with pkgs; [
-    (if config.services.xserver.enable then gitAndTools.gitFull else git)
+    (if config.services.xserver.enable then gitFull else git)
     #utillinuxCurses
     (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
     bat
