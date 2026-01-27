@@ -10,7 +10,7 @@ let
     shift
     wakatime "$@"
   '';
-  myVim = (pkgs.vim_configurable.override {
+  myVim = (pkgs.vim-full.override {
     #python = pkgs.python3;
   }).customize {
     name = "vim";
@@ -55,7 +55,7 @@ let
         autocmd FileType cpp set expandtab shiftwidth=2 softtabstop=2
 
         let g:ycm_semantic_triggers = {'haskell' : ['.']}
-        let g:ycm_server_python_interpreter='${pkgs.python311.interpreter}'
+        "let g:ycm_server_python_interpreter='{pkgs.python311.interpreter}'
         let g:ycm_max_diagnostics_to_display=1000
       '';
       vam.pluginDictionaries = [
@@ -79,7 +79,7 @@ in
     };
   };
   config = {
-    environment.systemPackages = [ myVim pkgs.wakatime ];
+    environment.systemPackages = [ myVim pkgs.wakatime-cli ];
     environment.shellAliases.vi = "vim";
     environment.variables.EDITOR = "vim";
     programs.bash.shellAliases = {
@@ -87,7 +87,7 @@ in
     };
     nixpkgs.overlays = [
       (self: super: {
-        ycmd = super.ycmd.override { python3 = self.python311; };
+        #ycmd = super.ycmd.override { python3 = self.python311; };
       })
     ];
   };
