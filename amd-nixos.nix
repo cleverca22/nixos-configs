@@ -11,7 +11,9 @@ let
 in {
   imports = [
     # ./amd-wg.nix
+    # ./psql_test.nix
     # ./radeon-exporter.nix
+    # ./zfs-patch.nix
     ./amdgpu.nix
     ./auto-gc.nix
     ./core.nix
@@ -19,12 +21,10 @@ in {
     ./exporter.nix
     ./ipfs.nix
     ./pipewire.nix
-    ./psql_test.nix
     ./rpi-udev.nix
     ./steam.nix
     ./wireshark-no-root.nix
     ./zdb.nix
-    #./zfs-patch.nix
   ];
   boot = {
     binfmt = {
