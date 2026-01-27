@@ -130,7 +130,7 @@ in {
     #youtube-dl
     (hwloc.override { x11Support = true; })
     (mcomix.override { pdfSupport = false; })
-    (pkgs.callPackage ./syncplay-clients.nix {})
+    #(pkgs.callPackage ./syncplay-clients.nix {})
     acpi
     #config.boot.kernelPackages.perf
     #(discord.override { withVencord = true; })
