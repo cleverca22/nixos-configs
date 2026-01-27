@@ -3,6 +3,7 @@ let
   linuxPkgs = import <nixpkgs> {};
   sources = import ./nix/sources.nix;
 in {
+  amd = (nixosFunc { configuration = ./amd-nixos.nix; }).system;
   nas = (nixosFunc { configuration = ./nas.nix; }).system;
   router = (nixosFunc { configuration = ./router.nix; }).system;
   system76 = (nixosFunc { configuration = ./system76.nix; }).system;
