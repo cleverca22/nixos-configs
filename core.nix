@@ -24,7 +24,7 @@ in {
     psmisc
     sqlite-interactive
     util
-    util-linuxCurses
+    util-linux
   ];
   boot = {
     blacklistedKernelModules = [ "dccp" ];
