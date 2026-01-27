@@ -10,8 +10,8 @@ let
   flake = builtins.getFlake (toString ./.);
 in {
   imports = [
-    #./radeon-exporter.nix
-    ./amd-wg.nix
+    # ./amd-wg.nix
+    # ./radeon-exporter.nix
     ./amdgpu.nix
     ./auto-gc.nix
     ./core.nix
