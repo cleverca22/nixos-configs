@@ -159,10 +159,12 @@ in {
     bustle
     chromium
     cnping
+    colmena
     corectrl
     d-spy
     ddd
     dos2unix
+    dtc
     efibootmgr
     element-desktop
     eog
@@ -192,6 +194,7 @@ in {
     mesa-demos
     mkvtoolnix
     moreutils # ts
+    morph
     mpv
     nettools
     niv
@@ -216,7 +219,9 @@ in {
     smartmontools
     socat
     sysstat pciutils vlc
+    tree
     tcpdump
+    tmate
     valgrind
     vesktop
     vulkan-tools
