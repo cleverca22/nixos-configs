@@ -221,6 +221,7 @@ in {
     vesktop
     vulkan-tools
     wget usbutils nox
+    xkill
     xorg.xev unrar unzip openssl xrestop zip ntfs3g
     xscreensaver wireshark-qt ncdu
     yt-dlp
