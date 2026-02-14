@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./bircd_module.nix
+  ];
+
   boot = {
     initrd = {
       availableKernelModules = [ "ahci" "xhci_pci" "uas" "sd_mod" "sdhci_pci" ];
@@ -27,11 +31,12 @@
   };
 
   environment.systemPackages = with pkgs; [
-    screen
     efibootmgr
-    pciutils
-    usbutils
     lshw
+    net-tools
+    pciutils
+    screen
+    usbutils
   ];
 
   hardware.cpu.intel.updateMicrocode = true;
@@ -43,6 +48,9 @@
   };
 
   services = {
+    bircd = {
+      enable = true;
+    };
     openssh.enable = true;
     xserver = {
       enable = true;

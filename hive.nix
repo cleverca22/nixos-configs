@@ -1,12 +1,14 @@
-{ nixpkgs, ... }:
+{ nixpkgs, ... }@inputs:
 
 {
   defaults = {
     documentation.enable = false;
-    _module.args.inputs = (builtins.getFlake (toString ../.)).inputs;
   };
   meta = {
     nixpkgs = nixpkgs.legacyPackages.x86_64-linux;
+    specialArgs = {
+      inherit inputs;
+    };
   };
 
   thin-router = ./thin-router.nix;

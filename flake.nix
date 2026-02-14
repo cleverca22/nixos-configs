@@ -115,6 +115,7 @@
       ghidra = nixpkgs.legacyPackages.${system}.ghidra.overrideAttrs (old: {
         patches = old.patches ++ [ ./ghidra-1147.patch ];
       });
+      bircd = nixpkgs.legacyPackages.i686-linux.callPackage ./bircd.nix {};
     };
     hydraJobs.cachecache = cachecache.outputs.packages.${system}.cachecache;
   } // lib.optionalAttrs (system == "aarch64-linux") {
