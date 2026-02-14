@@ -1,0 +1,62 @@
+{ pkgs, ... }:
+
+{
+  boot = {
+    initrd = {
+      availableKernelModules = [ "ahci" "xhci_pci" "uas" "sd_mod" "sdhci_pci" ];
+      kernelModules = [ ];
+    };
+    kernelModules = [ "kvm-intel" ];
+    extraModulePackages = [ ];
+    loader = {
+      grub = {
+        enable = true;
+        device = "nodev";
+        efiInstallAsRemovable = false;
+        efiSupport = true;
+      };
+      efi.canTouchEfiVariables = true;
+    };
+  };
+
+  fileSystems = {
+    "/" = { device = "router/root"; fsType = "zfs"; };
+    "/nix" = { device = "router/nix"; fsType = "zfs"; };
+    "/home" = { device = "router/home"; fsType = "zfs"; };
+    "/boot" = { device = "/dev/disk/by-uuid/5D1A-4005"; fsType = "vfat"; options = [ "fmask=0022" "dmask=0022" ]; };
+  };
+
+  environment.systemPackages = with pkgs; [
+    screen
+    efibootmgr
+    pciutils
+    usbutils
+    lshw
+  ];
+
+  hardware.cpu.intel.updateMicrocode = true;
+
+  networking = {
+    hostId = "491ddec8";
+    hostName = "thin-router";
+    networkmanager.enable = false;
+  };
+
+  services = {
+    openssh.enable = true;
+    xserver = {
+      enable = true;
+      displayManager.lightdm.enable = true;
+      desktopManager.xfce.enable = true;
+    };
+  };
+
+  users.users.clever = {
+    isNormalUser = true;
+    uid = 1000;
+    extraGroups = [ "wheel" ];
+  };
+
+  system.stateVersion = "25.11";
+  deployment.targetHost = "10.0.0.108";
+}

@@ -1,8 +1,9 @@
 {
   inputs = {
     cachecache.url = "github:cleverca22/cachecache";
-    utils.url = "github:numtide/flake-utils";
+    colmena.url = "github:zhaofengli/colmena";
     rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
+    utils.url = "github:numtide/flake-utils";
     #rpi-nixos.url = "path:/home/clever/apps/rpi/rpi-nixos";
     firmware = {
       flake = false;
@@ -17,7 +18,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/7fd36ee82c0275fb545775cc5e4d30542899511d";
     agenix.url = "github:ryantm/agenix";
   };
-  outputs = { rpi-nixos, firmware, cachecache, self, utils, nixpkgs, zfs-utils, agenix }@attrs:
+  outputs = { colmena, rpi-nixos, firmware, cachecache, self, utils, nixpkgs, zfs-utils, agenix }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
@@ -121,6 +122,7 @@
     hydraJobs = arm64_images;
   }
   )) // {
+    colmenaHive = colmena.lib.makeHive (import ./hive.nix attrs);
     nixosConfigurations = {
       thinkpad = nixpkgs.lib.nixosSystem {
         modules = [ ./thinkpad.nix ];
