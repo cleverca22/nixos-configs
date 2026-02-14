@@ -3,6 +3,7 @@
 {
   imports = [
     ./bircd_module.nix
+    ./core.nix
   ];
 
   boot = {
@@ -14,10 +15,11 @@
     extraModulePackages = [ ];
     loader = {
       grub = {
-        enable = true;
         device = "nodev";
         efiInstallAsRemovable = false;
         efiSupport = true;
+        enable = true;
+        memtest86.enable = true;
       };
       efi.canTouchEfiVariables = true;
     };
@@ -31,6 +33,7 @@
   };
 
   environment.systemPackages = with pkgs; [
+    edid-decode
     efibootmgr
     lshw
     net-tools
