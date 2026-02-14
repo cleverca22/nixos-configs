@@ -17,6 +17,7 @@ pi400   IN      A       10.0.0.51
 system76 IN     A       10.0.0.52     ; lan wifi
 tablet  IN      A       10.0.0.53
 picow   IN      A       10.0.0.54
+thin-router IN  A       10.0.0.60
 ;system76 IN     A       192.168.123.12   ; toxvpn
 pi4     IN      A       10.0.0.70
 pi400e  IN      A       10.0.0.71

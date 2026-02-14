@@ -42,9 +42,24 @@
   hardware.cpu.intel.updateMicrocode = true;
 
   networking = {
+    defaultGateway = "10.0.0.1";
     hostId = "491ddec8";
     hostName = "thin-router";
+    interfaces = {
+      enp1s0 = {
+        useDHCP = false;
+        mtu = 1500;
+        ipv4.addresses = [
+          {
+            address = "10.0.0.60";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+    nameservers = [ "10.0.0.1" ];
     networkmanager.enable = false;
+    search = [ "localnet" ];
   };
 
   services = {
@@ -66,5 +81,5 @@
   };
 
   system.stateVersion = "25.11";
-  deployment.targetHost = "10.0.0.108";
+  deployment.targetHost = "10.0.0.60";
 }
