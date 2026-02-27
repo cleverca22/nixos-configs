@@ -269,6 +269,7 @@
         "firmware": "firmware",
         "nixpkgs": "nixpkgs_4",
         "rpi-nixos": "rpi-nixos",
+        "temp-daemon": "temp-daemon",
         "utils": "utils_2",
         "zfs-utils": "zfs-utils"
       }
@@ -321,6 +322,26 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "temp-daemon": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772173546,
+        "narHash": "sha256-xFRsfSTxjgl2ZmSb4c0xg5KGxCiax3714yjfZIwKG1o=",
+        "owner": "cleverca22",
+        "repo": "temp_daemon",
+        "rev": "f827a93cb69f8ac12101b3adecd4a4357711f9c5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "temp_daemon",
         "type": "github"
       }
     },

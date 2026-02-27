@@ -55,6 +55,9 @@ let
     dadnas = {
       hasZfs = false;
     };
+    thin-router = {
+      hasZfs = true;
+    };
   };
   only_rpi = n: v: v.pi5_voltage or false;
 in {
@@ -202,6 +205,18 @@ in {
         (mkMinecraft "prom")
         (mkMinecraft "prom2")
         {
+          job_name = "gtnh";
+          scrape_interval = "10s";
+          metrics_path = "/";
+          static_configs = [ { targets = [ "127.0.0.1:19565" ]; } ];
+        }
+        {
+          job_name = "bind";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [ { targets = [ "10.0.0.1:9119" "10.0.0.60:9119" ]; } ];
+        }
+        {
           job_name = "cachecache";
           scrape_interval = "60s";
           metrics_path = "/";
@@ -241,7 +256,7 @@ in {
           scrape_interval = "60s";
           static_configs = [
             {
-              targets = [ "c2d:49116" ];
+              targets = [ "thin-router:49116" ];
               labels.alias = "temp_daemon";
             }
           ];
@@ -264,10 +279,7 @@ in {
           scrape_interval = "10s";
           metrics_path = "/metrics";
           static_configs = [
-            {
-              targets = [ "amd:12913" ];
-              labels.alias = "amd";
-            }
+            #{ targets = [ "amd:12913" ]; labels.alias = "amd"; }
           ];
         }
         {

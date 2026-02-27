@@ -61,6 +61,7 @@ let
     SecretUserip=0
     SecretWallops=1
     Send005=1
+    ServAliases=hs;helpserv@services.mikesnet.net;cs;chanserv@services.mikesnet.net;chanserv;chanserv@services.mikesnet.net;as;authserv@services.mikesnet.net;authserv;authserv@services.mikesnet.net;os;opserv@services.mikesnet.net;
     SetHost=1
     SetHostAuto=1
     SetHostFreeform=1
