@@ -21,3 +21,5 @@ $TTL 3D
 
 90      IN      PTR     pi5w.localnet.
 91      IN      PTR     pi5e.localnet.
+
+112     IN      PTR     thinkpad.localnet.

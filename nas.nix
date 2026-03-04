@@ -27,13 +27,16 @@ in {
     ./iohk-binary-cache.nix
     ./media-center.nix
     ./nas-hydra.nix
+    #./snmpd.nix
+    ./grocy.nix
+    ./gtnh.nix
     ./nas-monitoring-rewrite.nix
     ./nas-monitoring.nix
     ./nas-websites.nix
     ./nas-wifi.nix
     ./nixops-managed.nix
     ./rtmp.nix
-    ./snmpd.nix
+    ./rtorrent.nix
     ./syncplay.nix
     ./tgt_service.nix
     ./zdb.nix
@@ -42,6 +45,9 @@ in {
     flake.inputs.agenix.nixosModules.default
   ];
   boot = {
+    blacklistedKernelModules = [
+      "dvb_usb_rtl28xxu"
+    ];
     initrd.availableKernelModules = [
       "ahci"          # SATA
       "ehci_pci"      # USB
@@ -54,18 +60,25 @@ in {
       "mpt3sas" "raid_class" "scsi_transport_sas" # SAS
       #"rr3740a"
     ];
-    loader.grub = {
-      device = "/dev/sdf";
-      configurationLimit = 1;
+    loader = {
+      efi.canTouchEfiVariables = false;
+      grub = {
+        enable = true;
+        device = "nodev";
+        efiInstallAsRemovable = true;
+        efiSupport = true;
+        #device = "/dev/sdf";
+        configurationLimit = 1;
+      };
     };
     kernelModules = [ "tcp_bbr" "kvm-amd" ];
     kernel.sysctl = {
       "net.ipv4.tcp_congestion_control" = "bbr";
       "fs.inotify.max_user_watches" = "100000";
     };
-    extraModprobeConfig = ''
-      options netconsole netconsole=6665@192.168.2.11/eth0,6666@192.168.2.61/00:1c:c4:6e:00:46
-    '';
+    #extraModprobeConfig = ''
+    #  options netconsole netconsole=6665@192.168.2.11/eth0,6666@192.168.2.61/00:1c:c4:6e:00:46
+    #'';
     kernelParams = [
       #"maxcpus=1"
       "zfs.zfs_active_allocator=cursor"
@@ -77,16 +90,23 @@ in {
   environment = {
     systemPackages = with pkgs; [
       ethtool
+      fastfetch
       file
       flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
       flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
       gdb
       iotop
+      iperf3
       jq
       lsof
+      nettools
       nvme-cli
       pciutils usbutils # lsusb and lspci
+      powerjoular
+      powertop
       pv
+      radeontop
+      rtl-sdr
       rtorrent
       smartmontools
       socat
@@ -98,7 +118,8 @@ in {
   };
   fileSystems = {
     "/" = { device = "naspool/root"; fsType = "zfs"; };
-    "/boot" = { device = "UUID=f5c56a8b-edcd-44ca-8814-490bf43ab576"; fsType = "ext4"; };
+    # "/boot" = { device = "UUID=f5c56a8b-edcd-44ca-8814-490bf43ab576"; fsType = "ext4"; };
+    "/boot" = { device = "PARTUUID=3cb64d49-9464-4ffe-b7ee-380a9b12df01"; fsType = "auto"; };
     "/home" = { device = "naspool/home"; fsType = "zfs"; };
     "/home/clever/downloading" = { device = "naspool/downloading"; fsType = "zfs"; };
     "/media/videos/4tb" = { device = "c2d:/media/videos/4tb"; fsType = "nfs"; options = [ "soft" ]; };
@@ -106,29 +127,29 @@ in {
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
     #"/zfs-defrag" = { device = "/dev/media/zfs-defrag"; fsType = "ext4"; };
   };
-  hardware = {
-    bluetooth.enable = false;
-  };
   swapDevices = [
-    { device = "/dev/media/swap"; }
+    { device = "/dev/media/swap"; priority = 5; }
+    { label = "SWAP_A"; priority = 10; }
+    { label = "SWAP_B"; priority = 10; }
+    { label = "SWAP_C"; priority = 10; }
   ];
   networking = {
     timeServers = [
       "router"
       "amd"
-      "system76"
       "c2d"
     ];
-    defaultGateway = "10.0.0.1";
+    defaultGateway = "10.0.0.60";
     firewall = {
       allowedTCPPorts = [
         80 443
-        1337
+        1234 # rtl_tcp
         1935 1936 # rtmp.nix
         111 2049 # nfs
-        3260
+        #58846 8112 # deluge
         10011 30033 30034 # ts3
-        58846 8112 # deluge
+        3260
+        5201 # iperf3
         8081
         8333 # bitcoin
         6991 # rtorrent
@@ -145,17 +166,17 @@ in {
     };
     hostId = "491ddec8";
     hostName = "nas";
-    nameservers = [ "10.0.0.1" ];
+    nameservers = [ "10.0.0.60" ];
     search = [ "localnet" ];
     interfaces.eth0 = {
-      useDHCP = true;
-      mtu = 1500;
-      #ipv4.addresses = [
-      #  {
-      #    address = "10.0.0.11";
-      #    prefixLength = 24;
-      #  }
-      #];
+      useDHCP = false;
+      mtu = 9000;
+      ipv4.addresses = [
+        {
+          address = "10.0.0.11";
+          prefixLength = 24;
+        }
+      ];
     };
     usePredictableInterfaceNames = false;
   };
@@ -163,6 +184,18 @@ in {
   services = {
     arcstats = false;
     cachecache.enable = true;
+    jellyfin = {
+      enable = true;
+      openFirewall = true;
+    };
+    iperf3 = {
+      enable = true;
+      openFirewall = true;
+    };
+    kubo = {
+      #enable = true;
+      settings.Addresses.Gateway = "/ip4/127.0.0.1/tcp/8082";
+    };
     monitoring-exporters = {
       enable = true;
       metrics = true;
@@ -175,6 +208,7 @@ in {
       targets = {
         #"iqn.2019-01.amd-steam" = { backingStore = "/dev/naspool/amd-steam"; index = 1; };
         "iqn.2020-12.amd-steam-xfs" = { backingStore = "/dev/zvol/naspool/amd-steam-xfs"; index = 2; };
+        "iqn.2025-02.amd-steam-zfs" = { backingStore = "/dev/zvol/naspool/amd-steam-zfs"; index = 6; };
         #"iqn.2021-08.com.example:pi400.img" = { backingStore = "/dev/naspool/rpi/netboot-1"; index=3; };
         #"iqn.2019-03.vm-example" = {
         #  backingStore = "/dev/naspool/vm-example";
@@ -184,7 +218,7 @@ in {
         "iqn.2022-10.huge" = { backingStore = "/dev/zvol/naspool/huge"; index = 5; blockSize = 4096; };
       };
     };
-    locate.enable = false;
+    locate.enable = true;
     nfs = {
       server = {
         enable = true;
@@ -197,6 +231,11 @@ in {
           /naspool/amd-nixos amd(rw,sync,subtree_check,no_root_squash)
 
           /nas 10.0.0.110(rw,async,no_subtree_check,no_root_squash)
+
+          /nas 10.0.0.103(ro)
+          /nas 10.0.0.60(ro)
+
+          /home/gtnh 10.0.0.15(ro,no_root_squash)
         '';
       };
     };
@@ -235,7 +274,7 @@ in {
     };
     postfix = {
       enable = true;
-      settings.main.relayhost = [ "c2d.localnet:25" ];
+      #settings.main.relayhost = "c2d.localnet:25";
     };
     toxvpn = {
       enable = true;
@@ -246,13 +285,6 @@ in {
       defaultVoicePort = 9990;
       fileTransferPort = 30034;
       queryPort = 10012;
-    };
-    prometheus.exporters = {
-      smartctl = {
-        enable = true;
-        port = 9633;
-        devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" "/dev/sde" "/dev/sdf" ];
-      };
     };
     udev = {
       extraRules = ''
@@ -269,8 +301,7 @@ in {
     };
   };
   nix = {
-    #package = pkgs.nixUnstable;
-    #package = nix;
+    package = pkgs.nixVersions.git;
     gc = {
       automatic = true;
       dates = "0:00:00";
@@ -287,9 +318,9 @@ in {
       #builders.rpi4
       #builders.pi400
       #{ hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
-      { hostName = "clever@pi5w"; supportedFeatures = [ "big-parallel" ]; systems = [ "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
-      builders.system76
-      #builders.amd
+      { hostName = "clever@pi5e"; supportedFeatures = [ "big-parallel" ]; systems = [ "armv7l-linux" "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
+      #builders.system76
+      builders.amd
       #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
       { hostName = "root@10.42.1.5"; supportedFeatures = [ "big-parallel" ]; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
       #{ hostName = "root@10.42.1.6"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
@@ -319,6 +350,7 @@ in {
   };
   programs.vim.fat = false;
   users = {
+    users.clever.extraGroups = [ "ipfs" ];
     extraUsers = {
       gits = {
         isNormalUser = true;
