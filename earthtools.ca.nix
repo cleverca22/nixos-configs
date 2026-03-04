@@ -102,6 +102,35 @@
       };
   in {
     enable = true;
+    validateConfigFile = true;
+    upstreams = {
+      nas = {
+        extraConfig = ''
+          keepalive 60;
+        '';
+        servers = {
+          "10.0.0.11" = {
+          };
+        };
+      };
+      plex = {
+        extraConfig = ''
+          keepalive 60;
+        '';
+        servers = {
+          "10.0.0.11:32400" = {
+          };
+        };
+      };
+      jellyfin = {
+        extraConfig = "keepalive 60;";
+        servers."10.0.0.11:8096" = {};
+      };
+      hass = {
+        extraConfig = "keepalive 60;";
+        servers."10.0.0.11:8123" = {};
+      };
+    };
     virtualHosts = {
       #"fuspr.net" = nasProxy;
       #"hydra.taktoa.me" = nasProxy;
@@ -109,32 +138,71 @@
       "monitoring.earthtools.ca" = {
         enableACME = true;
         forceSSL = true;
+        extraConfig = ''
+          access_log /var/log/nginx/monitoring.earthtools.ca/access.log;
+        '';
         locations = {
           "/" = {
-            proxyPass = "http://10.0.0.11";
+            proxyPass = "http://nas";
             extraConfig = ''
               proxy_set_header Host $host;
               proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_read_timeout 120;
+              proxy_http_version 1.1;
+              proxy_set_header Connection "";
             '';
           };
           "/grafana/api/live/ws" = {
-            proxyPass = "http://10.0.0.11";
+            proxyPass = "http://nas";
+            proxyWebsockets = true;
             extraConfig = ''
-              proxy_http_version 1.1;
               proxy_set_header Host $host;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection "Upgrade";
+            '';
+          };
+          "/prometheus/api/v1/notifications/live" = {
+            proxyPass = "http://nas";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host $host;
             '';
           };
         };
       };
-      "hydra.angeldsis.com" = nasProxy;
+      "hydra.angeldsis.com" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://nas";
+          extraConfig = ''
+            proxy_connect_timeout 120;
+            proxy_http_version 1.1;
+            proxy_read_timeout 120;
+            proxy_send_timeout 120;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            send_timeout 120;
+
+            if ($badagent) {
+              access_log /var/log/nginx/abuse.log;
+              return 403;
+            }
+          '';
+        };
+        extraConfig = ''
+          access_log /var/log/nginx/hydra.angeldsis.com/access.log;
+        '';
+      };
+      "grocy.earthtools.ca" = nasProxy // {
+        extraConfig = ''
+          access_log /var/log/nginx/grocy.earthtools.ca/access.log;
+        '';
+      };
       "plex.earthtools.ca" = {
         enableACME = true;
         forceSSL = true;
         locations."/" = {
-          proxyPass = "http://10.0.0.11:32400";
+          proxyPass = "http://plex";
           extraConfig = ''
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Proto $scheme;
@@ -145,7 +213,7 @@
           '';
         };
         locations."/:/websockets/" = {
-          proxyPass = "http://10.0.0.11:32400";
+          proxyPass = "http://plex";
           extraConfig = ''
             proxy_http_version 1.1;
             proxy_set_header Host $host;
@@ -153,6 +221,31 @@
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "Upgrade";
           '';
+        };
+      };
+
+      "jellyfin.earthtools.ca" = {
+        enableACME = true;
+        forceSSL = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://jellyfin";
+            proxyWebsockets = false;
+            extraConfig = ''
+              proxy_http_version 1.1;
+              proxy_read_timeout          600;
+              proxy_send_timeout          300;
+              proxy_set_header Connection "";
+              proxy_set_header Host $host;
+            '';
+          };
+          "/socket" = {
+            proxyPass = "http://jellyfin";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host $host;
+            '';
+          };
         };
       };
 
@@ -170,15 +263,20 @@
       "hass.earthtools.ca" = {
         enableACME = true;
         forceSSL = true;
+        extraConfig = ''
+          access_log /var/log/nginx/hass.earthtools.ca/access.log;
+        '';
         locations."/" = {
-          proxyPass = "http://10.0.0.11:8123";
+          proxyPass = "http://hass";
           extraConfig = ''
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Proto $scheme;
           '';
         };
         locations."/api/websocket" = {
-          proxyPass = "http://10.0.0.11:8123";
+          proxyPass = "http://hass";
           extraConfig = ''
             proxy_http_version 1.1;
             proxy_set_header Host $host;
@@ -190,7 +288,7 @@
       };
 
       "ext.earthtools.ca" = mainsite;
-      "nail.earthtools.ca" = mainsite;
+      #"nail.earthtools.ca" = mainsite;
     };
   };
 }

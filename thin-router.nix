@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   # physical port aliases
@@ -7,13 +7,15 @@ let
   TOP = "enp1s0f1";
 
   # aliases by usage
-  LAN = ETH;
+  LAN = TOP;
   WAN = BOTTOM;
+  localip = "47.54.160.77";
 in
 {
   imports = [
     ./bircd_module.nix
     ./clevers_machines.nix
+    ./earthtools.ca.nix
     ./exporter.nix
     ./temp-daemon.nix
     ./zdb.nix
@@ -26,7 +28,7 @@ in
       kernelModules = [ ];
     };
     extraModprobeConfig = ''
-      options ixgbe debug=16 allow_unsupported_sfp=1,1
+      options ixgbe debug=16 allow_unsupported_sfp=1
     '';
     extraModulePackages = [ ];
     kernelModules = [ "kvm-intel" ];
@@ -47,10 +49,12 @@ in
     edid-decode
     efibootmgr
     ethtool
+    irssi
     lshw
     net-tools
     pciutils
     screen
+    smartmontools
     tcpdump
     usbutils
   ];
@@ -74,14 +78,23 @@ in
   networking = {
     defaultGateway = "192.168.2.1";
     firewall = {
+      allowedTCPPorts = [
+        80 443
+      ];
       enable = true;
+      extraCommands = lib.mkMerge [ (lib.mkAfter ''
+        # redirect traffic to the public ip back to localhost
+        iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 80 -j DNAT --to-destination 10.0.0.60
+        iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 443 -j DNAT --to-destination 10.0.0.60
+      '') ];
       interfaces = {
         ${LAN} = {
           allowedTCPPorts = [
             53
+            config.services.iperf3.port
             config.services.prometheus.exporters.bind.port
-            config.services.prometheus.exporters.smartctl.port
             config.services.prometheus.exporters.node.port
+            config.services.prometheus.exporters.smartctl.port
             9103 # zfs-frag
             49115 49116 # temp-daemon
           ];
@@ -97,7 +110,7 @@ in
     interfaces = {
       ${LAN} = {
         useDHCP = false;
-        mtu = 1500;
+        mtu = 9000;
         ipv4.addresses = [
           {
             address = "10.0.0.60";
@@ -119,6 +132,18 @@ in
     nat = {
       enable = true;
       externalInterface = WAN;
+      forwardPorts = [
+        { destination = "10.0.0.11"; sourcePort = 6991; }       # rtorrent
+        { sourcePort = 25565; destination = "10.0.0.11"; }	# minecraft
+        # 2nd teamspeak server
+        { destination = "10.0.0.11"; sourcePort = 10012; }
+        { destination = "10.0.0.11"; sourcePort = 30034; }
+        { destination = "10.0.0.11"; sourcePort = 1935; }
+        { destination = "10.0.0.11"; sourcePort = 32400; }
+        { destination = "10.0.0.11"; sourcePort = 1337; } # syncplay
+        { destination = "10.0.0.61"; sourcePort = 4400; } # bircd
+        { destination = "10.0.0.11"; sourcePort = 1883; } # mqtt
+      ];
       internalIPs = [
       ];
       internalInterfaces = [ LAN ];
@@ -174,6 +199,14 @@ in
     bircd = {
       enable = true;
     };
+    fail2ban = {
+      enable = true;
+      ignoreIP = [ "76.112.236.206/32" ];
+    };
+    getty.helpLine = "[9;0][14;0]";
+    iperf3 = {
+      enable = true;
+    };
     ntp.enable = true;
     openssh = {
       enable = true;
@@ -190,12 +223,8 @@ in
       enable = true;
       port = "/dev/ttyUSB0";
     };
+    toxvpn = { enable = true; localip = "192.168.123.1"; };
     vnstat.enable = true;
-    xserver = {
-      enable = false;
-      displayManager.lightdm.enable = false;
-      desktopManager.xfce.enable = false;
-    };
   };
 
   users.users.clever = {

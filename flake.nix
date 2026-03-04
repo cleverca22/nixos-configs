@@ -8,7 +8,7 @@
       url = "path:/home/clever/apps/rpi/firmware2";
       #url = "github:raspberrypi/firmware";
     };
-    nixpkgs.url = "github:nixos/nixpkgs/7fd36ee82c0275fb545775cc5e4d30542899511d";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
     temp-daemon.url = "github:cleverca22/temp_daemon";
     temp-daemon.inputs.nixpkgs.follows = "nixpkgs";
