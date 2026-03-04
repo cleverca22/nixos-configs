@@ -7,4 +7,5 @@ in {
   "hass_token.age".publicKeys = [ nas local ];
   "ircd-secret.age".publicKeys = [ local thin-router ];
   "temp-daemon.age".publicKeys = [ local thin-router ];
+  "mqtt.zigbee2mqtt.age".publicKeys = [ local nas ];
 }

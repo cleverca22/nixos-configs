@@ -1,7 +1,12 @@
+{ config, pkgs, ... }:
+
 let
   #nixpkgsfix = builtins.fetchTarball "https://github.com/nixos/nixpkgs/archive/pull/152462/head.tar.gz";
-  nixpkgsfix = builtins.fetchTarball "https://github.com/nixos/nixpkgs/archive/b211b392b8486ee79df6cdfb1157ad2133427a29.tar.gz";
-  fixed_pkgs = import nixpkgsfix { config = {}; overlays = []; };
+  nixpkgsfix = builtins.fetchTarball {
+    url = "https://github.com/nixos/nixpkgs/archive/cad22e7d996aea55ecab064e84834289143e44a0.tar.gz";
+    sha256 = "1k49sblli685i65vv4sw66c7k5fb16l13ww2ivkj86vmd7vv1wp6";
+  };
+  fixed_pkgs = import nixpkgsfix { config = {}; overlays = []; system = "x86_64-linux"; };
   mkYoutubeAction = video: {
     service = "media_player.play_media";
     target.entity_id = "media_player.living_room_tv";
@@ -77,41 +82,81 @@ let
     ];
   };
 in {
+  imports = [
+    ./zigbee2mqtt.nix
+  ];
+
+  age.secrets = {
+    "mqtt.callerid".file = ./secrets/mqtt.callerid.age;
+    "mqtt.full_access".file = ./secrets/mqtt.full_access.age;
+    "mqtt.hass".file = ./secrets/mqtt.hass.age;
+    "mqtt.oc".file = ./secrets/mqtt.oc.age;
+    "mqtt.zigbee2mqtt".file = ./secrets/mqtt.zigbee2mqtt.age;
+  };
+
+  environment.systemPackages = [ pkgs.blueman ];
   systemd.services.home-assistant = {
     serviceConfig = {
       DeviceAllow = [
-        "/dev/ttyUSB0"
-        "/dev/ttyACM*"
-        "/dev/ttyzigbee"
+        #"/dev/ttyUSB0"
+        #"/dev/ttyACM*"
+        #"/dev/ttyzigbee"
       ];
     };
   };
   networking.firewall.allowedTCPPorts = [
     1883
   ];
-  #hardware.bluetooth.enable = true;
+  hardware.bluetooth.enable = true;
   services.mosquitto = {
     enable = true;
     listeners = [
       {
         users = {
           full_access = {
-            password = "hunter2";
+            passwordFile = config.age.secrets."mqtt.full_access".path;
             acl = [
-              "readwrite homeassistant/#"
-              "readwrite home/#"
-              "readwrite elite_dangerous/#"
               "readwrite $SYS/#"
               "readwrite caller-id/#"
+              "readwrite elite_dangerous/#"
+              "readwrite home/#"
+              "readwrite homeassistant/#"
+              "readwrite oc-computer/#"
+              "readwrite temp_daemon/#"
+              "readwrite zigbee2mqtt/#"
+            ];
+          };
+          hass = {
+            passwordFile = config.age.secrets."mqtt.hass".path;
+            acl = [
+              "readwrite homeassistant/#"
+              "readwrite zigbee2mqtt/#"
+              "readwrite temp_daemon/#"
+              "readwrite oc-computer/#"
+            ];
+          };
+          zigbee2mqtt = {
+            passwordFile = config.age.secrets."mqtt.zigbee2mqtt".path;
+            acl = [
+              "readwrite homeassistant/#"
+              "readwrite zigbee2mqtt/#"
             ];
           };
           callerid = {
-            password = "hunter2";
+            passwordFile = config.age.secrets."mqtt.callerid".path;
             acl = [
               "readwrite caller-id/#"
             ];
           };
+          oc = {
+            passwordFile = config.age.secrets."mqtt.oc".path;
+            acl = [
+              "readwrite oc-computer/#"
+              "readwrite homeassistant/#"
+            ];
+          };
         };
+        settings.allow_anonymous = true;
       }
     ];
     # logType = [ "all" ];
@@ -123,6 +168,7 @@ in {
       extraComponents = [
         "cast" "http" "openweathermap" "roku"
         "google"
+        "jellyfin"
       ];
       extraPackages = pypkgs: [ pypkgs.aiohttp-cors ];
     }).overrideAttrs (oldAttrs: { doInstallCheck = false; });
@@ -268,7 +314,6 @@ in {
       mqtt = {
         #broker = "127.0.0.1";
         #username = "full_access";
-        #password = "hunter2";
       };
       google_assistant_sdk = {
       };

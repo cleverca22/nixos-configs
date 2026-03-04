@@ -19,7 +19,7 @@ let
   webhost = "monitoring.earthtools.ca";
   monitoredNodes = {
     "router" = {
-      hasNginx = true;
+      hasNginx = false;
     };
     "nas" = {
       hasNginx = true;
@@ -57,6 +57,7 @@ let
     };
     thin-router = {
       hasZfs = true;
+      hasNginx = true;
     };
   };
   only_rpi = n: v: v.pi5_voltage or false;
@@ -94,6 +95,7 @@ in {
         server.http_addr = "";
         server.root_url = "%(protocol)ss://%(domain)s/grafana/";
         users.allow_sign_up = false;
+        security.secret_key = "/var/lib/grafana/secret-key";
       };
       provision = {
         enable = true;
@@ -214,7 +216,7 @@ in {
           job_name = "bind";
           scrape_interval = "60s";
           metrics_path = "/metrics";
-          static_configs = [ { targets = [ "10.0.0.1:9119" "10.0.0.60:9119" ]; } ];
+          static_configs = [ { targets = [ "router:9119" "thin-router:9119" ]; } ];
         }
         {
           job_name = "cachecache";
@@ -315,6 +317,10 @@ in {
               targets = [ "thinkpad:9633" ];
               labels.alias = "thinkpad";
             }
+            {
+              targets = [ "thin-router:9633" ];
+              labels.alias = "thin-router";
+            }
           ];
         }
         {
@@ -327,6 +333,18 @@ in {
             {
               targets = [ "localhost:8123" ];
               labels.alias = "hass";
+            }
+          ];
+        }
+        {
+          job_name = "docsis";
+          scrape_interval = "2m";
+          static_configs = [
+            {
+              targets = [
+                "10.192.0.4:9712"
+              ];
+              labels.alias = "vali";
             }
           ];
         }

@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, inputs, ... }:
 
 with lib;
 let
@@ -10,12 +10,11 @@ let
     });
   };
   sources = import ./nix/sources.nix;
-  iohk-ops = sources.iohk-ops;
+  iohk-ops = inputs.iohk-ops;
   #nix-src = builtins.fetchTarball "https://github.com/nixos/nix/archive/374fe49ff78c13457c6cfe396f9ed0cb986c903b.tar.gz";
   #nix-flake = builtins.getFlake "github.com:cleverca22/nix?rev=374fe49ff78c13457c6cfe396f9ed0cb986c903b";
   #nix-flake = builtins.getFlake (builtins.unsafeDiscardStringContext nix-src);
   #nix = nix-flake.defaultPackage.x86_64-linux;
-  flake = builtins.getFlake "github:cleverca22/nixos-configs";
 in {
   imports = [
     #./cardano-relay.nix
@@ -33,7 +32,7 @@ in {
     ./nas-monitoring-rewrite.nix
     ./nas-monitoring.nix
     ./nas-websites.nix
-    ./nas-wifi.nix
+    #./nas-wifi.nix
     ./nixops-managed.nix
     ./rtmp.nix
     ./rtorrent.nix
@@ -41,8 +40,8 @@ in {
     ./tgt_service.nix
     ./zdb.nix
     ./zfs-patch.nix
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    flake.inputs.agenix.nixosModules.default
+    #<nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    inputs.agenix.nixosModules.default
   ];
   boot = {
     blacklistedKernelModules = [
@@ -92,9 +91,9 @@ in {
       ethtool
       fastfetch
       file
-      flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
-      flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
       gdb
+      inputs.zfs-utils.packages.x86_64-linux.gang-finder
+      inputs.zfs-utils.packages.x86_64-linux.txg-watcher
       iotop
       iperf3
       jq

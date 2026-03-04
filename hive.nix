@@ -12,4 +12,5 @@
   };
 
   thin-router = ./thin-router.nix;
+  nas = ./nas.nix;
 }

@@ -2,6 +2,7 @@
   inputs = {
     agenix.url = "github:ryantm/agenix";
     cachecache.url = "github:cleverca22/cachecache";
+    cachecache.inputs.nixpkgs.follows = "nixpkgs";
     colmena.url = "github:zhaofengli/colmena";
     firmware = {
       flake = false;
@@ -19,8 +20,13 @@
       url = "github:cleverca22/zfs-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    iohk-ops = {
+      flake = false;
+      url = "github:input-output-hk/iohk-ops/65cb4d0b11d4504497aa334fb648716de2338ff5";
+    };
+    hydra.url = "github:cleverca22/hydra/1ef6b5e7";
   };
-  outputs = { agenix, colmena, rpi-nixos, temp-daemon, firmware, cachecache, self, utils, nixpkgs, zfs-utils }@attrs:
+  outputs = { agenix, colmena, rpi-nixos, temp-daemon, firmware, cachecache, self, utils, nixpkgs, zfs-utils, iohk-ops, hydra }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:

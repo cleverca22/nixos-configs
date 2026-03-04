@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 let
   passwords = import ./load-secrets.nix;
@@ -9,7 +9,7 @@ let
     rev = hydraRev;
     hash = "sha256-Fj0QgY+lkuEoRsPxL/y4VLHs1QWeq+kPbnt4hq7j+/o=";
   };
-  hydraFlake = builtins.getFlake "github:cleverca22/hydra/${hydraRev}";
+  hydraFlake = inputs.hydra;
   hydra-fork = hydraFlake.packages.x86_64-linux.default;
   hydraSrc' = {
     outPath = hydraSrc;
@@ -23,12 +23,12 @@ in {
     serviceConfig = {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
     };
-    wantedBy = lib.mkForce [];
+    #wantedBy = lib.mkForce [];
   };
   systemd.services.hydra-evaluator = {
     path = [ pkgs.jq pkgs.gawk ];
     environment.TMPDIR = "/dev/shm";
-    wantedBy = lib.mkForce [];
+    #wantedBy = lib.mkForce [];
   };
   nix.extraOptions = ''
     allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs github:
@@ -83,7 +83,7 @@ in {
       '';
       hydraURL = "https://hydra.angeldsis.com";
       listenHost = "localhost";
-      maxServers = 10;
+      maxServers = 5;
       maxSpareServers = 2;
       minSpareServers = 1;
       minimumDiskFree = 2;

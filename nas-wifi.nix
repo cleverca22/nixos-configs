@@ -16,26 +16,71 @@ in {
         ];
       };
     };
+    nat = {
+      enable = true;
+      externalInterface = "eth0";
+      internalIPs = [
+        "192.168.3.0/24"
+      ];
+      internalInterfaces = [ WIFI ];
+    };
   };
   services = {
     hostapd = {
       enable = true;
-      interface = WIFI;
-      ssid = "Family-nas";
-      wpaPassphrase = secrets.wifiPassword;
+      radios = {
+        ${WIFI} = {
+          countryCode = "US";
+          channel = 11;
+          networks = {
+            ${WIFI} = {
+              bssid = "a8:e2:91:97:5a:4b";
+              ssid = "Family-nas";
+              authentication.wpaPassword = secrets.wifiPassword;
+              authentication.mode = "wpa2-sha1";
+            };
+          };
+        };
+      };
     };
-    dhcpd4 = {
+    kea.dhcp4 = {
       enable = true;
-      interfaces = [ WIFI ];
-      extraConfig = ''
-        authoritative;
-        subnet 192.168.3.0 netmask 255.255.255.0 {
-          option routers 192.168.3.1;
-          option broadcast-address 192.168.3.255;
-          option domain-name-servers 192.168.2.1;
-          range 192.168.3.100 192.168.3.200;
-        }
-      '';
+      settings = {
+        interfaces-config.interfaces = [ WIFI ];
+        lease-database = {
+          name = "/var/lib/kea/dhcp4.leases";
+          persist = true;
+          type = "memfile";
+        };
+        rebind-timer = 3600 * 10;
+        renew-timer = 3600;
+        valid-lifetime = 3600 * 24;
+        subnet4 = [
+          {
+            id = 1;
+            subnet = "192.168.3.0/24";
+            pools = [
+              {
+                pool = "192.168.3.100 - 192.168.3.200";
+              }
+            ];
+            option-data = [
+              {
+                name = "routers";
+                data = "192.168.3.1";
+              }
+              {
+                name = "domain-name-servers";
+                data = "10.0.0.1";
+              }
+              {
+                name = "domain-search";
+                data = "localnet";
+              }
+            ];
+          }
+        ];
+      };
     };
   };
 }

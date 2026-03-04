@@ -1,10 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ inputs, config, lib, pkgs, ... }:
 
 with lib;
 
 let
   cfg = config.services.cachecache;
-  sources = import ./nix/sources.nix;
 in {
   options = {
     services.cachecache.enable = mkEnableOption "enable cachecache";
@@ -12,7 +11,7 @@ in {
   config = mkIf cfg.enable {
     nixpkgs.overlays = [
       (super: self: {
-        cachecache = pkgs.callPackage sources.cachecache {};
+        cachecache = inputs.cachecache.packages.x86_64-linux.cachecache;
       })
     ];
     users.users.cachecache = {

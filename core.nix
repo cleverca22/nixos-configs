@@ -23,6 +23,7 @@ in {
     ncdu
     psmisc
     sqlite-interactive
+    sysstat
     util
     util-linux
   ];
@@ -51,8 +52,9 @@ in {
   programs = {
     screen.enable = true;
     screen.screenrc = ''
-      defscrollback 5000
+      defscrollback 2000
       caption always
+      caption string "%4n foo %t"
       #termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
       # fixes terminfo bugs involing tsl=
       termcapinfo xterm 'hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007'
@@ -92,7 +94,9 @@ in {
       ];
       builder = {
         uid = 1001;
-        isNormalUser = true;
+        isNormalUser = false;
+        isSystemUser = true;
+        group = "users";
         openssh.authorizedKeys.keys = with keys; [
           dual.distro
           #clever.amd
@@ -134,7 +138,12 @@ in {
   };
   networking = {
     extraHosts = ''
-      10.42.1.5 nixbox360
+      10.42.1.5       nixbox360
+      10.0.127.3      shitzen-nixos
+      10.0.0.1        router
+      10.0.0.60       thin-router
+      10.0.0.110      pi500e
+      192.168.123.21  dadnas
     '';
   };
   nix = {
