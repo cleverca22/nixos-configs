@@ -514,11 +514,11 @@
         "utils": "utils_3"
       },
       "locked": {
-        "lastModified": 1739561886,
-        "narHash": "sha256-u9pgdUVBN0J7eCXBeDqXaexlNt/NCgN54LQ4Lgj0XT8=",
+        "lastModified": 1772718041,
+        "narHash": "sha256-uaTqN0XjXzsq/S+SUSBNQjzKwR2sn6Tji1XzNd5ryJU=",
         "owner": "cleverca22",
         "repo": "zfs-utils",
-        "rev": "509f1fa115a0f1c9bda9f4b6175a3f6c1fc47c05",
+        "rev": "bcd4533326e12d8b1abe9971a3a86d8a96ca06cd",
         "type": "github"
       },
       "original": {

@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
-  flake = builtins.getFlake (toString ./.);
-  zfs-utils = flake.inputs.zfs-utils;
+  #flake = builtins.getFlake (toString ./.);
+  #zfs-utils = builtins.getFlake "github:cleverca22/zfs-utils/master";
+  #zfs-utils = flake.inputs.zfs-utils;
+  zfs-utils = inputs.zfs-utils;
 in {
   systemd = {
     services.zfs-fragmentation = {
@@ -11,5 +13,5 @@ in {
       serviceConfig.Restart = "always";
     };
   };
-  networking.firewall.allowedTCPPorts = [ 9103 ];
+  networking.firewall.allowedTCPPorts = lib.mkIf config.exporters.openFirewall [ 9103 ];
 }
