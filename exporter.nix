@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   buildGoModule = attrs: pkgs.buildGoModule (attrs // {
@@ -11,57 +11,76 @@ let
     vendorHash = "sha256-YvCYjaF6Jgkjxh80EIzxzkMjM9380/eAl1BnRBYmVsU=";
   });
 in {
-  nixpkgs.overlays = [
-    (self: super: {
-      #prometheus-node-exporter = super.prometheus-node-exporter.override { inherit buildGoModule; };
-    })
-  ];
-  services = {
-    nginx = {
-      appendHttpConfig = lib.mkIf false ''
-        vhost_traffic_status_zone;
-        server {
-          listen 9113;
-          location /status {
-            vhost_traffic_status_display;
-            vhost_traffic_status_display_format html;
-          }
-        }
-      '';
-    };
-    prometheus.exporters.node = {
-      enable = true;
-      enabledCollectors = lib.mkForce [
-        "cgroups"
-        "conntrack"
-        "diskstats"
-        "entropy"
-        "filefd"
-        "filesystem"
-        "interrupts"
-        "loadavg"
-        "meminfo"
-        "netdev"
-        "netstat"
-        "ntp"
-        "stat"
-        "systemd"
-        "systemd.network-metrics"
-        "tcpstat"
-        "time"
-        "timex"
-        "vmstat"
-        "wifi"
-        #"ksmd"
-        #"logind"
-        #"processes"
-      ];
+  options = {
+    exporters.openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
     };
   };
-  networking.firewall.allowedTCPPorts = [ 9113 9100 9102 ];
-  systemd.services = {
-    "prometheus-node-exporter" = {
-      serviceConfig.ProtectHome = lib.mkForce false;
+  config = {
+    nixpkgs.overlays = [
+      (self: super: {
+        #prometheus-node-exporter = super.prometheus-node-exporter.override { inherit buildGoModule; };
+      })
+    ];
+    services = {
+      nginx = {
+        appendHttpConfig = lib.mkIf false ''
+          vhost_traffic_status_zone;
+          server {
+            listen 9113;
+            access_log /var/log/nginx/prometheus/access.log;
+            location /status {
+              vhost_traffic_status_display;
+              vhost_traffic_status_display_format html;
+            }
+          }
+        '';
+      };
+      prometheus.exporters = {
+        smartctl = {
+          enable = true;
+          port = 9633;
+          #devices = [ "/dev/sda" "/dev/sdb" "/dev/sdc" "/dev/sdd" "/dev/sde" "/dev/sdf" ];
+          openFirewall = config.exporters.openFirewall;
+        };
+        node = {
+          enable = true;
+          enabledCollectors = lib.mkForce [
+            "cgroups"
+            "conntrack"
+            "diskstats"
+            "entropy"
+            "filefd"
+            "filesystem"
+            "interrupts"
+            "loadavg"
+            "meminfo"
+            "netdev"
+            "netstat"
+            "ntp"
+            "stat"
+            "systemd"
+            #"systemd.network-metrics"
+            "systemd.enable-start-time-metrics"
+            "tcpstat"
+            "time"
+            "timex"
+            "vmstat"
+            "wifi"
+            #"ksmd"
+            #"logind"
+            #"processes"
+          ];
+          openFirewall = config.exporters.openFirewall;
+        };
+      };
+    };
+    networking.firewall.allowedTCPPorts = lib.mkIf config.exporters.openFirewall [ 9113 9102 ];
+    systemd.services = {
+      "prometheus-node-exporter" = {
+        serviceConfig.ProtectHome = lib.mkForce false;
+      };
     };
   };
 }
