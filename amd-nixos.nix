@@ -13,7 +13,6 @@ in {
     # ./amd-wg.nix
     # ./psql_test.nix
     # ./radeon-exporter.nix
-    # ./zfs-patch.nix
     ./amdgpu.nix
     ./auto-gc.nix
     ./core.nix
@@ -25,6 +24,7 @@ in {
     ./steam.nix
     ./wireshark-no-root.nix
     ./zdb.nix
+    ./zfs-patch.nix
   ];
   boot = {
     binfmt = {
@@ -143,7 +143,7 @@ in {
     #apktool
     #barrier
     #ffmpeg
-    #lutris-free
+    #handbrake
     #renderdoc
     #synergy
     #teamspeak_client
@@ -182,7 +182,6 @@ in {
     gparted
     gramps
     graphviz
-    #handbrake
     helvum
     hping
     iftop
@@ -190,6 +189,7 @@ in {
     jq
     kdePackages.kgpg
     lshw
+    lutris-free
     magic-wormhole
     mesa-demos
     mkvtoolnix
@@ -279,7 +279,6 @@ in {
       #  paths = [ vc4_mesa vc4_mesa.drivers ];
       #};
     };
-    pulseaudio.enable = false;
   };
   networking = {
     bridges = {
@@ -290,7 +289,7 @@ in {
         ];
       };
     };
-    defaultGateway = "10.0.0.1";
+    defaultGateway = "10.0.0.60";
     dhcpcd.enable = false;
     extraHosts = ''
       192.168.2.11  hydra.taktoa.me deluge.earthtools.ca fuspr.net
@@ -332,7 +331,7 @@ in {
         ];
       };
     };
-    nameservers = [ "10.0.0.1" ];
+    nameservers = [ "10.0.0.60" ];
     search = [ "localnet" ];
     timeServers = [
       "router"
@@ -495,6 +494,7 @@ in {
         port = 9633;
       };
     };
+    pulseaudio.enable = false;
     tor = {
       enable = false;
       client = {
