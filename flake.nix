@@ -138,6 +138,16 @@
         specialArgs.inputs = attrs;
         system = "x86_64-linux";
       };
+      amd-nixos = nixpkgs.lib.nixosSystem {
+        modules = [ ./amd-nixos.nix ];
+        specialArgs.inputs = attrs;
+        system = "x86_64-linux";
+      };
+      system76 = nixpkgs.lib.nixosSystem {
+        modules = [ ./system76.nix ];
+        specialArgs.inputs = attrs;
+        system = "x86_64-linux";
+      };
     };
   };
 }

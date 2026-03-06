@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ config, lib, modulesPath, pkgs, ... }:
 
 let
   nixMasterSrc = pkgs.fetchFromGitHub {
@@ -23,7 +23,7 @@ in {
     ./wireshark-no-root.nix
     ./zdb.nix
     ./zfs-patch.nix
-    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+    (modulesPath + "/installer/scan/not-detected.nix")
     #./test.nix
     ./stationeers.nix
     #./pi-v6.nix

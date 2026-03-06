@@ -1,7 +1,8 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, inputs, lib, pkgs, ... }:
 
 let
   #flake = builtins.getFlake (toString ./.);
+  #inputs = flake.inputs;
   #zfs-utils = builtins.getFlake "github:cleverca22/zfs-utils/master";
   #zfs-utils = flake.inputs.zfs-utils;
   zfs-utils = inputs.zfs-utils;
