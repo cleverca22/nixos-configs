@@ -375,6 +375,20 @@
         "type": "indirect"
       }
     },
+    "nixpkgs_6": {
+      "locked": {
+        "lastModified": 1736042175,
+        "narHash": "sha256-jdd5UWtLVrNEW8K6u5sy5upNAFmF3S4Y+OIeToqJ1X8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "bf689c40d035239a489de5997a4da5352434632e",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -386,6 +400,7 @@
         "nixpkgs": "nixpkgs_4",
         "rpi-nixos": "rpi-nixos",
         "temp-daemon": "temp-daemon",
+        "toxvpn": "toxvpn",
         "utils": "utils_2",
         "zfs-utils": "zfs-utils"
       }
@@ -458,6 +473,24 @@
       "original": {
         "owner": "cleverca22",
         "repo": "temp_daemon",
+        "type": "github"
+      }
+    },
+    "toxvpn": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_6"
+      },
+      "locked": {
+        "lastModified": 1761265530,
+        "narHash": "sha256-1RtW+UBIMICQfHrmkCq09wKw8VELDm58Giu6cjdgCpw=",
+        "owner": "cleverca22",
+        "repo": "toxvpn",
+        "rev": "0a2ab5acdf96975e128e6bbe1fd8c9fac33625d2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "toxvpn",
         "type": "github"
       }
     },

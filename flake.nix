@@ -1,18 +1,24 @@
 {
   inputs = {
     agenix.url = "github:ryantm/agenix";
-    cachecache.url = "github:cleverca22/cachecache";
     cachecache.inputs.nixpkgs.follows = "nixpkgs";
+    cachecache.url = "github:cleverca22/cachecache";
     colmena.url = "github:zhaofengli/colmena";
     firmware = {
       flake = false;
       url = "path:/home/clever/apps/rpi/firmware2";
       #url = "github:raspberrypi/firmware";
     };
+    hydra.url = "github:cleverca22/hydra/1ef6b5e7";
+    iohk-ops = {
+      flake = false;
+      url = "github:input-output-hk/iohk-ops/65cb4d0b11d4504497aa334fb648716de2338ff5";
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
-    temp-daemon.url = "github:cleverca22/temp_daemon";
     temp-daemon.inputs.nixpkgs.follows = "nixpkgs";
+    temp-daemon.url = "github:cleverca22/temp_daemon";
+    toxvpn.url = "github:cleverca22/toxvpn";
     utils.url = "github:numtide/flake-utils";
     #rpi-nixos.url = "path:/home/clever/apps/rpi/rpi-nixos";
     #nix.url = "path:/home/clever/apps/nix-master";
@@ -20,13 +26,8 @@
       url = "github:cleverca22/zfs-utils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    iohk-ops = {
-      flake = false;
-      url = "github:input-output-hk/iohk-ops/65cb4d0b11d4504497aa334fb648716de2338ff5";
-    };
-    hydra.url = "github:cleverca22/hydra/1ef6b5e7";
   };
-  outputs = { agenix, colmena, rpi-nixos, temp-daemon, firmware, cachecache, self, utils, nixpkgs, zfs-utils, iohk-ops, hydra }@attrs:
+  outputs = { agenix, colmena, rpi-nixos, temp-daemon, firmware, cachecache, self, toxvpn, utils, nixpkgs, zfs-utils, iohk-ops, hydra }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
@@ -125,7 +126,9 @@
       });
       bircd = nixpkgs.legacyPackages.i686-linux.callPackage ./bircd.nix {};
     };
-    hydraJobs.cachecache = cachecache.outputs.packages.${system}.cachecache;
+    hydraJobs = {
+      cachecache = cachecache.outputs.packages.${system}.cachecache;
+    } // lib.optionalAttrs (system == "x86_64-linux") self.colmenaHive.toplevel;
   } // lib.optionalAttrs (system == "aarch64-linux") {
     packages = arm64_images;
     hydraJobs = arm64_images;
