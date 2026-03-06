@@ -13,6 +13,7 @@ with lib;
     };
   };
   config = mkIf config.services.iscsid.enable {
+    environment.systemPackages = [ pkgs.openiscsi ];
     systemd.services.iscsid = {
       description = "iscsid daemon";
       wantedBy = [ "basic.target" ];

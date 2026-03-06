@@ -30,7 +30,7 @@ def on_message(client_instance, userdata, msg):
 def on_disconnect(client_instance, userdata, rc):
     print("on_disconnect")
 
-client = mqtt.Client(client_id="test-client")
+client = mqtt.Client(client_id="test-client-2")
 client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect

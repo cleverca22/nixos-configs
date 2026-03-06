@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ config, inputs, modulesPath, pkgs, lib, ... }:
 
 let
   vc4_mesa = pkgs.mesa.override { galliumDrivers = [ "radeonsi" "vc4" "v3d" "swrast" ]; };
@@ -7,7 +7,6 @@ let
     src = /home/clever/x/mesa-11.2.2;
     dontStrip = true;
   });
-  flake = builtins.getFlake (toString ./.);
 in {
   imports = [
     # ./amd-wg.nix
@@ -16,13 +15,17 @@ in {
     ./amdgpu.nix
     ./auto-gc.nix
     ./core.nix
+    ./direnv.nix
     ./docker.nix
     ./exporter.nix
     ./ipfs.nix
     ./pipewire.nix
     ./rpi-udev.nix
+    (modulesPath + "/installer/scan/not-detected.nix")
+    (modulesPath + "/profiles/all-hardware.nix")
     ./steam.nix
     ./wireshark-no-root.nix
+    ./yubikey.nix
     ./zdb.nix
     ./zfs-patch.nix
   ];
@@ -120,7 +123,6 @@ in {
   environment.systemPackages = with pkgs; [
     #audacity
     #diffoscope
-    #gist
     #gnome3.gedit
     #gtkwave
     #remmina
@@ -130,16 +132,16 @@ in {
     #youtube-dl
     (hwloc.override { x11Support = true; })
     (mcomix.override { pdfSupport = false; })
-    #(pkgs.callPackage ./syncplay-clients.nix {})
+    (pkgs.callPackage ./syncplay-clients.nix {})
     acpi
     #config.boot.kernelPackages.perf
-    #(discord.override { withVencord = true; })
-    ((discord.override { withVencord = true; }).overrideAttrs {
-      src = fetchurl {
-        url = "https://stable.dl2.discordapp.net/apps/linux/0.0.106/discord-0.0.106.tar.gz";
-        hash = "sha256-FqY2O7EaEjV0O8//jIW1K4tTSPLApLxAbHmw4402ees=";
-      };
-    })
+    (discord.override { withVencord = true; })
+    #((discord.override { withVencord = true; }).overrideAttrs {
+    #  src = fetchurl {
+    #    url = "https://stable.dl2.discordapp.net/apps/linux/0.0.106/discord-0.0.106.tar.gz";
+    #    hash = "sha256-FqY2O7EaEjV0O8//jIW1K4tTSPLApLxAbHmw4402ees=";
+    #  };
+    #})
     #apktool
     #barrier
     #ffmpeg
@@ -173,12 +175,14 @@ in {
     file
     file-roller
     firefox
-    flake.inputs.zfs-utils.packages.x86_64-linux.gang-finder
-    flake.inputs.zfs-utils.packages.x86_64-linux.txg-watcher
+    inputs.zfs-utils.packages.x86_64-linux.gang-finder
+    inputs.zfs-utils.packages.x86_64-linux.txg-watcher
     flashrom
     gimp
+    gist
     git-crypt
     git-lfs
+    gpa
     gparted
     gramps
     graphviz
@@ -219,11 +223,13 @@ in {
     smartmontools
     socat
     sysstat pciutils vlc
-    tree
     tcpdump
     tmate
+    tree
+    utox
     valgrind
     vesktop
+    vintagestory
     vulkan-tools
     wget usbutils nox
     xkill
@@ -292,6 +298,7 @@ in {
     defaultGateway = "10.0.0.60";
     dhcpcd.enable = false;
     extraHosts = ''
+      # 10.5.2.1   monitoring.blockfrost.io
       192.168.2.11  hydra.taktoa.me deluge.earthtools.ca fuspr.net
       127.0.0.1 cacti.earthtools.ca old.explorer.angeldsis.com
       10.8.0.1  cert.root.vem
@@ -389,12 +396,14 @@ in {
         #"http://cache.earthtools.ca"
         "http://nas.localnet:8081"
         "https://runner.blockfrost.io/bin-cache"
+        "https://matthewcroughan.cachix.org"
         #"http://nixcache.localnet"
         #"https://cache.nixos.org"
         #"https://hydra.mantis.ist/"
       ];
       trusted-binary-caches = [ "http://nas.localnet:8081" "https://hydra.iohk.io" "https://hydra.angeldsis.com" "https://cache.nixos.org" ];
       trusted-public-keys = [
+        "matthewcroughan.cachix.org-1:fON2C9BdzJlp1qPan4t5AF0xlnx8sB0ghZf8VDo7+e8="
         "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
         "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
         "runner1:W6f2fUzWauzS9ruoN0WHFGtPJnqngUbqgD5oqCMsoJg=" # runner.blockfrost.io
@@ -595,9 +604,20 @@ in {
     };
   };
   fileSystems."/home/clever/VirtualBox\\040VMs" = { fsType = "zfs"; device = "amd/vbox"; };
-  systemd.services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
-  systemd.coredump = {
-    enable = true;
-    extraConfig = "ExternalSizeMax=${toString (8 * 1024 * 1024 * 1024)}";
+  systemd = {
+    coredump = {
+      enable = true;
+      extraConfig = "ExternalSizeMax=${toString (8 * 1024 * 1024 * 1024)}";
+    };
+    services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
+    user = {
+      services = {
+        caller-id-client = {
+          environment.CALLERID_PW = "hunter2";
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig.ExecStart = "${pkgs.caller-id-client}/bin/caller-id.py";
+        };
+      };
+    };
   };
 }

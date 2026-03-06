@@ -10,7 +10,6 @@ in {
     ./iscsi_module.nix
     ./qemu.nix
     ./arcstats.nix
-    ./extra-statsd.nix
     ./auto-gc.nix
     ./coredump.nix
     #./dexml.nix
@@ -27,10 +26,12 @@ in {
       (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
       bat
       ncdu
-      #net-tools # netstat
+      net-tools # netstat
       psmisc
       sqlite-interactive
+      stuff
       sysstat
+      technic
       util
       util-linux
     ];
@@ -51,9 +52,19 @@ in {
     };
     overlays = [
       (self: super: {
-        util = self.callPackage ./util.nix {};
         mbrola-voices = super.mbrola-voices.override { languages = [ "en1" ]; };
+        stuff = self.runCommand "stuff" { } ''
+          #!${self.stdenv.shell}
+          mkdir -p $out/bin
+          mkdir -p $out/share/man/man1
+          ln -s ${self.binutils.out}/bin/readelf $out/bin
+          ln -s ${self.binutils.out}/bin/strings $out/bin
+          ln -s ${self.binutils.out}/share/man/man1/readelf.1.gz $out/share/man/man1/
+          ln -s ${self.binutils.out}/share/man/man1/strings.1.gz $out/share/man/man1/
+        '';
+        technic = self.callPackage ./technic.nix {};
         toxvpn = inputs.toxvpn.packages.x86_64-linux.default;
+        util = self.callPackage ./util.nix {};
       })
     ];
   };
@@ -134,12 +145,6 @@ in {
     };
   };
   services = {
-    openssh = {
-      enable = true;
-      settings = {
-        PermitRootLogin = "yes";
-      };
-    };
     avahi = {
       enable = true;
       nssmdns4 = true;
@@ -149,6 +154,13 @@ in {
         workstation = true;
       };
     };
+    openssh = {
+      enable = true;
+      settings = {
+        PermitRootLogin = "yes";
+      };
+    };
+    speechd.enable = false;
   };
   networking = {
     extraHosts = ''
@@ -180,6 +192,16 @@ in {
   #system.extraSystemBuilderCmds = ''
   #  ln -sv ${./.} $out/nixcfg
   #'';
-  security.acme.defaults.email = "cleverca22@gmail.com";
   security.acme.acceptTerms = true;
+  security.acme.defaults.email = "cleverca22@gmail.com";
+  systemd = {
+    services = {
+      nix-daemon = {
+        serviceConfig = {
+          OOMScoreAdjust = "350";
+        };
+      };
+    };
+  };
+  time.timeZone = "America/Moncton";
 }

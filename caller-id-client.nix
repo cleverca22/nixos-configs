@@ -1,4 +1,4 @@
-{ runCommand, python3, gbject-introspection, libnotify }:
+{ runCommand, python3, gobject-introspection, libnotify }:
 
 runCommand "caller-id-client" {
 } ''
