@@ -128,7 +128,10 @@
     };
     hydraJobs = {
       cachecache = cachecache.outputs.packages.${system}.cachecache;
-    } // lib.optionalAttrs (system == "x86_64-linux") self.colmenaHive.toplevel;
+    } // lib.optionalAttrs (system == "x86_64-linux") {
+      colmena = self.colmenaHive.toplevel;
+      nixos = lib.mapAttrs (k: v: v.config.system.build.toplevel) self.nixosConfigurations;
+    };
   } // lib.optionalAttrs (system == "aarch64-linux") {
     packages = arm64_images;
     hydraJobs = arm64_images;
