@@ -17,6 +17,7 @@ in
     ./clevers_machines.nix
     ./earthtools.ca.nix
     ./exporter.nix
+    ./sounds.nix
     ./temp-daemon.nix
     ./zdb.nix
     ./zfs-patch.nix
@@ -45,11 +46,15 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    alsa-utils
+    beep
     dig
-    edid-decode
+    #edid-decode # depends on QT
     efibootmgr
     ethtool
+    evtest
     irssi
+    jq
     lshw
     net-tools
     pciutils
@@ -77,6 +82,7 @@ in
   hardware.firmware = [ pkgs.linux-firmware ];
   networking = {
     defaultGateway = "192.168.2.1";
+    dhcpcd.enable = false;
     firewall = {
       allowedTCPPorts = [
         80 443
@@ -156,7 +162,15 @@ in
       "c2d"
     ];
   };
+  nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
 
+  programs = {
+    vim.fat = false;
+  };
   services = {
     avahi = {
       allowInterfaces = [ LAN ];

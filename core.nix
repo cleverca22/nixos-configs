@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ inputs, pkgs, config, ... }:
 
 let
   secrets = import ./load-secrets.nix;
@@ -13,20 +13,28 @@ in {
     ./extra-statsd.nix
     ./auto-gc.nix
     ./coredump.nix
+    #./dexml.nix
   ];
 
-  environment.systemPackages = with pkgs; [
-    (if config.services.xserver.enable then gitFull else git)
-    #utillinuxCurses
-    (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
-    bat
-    ncdu
-    psmisc
-    sqlite-interactive
-    sysstat
-    util
-    util-linux
-  ];
+  environment = {
+    variables = {
+      HISTTIMEFORMAT = "%F %T ";
+      HISTCONTROL = "ignoredups:erasedups";
+    };
+    systemPackages = with pkgs; [
+      (if config.services.xserver.enable then gitFull else git)
+      #utillinuxCurses
+      (pkgs.makeDesktopItem { name = "screen"; exec = "${pkgs.xterm}/bin/xterm -e ${pkgs.screen}/bin/screen -xRR"; desktopName = "Screen"; genericName = "screen"; categories = [ "System" "TerminalEmulator" ]; })
+      bat
+      ncdu
+      #net-tools # netstat
+      psmisc
+      sqlite-interactive
+      sysstat
+      util
+      util-linux
+    ];
+  };
   boot = {
     blacklistedKernelModules = [ "dccp" ];
     kernelParams = [
@@ -45,7 +53,7 @@ in {
       (self: super: {
         util = self.callPackage ./util.nix {};
         mbrola-voices = super.mbrola-voices.override { languages = [ "en1" ]; };
-        toxvpn = (builtins.getFlake "github:cleverca22/toxvpn/1830f9b8c12b4c5ef36b1f60f7e600cd1ecf4ccf").packages.x86_64-linux.default;
+        toxvpn = inputs.toxvpn.packages.x86_64-linux.default;
       })
     ];
   };
@@ -69,7 +77,13 @@ in {
         router = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMSvyvC18BHfivZJDhWSm7VU3kEElfNfMIfeohkil614"; };
         amd = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJhJRINrY5cFcqZ76GsAK7FU+wQhErlS6APdOIm7xcnW"; };
         system76 = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGtWMQ3F30gczudsr38Tw9yARsUMZbmvD4llnZq3K68u"; };
+        thinkpad = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICU4So8JKMeabYgGez4nrwdn4uNcWrZjZHOFPJC/HUED"; };
+        thin-router = { publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEcx7QvkEoETl750N8qo+hH7n6ApOYAtnkkPTRmx4ngJ"; };
+        c2d = { publicKey = "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAeIKSyO23iQey8rfwqYdRrcn2sY/Uxcy/OogAZKYNBAeLdwWDmX73d/TZA/rLJtImKPjZYl1VyCIylnNaogvNs="; };
       in {
+        inherit c2d;
+        inherit thin-router;
+        inherit thinkpad;
         "192.168.2.1" = router;
         "router.localnet" = router;
         "192.168.2.15" = amd;
@@ -94,8 +108,8 @@ in {
       ];
       builder = {
         uid = 1001;
-        isNormalUser = false;
-        isSystemUser = true;
+        isNormalUser = true;
+        isSystemUser = false;
         group = "users";
         openssh.authorizedKeys.keys = with keys; [
           dual.distro

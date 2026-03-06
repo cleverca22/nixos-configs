@@ -29,10 +29,9 @@ in {
     <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ./router.nat.nix
     ./snmpd.nix
-    ./earthtools.ca.nix
+    #./earthtools.ca.nix
     ./core.nix
     ./iohk-binary-cache.nix
-    ./weechat.nix
     #./ntp_fix.nix
     ./nixops-managed.nix
     (iohk-ops +"/modules/monitoring-exporters.nix")
@@ -40,7 +39,7 @@ in {
     ./exporter.nix
     #./homeserver.nix
     ./ntp_fix.nix
-    ./caller-id.nix
+    #./caller-id.nix
   ];
   programs = {
     vim.fat = false;
@@ -55,12 +54,19 @@ in {
       device = "/dev/sda";
       memtest86.enable = true;
     };
+    kernelPackages = pkgs.linuxPackages_5_10;
+    kernelPatches = [
+      {
+        name = "e1000-32bit";
+        patch = ./e1000.patch;
+      }
+    ];
   };
+  exporters.openFirewall = false;
   networking = {
     timeServers = lib.mkOptionDefault [
       "nas"
       "amd"
-      "system76"
       "c2d"
     ];
     hostName = "router";
@@ -70,8 +76,10 @@ in {
       allowPing = true;
       allowedTCPPorts = [ 5201 33445 config.services.teamspeak3.fileTransferPort config.services.teamspeak3.queryPort 80 443 8443 ];
       allowedUDPPorts = [
-        123 161 33445 config.services.teamspeak3.defaultVoicePort 53 162
+        1139
+        123 161 33445 config.services.teamspeak3.defaultVoicePort 162
         51820
+        config.services.iperf3.port
       ];
       trustedInterfaces = [ "tox_master0" ];
     };
@@ -82,7 +90,10 @@ in {
     #arcstats = true;
     avahi.enable = true;
     extra-statsd = false;
-    fail2ban.enable = true;
+    fail2ban = {
+      enable = true;
+      ignoreIP = [ "76.112.236.206/32" ];
+    };
     getty.helpLine = "[9;0][14;0]";
     hydra = {
       enable = false;
@@ -91,6 +102,10 @@ in {
       notificationSender = "clever@ext.earthtools.ca";
       minimumDiskFree = 5;
       minimumDiskFreeEvaluator = 1;
+    };
+    iperf3 = {
+      enable = true;
+      openFirewall = false;
     };
     monitoring-exporters = {
       enable = true;
@@ -140,6 +155,7 @@ in {
     lshw
     lsof
     nmap
+    nodejs
     nox
     pciutils
     socat
@@ -147,13 +163,21 @@ in {
     tcpdump
     wireshark-cli
   ];
-  users.extraUsers.gits = {
-    isNormalUser = true;
-    uid = 1006;
-    openssh.authorizedKeys.keys = with keys; [
-      clever.nix2
-      clever.amd clever.laptop clever.router_root
-    ];
+  users.extraUsers = {
+    gits = {
+      isNormalUser = true;
+      uid = 1006;
+      openssh.authorizedKeys.keys = with keys; [
+        clever.nix2
+        clever.amd clever.laptop clever.router_root
+      ];
+    };
+    vali = {
+      isNormalUser = true;
+      openssh.authorizedKeys.keys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJR3qDc8r2kbg6Q+A0dk7E6fC/wdlySBKb8X+8XgRGJg6huXaCTPZbAyvzt1IvxY69IdBymExjUie7YuFOLOKi5wisfw6d1yVjrhaoZWvXTz6eyF0ssAzM1BbqJsHU2dahQnNo7ThUguR365woBaw1UrZHEjlAiX16NxDVEyaXNImDjlQKBiAyDaa/pOCe1GUYwPgXHJMwF+6JbY+pGYAm6AvvsnjhLO0kyzwv1hSOd4qlzSobkDE9FQMbJD7uV+D1cXAv2ERdf/h9/L5dUcOEUscES+wg8ezLOhaBmq8TT9K3gmhMa47zNQU1WUAg39n+2+/Dwix0j7GNsNZdbp6B vali@nixos-amd"
+      ];
+    };
   };
   swapDevices = [
     { device = "/var/db/swap"; priority = 10; size = 1024; }

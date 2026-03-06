@@ -66,8 +66,7 @@ in {
         device = "nodev";
         efiInstallAsRemovable = true;
         efiSupport = true;
-        #device = "/dev/sdf";
-        configurationLimit = 1;
+        configurationLimit = 20;
       };
     };
     kernelModules = [ "tcp_bbr" "kvm-amd" ];
@@ -202,7 +201,8 @@ in {
       #{ hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
       { hostName = "clever@pi5e"; supportedFeatures = [ "big-parallel" ]; systems = [ "armv7l-linux" "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
       #builders.system76
-      builders.amd
+      #builders.amd
+      builders.thinkpad
       #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
       { hostName = "root@10.42.1.5"; supportedFeatures = [ "big-parallel" ]; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
       #{ hostName = "root@10.42.1.6"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }

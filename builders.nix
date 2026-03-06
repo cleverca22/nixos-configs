@@ -39,12 +39,21 @@ in {
   };
   amd = {
     hostName = "amd";
-    maxJobs = 5;
+    maxJobs = 2;
     speedFactor = 4;
-    sshUser = "builder";
-    system = "i686-linux,x86_64-linux,armv6l-linux,armv7l-linux";
     sshKey = key;
+    sshUser = "builder";
     supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ];
+    system = "i686-linux,x86_64-linux,armv6l-linux,armv7l-linux";
+  };
+  thinkpad = {
+    hostName = "thinkpad";
+    maxJobs = 2;
+    speedFactor = 4;
+    sshKey = key;
+    sshUser = "builder";
+    supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ];
+    systems = [ "x86_64-linux" ];
   };
   darwin = {
     hostName = "du075.macincloud.com";

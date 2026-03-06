@@ -1,7 +1,6 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 let
-  flake = builtins.getFlake "github:cleverca22/nixos-configs";
 in {
   imports = [
     #./rescue_boot.nix
@@ -34,6 +33,7 @@ in {
         device = "nodev";
         efiSupport = true;
         enable = true;
+        configurationLimit = 10;
       };
     };
     kernelModules = [ "kvm-intel" ];
@@ -46,7 +46,7 @@ in {
   };
   environment.systemPackages = with pkgs; [
     (pkgs.callPackage ./syncplay-clients.nix {})
-    barrier
+    #barrier
     dig
     discord
     edid-decode
@@ -55,10 +55,12 @@ in {
     ethtool
     file
     firefox
-    flake.inputs.agenix.packages.${pkgs.system}.agenix
+    gdb
     gimp
     git-crypt
     i2c-tools
+    net-tools
+    inputs.agenix.packages.${pkgs.system}.agenix
     iperf3
     josm
     jq
@@ -75,7 +77,7 @@ in {
     visualvm
     vlc
     wirelesstools
-    xorg.xev
+    xev
     zbar
   ];
 
@@ -106,6 +108,8 @@ in {
     };
   };
   hardware = {
+    firmware = with pkgs; [ linux-firmware sof-firmware wireless-regdb ];
+    alsa.enable = lib.mkForce false;
     pulseaudio = {
       enable = true;
     };
@@ -123,6 +127,7 @@ in {
       #};
     };
     #defaultGateway = "10.0.0.1";
+    firewall.allowedUDPPorts = [ config.services.toxvpn.port ];
     hostId = "5a11b73e";
     hostName = "thinkpad";
     interfaces = {
@@ -217,6 +222,7 @@ in {
     toxvpn = {
       enable = true;
       localip = "192.168.123.4";
+      port = 33446;
     };
     vnstat.enable = true;
     xserver = {
@@ -238,6 +244,7 @@ in {
       };
     };
   };
+  system.stateVersion = "26.05";
   time.timeZone = "America/Moncton";
   users.users.clever.extraGroups = [ config.services.kubo.group "docker" ];
   virtualisation.vswitch.enable = true;

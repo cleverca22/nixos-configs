@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 with lib;
 
@@ -26,7 +26,7 @@ let
     slaves = [];
     file = ./youtube;
   };
-  localip = "47.55.133.35";
+  localip = "47.54.160.77";
   mkReservation = k: v: {
     hw-address = v.mac;
     ip-address = v.ip;
@@ -38,9 +38,6 @@ in {
     firewall = {
       enable = true;
       extraCommands = lib.mkMerge [ (lib.mkAfter ''
-        iptables -w -t filter -A nixos-fw -s 10.0.0.0/24 -p udp --dport 53 -i ${LAN} -j nixos-fw-accept
-        iptables -w -t filter -A nixos-fw -s 10.0.0.0/24 -p tcp --dport 53 -i ${LAN} -j nixos-fw-accept
-        iptables -w -t filter -A nixos-fw -s 10.0.0.0/24 -p udp --dport 69 -i ${LAN} -j nixos-fw-accept
         #iptables -w -t filter -A nixos-fw -s 192.168.2.0/24 -p tcp --dport 3001 -i ${LAN} -j nixos-fw-accept # allow jormungandr api on lan
         #iptables -w -t filter -A nixos-fw -s 192.168.2.0/24 -p tcp --dport 8000 -i ${LAN} -j nixos-fw-accept # allow jormungandr exporter
 
@@ -65,6 +62,20 @@ in {
         iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 443 -j DNAT --to-destination 10.0.0.1
         #iptables -w -t nat -A nixos-nat-pre -i ${LAN} -s 10.0.0.0/24 -d ${localip} -p tcp --dport 32400 -j DNAT --to-destination 10.0.0.1:80
       '') ];
+      interfaces = {
+        ${LAN} = {
+          allowedTCPPorts = [
+            53
+            config.services.prometheus.exporters.bind.port
+            config.services.prometheus.exporters.smartctl.port
+            config.services.prometheus.exporters.node.port
+          ];
+          allowedUDPPorts = [
+            53
+            69 # tftp
+          ];
+        };
+      };
     };
     bridges = {
       br0 = {
@@ -72,7 +83,7 @@ in {
           LAN_A
           LAN_B
         ];
-        rstp = true;
+        rstp = false;
       };
     };
     interfaces = {
@@ -110,14 +121,14 @@ in {
       ];
       internalInterfaces = [ LAN ];
       forwardPorts = [
-        { destination = "10.0.0.61"; sourcePort = 25; }         # email
+        #{ destination = "10.0.0.61"; sourcePort = 25; }         # email
         # { destination = "192.168.2.62"; sourcePort = 80; }	# http
         #{ destination = "192.168.2.61:22"; sourcePort = 2222; } # ssh to laptop
         #{ destination = "192.168.2.15"; sourcePort = 22; }
         #{ destination = "192.168.2.61"; sourcePort = 6990; }	# rtorrent
         { destination = "10.0.0.11"; sourcePort = 6991; }       # rtorrent
         #{ destination = "192.168.2.61"; sourcePort = 11194; }	# openvpn
-        #{ sourcePort = 25565; destination = "192.168.2.32"; }	# minecraft
+        { sourcePort = 25565; destination = "10.0.0.11"; }	# minecraft
         #{ sourcePort = 45333; destination = "192.168.2.15"; } # mc test
         #{ sourcePort = 21025; destination = "192.168.2.11"; } # starbound
         #{ destination = "192.168.2.62:22"; sourcePort = 2222; }
@@ -138,6 +149,8 @@ in {
         #{ destination = "192.168.2.15"; sourcePort = 27015; } # stationeers update
         #{ destination = "10.0.0.112"; sourcePort = 8080; } # ip webcam on phone
         { destination = "10.0.0.61"; sourcePort = 4400; } # bircd
+        #{ destination = "10.0.0.11"; sourcePort = 4001; } # ipfs
+        { destination = "10.0.0.11"; sourcePort = 1883; } # mqtt
       ];
     };
   };
@@ -157,6 +170,9 @@ in {
         "10.0.0.0/24"
       ];
       extraConfig = ''
+        statistics-channels {
+          inet 127.0.0.1 port 8053 allow { 127.0.0.1; };
+        };
       '';
       extraOptions = ''
         #dnssec-enable yes;
@@ -168,40 +184,41 @@ in {
           master = true;
           name = "localnet";
           slaves = [ ];
-          file = ./localnet;
+          file = "${./localnet}";
         }
-        {
-          master = true;
-          name = "fw-download-alias1.raspberrypi.com";
-          slaves = [ ];
-          file = ./rpi.zone;
-        }
+        #{
+        #  master = true;
+        #  name = "fw-download-alias1.raspberrypi.com";
+        #  slaves = [ ];
+        #  file = "${./rpi.zone}";
+        #}
         #youtube reddit
         {
           master = true;
           name = "0.0.10.in-addr.arpa";
           slaves = [ ];
-          file = ./lan.reverse;
+          file = "${./lan.reverse}";
         }
         {
           master = true;
           name = "0.8.e.f.ip6.arpa";
           slaves = [ ];
-          file = ./ipv6.reverse;
+          file = "${./ipv6.reverse}";
         }
         {
           master = true;
           name = "a.9.1.0.c.1.0.0.0.7.4.0.1.0.0.2.ip6.arpa";
           slaves = [ ];
-          file = ./ipv6.reverse;
+          file = "${./ipv6.reverse}";
         }
         {
           master = true;
           name = "a.9.1.0.d.1.0.0.0.7.4.0.1.0.0.2.ip6.arpa";
           slaves = [ ];
-          file = ./ipv6.reverse;
+          file = "${./ipv6.reverse}";
         }
       ];
+      #openFirewall = false;
     };
     kea.dhcp4 = {
       enable = true;
@@ -248,7 +265,7 @@ in {
             option-data = [
               {
                 name = "routers";
-                data = "10.0.0.1";
+                data = "10.0.0.60";
               }
               {
                 name = "boot-file-name";
@@ -261,7 +278,7 @@ in {
               #}
               {
                 name = "domain-name-servers";
-                data = "10.0.0.1";
+                data = "10.0.0.60";
               }
               {
                 name = "domain-search";
@@ -278,16 +295,6 @@ in {
       };
     };
     #dhcpd4 = {
-        #{ hostName = "ramboot"; ethernetAddress = "00:1c:23:16:4b:b3"; ipAddress = "192.168.2.10"; }
-        #{ hostName = "nix1";    ethernetAddress = "92:C5:E2:BB:12:A9"; ipAddress = "192.168.2.30"; }
-        #{ hostName = "nix2";    ethernetAddress = "5E:88:5B:D7:6E:BC"; ipAddress = "192.168.2.31"; }
-
-        #{ hostName = "pi0";     ethernetAddress = "b8:27:eb:19:4b:a3"; ipAddress = "192.168.2.50"; } # wifi
-        #{ hostName = "pi3";     ethernetAddress = "b8:27:eb:80:d9:b6"; ipAddress = "192.168.2.53"; }
-
-        #{ hostName = "amd";         ethernetAddress = "40:16:7e:b3:32:48"; ipAddress = "10.0.0.15"; }
-
-        #{ hostName = "neo";         ethernetAddress = "88:83:22:dd:50:a5"; ipAddress = "10.0.0.52"; } # cellphone
       #extraConfig = ''
       #  subnet 10.0.0.0 netmask 255.255.255.0 {
       #    if exists user-class and option user-class = "iPXE" {
@@ -305,6 +312,14 @@ in {
     #config = pkgs.lib.readFile ./clever_router.ovpn;
     #};
     #};
+    prometheus = {
+      exporters = {
+        bind = {
+          enable = true;
+          openFirewall = false;
+        };
+      };
+    };
     tftpd = {
       enable = true;
       path = "/tftproot";
