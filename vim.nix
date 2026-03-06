@@ -55,14 +55,14 @@ let
         autocmd FileType cpp set expandtab shiftwidth=2 softtabstop=2
 
         let g:ycm_semantic_triggers = {'haskell' : ['.']}
-        "let g:ycm_server_python_interpreter='{pkgs.python311.interpreter}'
+        let g:ycm_server_python_interpreter='${pkgs.python3.interpreter}'
         let g:ycm_max_diagnostics_to_display=1000
       '';
       vam.pluginDictionaries = [
         {
           names = [
+            "syntastic"
             "vim-nix"
-            "Syntastic"
             "vim-wakatime"
           ] ++ optional config.programs.vim.fat "YouCompleteMe";
         }

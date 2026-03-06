@@ -1,25 +1,27 @@
 { pkgs, ... }:
 
 {
-  services.pipewire.enable = false;
-  services.xserver = {
-    enable = true;
+  services = {
+    pipewire.enable = false;
+    pulseaudio = {
+      enable = true;
+    };
     displayManager = {
       autoLogin = {
         enable = true;
         user = "media";
       };
-      sddm = {
-        enable = true;
-      };
-      sessionCommands = ''
-        ratpoison &
-        exec plexmediaplayer --fullscreen --tv > ~/.plexlogs
-      '';
+      sddm.enable = true;
     };
-  };
-  hardware.pulseaudio = {
-    enable = true;
+    xserver = {
+      enable = true;
+      displayManager = {
+        sessionCommands = ''
+          ratpoison &
+          exec plexmediaplayer --fullscreen --tv > ~/.plexlogs
+        '';
+      };
+    };
   };
   environment.systemPackages = with pkgs; [
     ratpoison pavucontrol

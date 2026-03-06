@@ -126,12 +126,6 @@ in {
     "/var/lib/deluge" = { device = "naspool/deluge"; fsType = "zfs"; };
     #"/zfs-defrag" = { device = "/dev/media/zfs-defrag"; fsType = "ext4"; };
   };
-  swapDevices = [
-    { device = "/dev/media/swap"; priority = 5; }
-    { label = "SWAP_A"; priority = 10; }
-    { label = "SWAP_B"; priority = 10; }
-    { label = "SWAP_C"; priority = 10; }
-  ];
   networking = {
     timeServers = [
       "router"
@@ -155,12 +149,13 @@ in {
         20048 # nfs
       ];
       allowedUDPPorts = [
-        161
-        123 # ntp
         111 2049 # nfs
+        123 # ntp
+        161
         9987 # ts3
         9990 # ts3 2nd
         33445
+        config.services.toxvpn.port
       ];
     };
     hostId = "491ddec8";
@@ -179,6 +174,61 @@ in {
     };
     usePredictableInterfaceNames = false;
   };
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+    };
+    overlays = [
+      overlay1
+    ];
+  };
+  nix = {
+    package = pkgs.nixVersions.git;
+    gc = {
+      automatic = true;
+      dates = "0:00:00";
+      options = ''--max-freed "$((32 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))"'';
+    };
+    buildMachines = let
+      key = "/etc/nixos/keys/distro";
+      builders = import ./builders.nix;
+    in [
+      #{ hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
+      #{ hostName = "root@192.168.2.140"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      #{ hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
+      #{ hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
+      #builders.rpi4
+      #builders.pi400
+      #{ hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
+      { hostName = "clever@pi5e"; supportedFeatures = [ "big-parallel" ]; systems = [ "armv7l-linux" "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
+      #builders.system76
+      builders.amd
+      #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+      { hostName = "root@10.42.1.5"; supportedFeatures = [ "big-parallel" ]; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+      #{ hostName = "root@10.42.1.6"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
+    ];
+    settings = {
+      max-jobs = 2;
+      cores = 2;
+      substituters = lib.mkForce [
+        "http://nas.localnet:8081"
+        #"ssh://nix-ssh@amd"
+      ];
+    };
+    extraOptions = mkAfter ''
+      gc-keep-derivations = true
+      keep-outputs = false
+      auto-optimise-store = false
+      secret-key-files = /etc/nix/keys/secret-key-file
+    '';
+  };
+  programs.vim.fat = false;
+  swapDevices = [
+    { device = "/dev/media/swap"; priority = 5; }
+    { label = "SWAP_A"; priority = 10; }
+    { label = "SWAP_B"; priority = 10; }
+    { label = "SWAP_C"; priority = 10; }
+  ];
   security.audit.enable = false;
   services = {
     arcstats = false;
@@ -278,6 +328,7 @@ in {
     toxvpn = {
       enable = true;
       localip = "192.168.123.51";
+      port = 33447;
     };
     teamspeak3 = {
       enable = true;
@@ -299,55 +350,7 @@ in {
       };
     };
   };
-  nix = {
-    package = pkgs.nixVersions.git;
-    gc = {
-      automatic = true;
-      dates = "0:00:00";
-      options = ''--max-freed "$((32 * 1024**3 - 1024 * $(df -P -k /nix/store | tail -n 1 | ${pkgs.gawk}/bin/awk '{ print $4 }')))"'';
-    };
-    buildMachines = let
-      key = "/etc/nixos/keys/distro";
-      builders = import ./builders.nix;
-    in [
-      #{ hostName = "clever@du075.macincloud.com"; systems = [ "x86_64-darwin" ]; sshKey = key; speedFactor = 1; maxJobs = 1; }
-      #{ hostName = "root@192.168.2.140"; systems = [ "armv6l-linux" "armv7l-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
-      #{ hostName = "builder@192.168.2.15"; systems = [ "i686-linux" "x86_64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 1; supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ]; }
-      #{ hostName = "clever@aarch64.nixos.community"; systems = [ "armv7l-linux" "aarch64-linux" ]; sshKey = key; maxJobs = 1; speedFactor = 2; supportedFeatures = [ "big-parallel" ]; }
-      #builders.rpi4
-      #builders.pi400
-      #{ hostName = "localhost"; mandatoryFeatures = [ "local" ]; systems = [ "x86_64-linux" "i686-linux" ]; maxJobs = 4; }
-      { hostName = "clever@pi5e"; supportedFeatures = [ "big-parallel" ]; systems = [ "armv7l-linux" "aarch64-linux" ]; maxJobs = 4; sshKey = key; }
-      #builders.system76
-      builders.amd
-      #{ hostName = "root@10.0.0.171"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
-      { hostName = "root@10.42.1.5"; supportedFeatures = [ "big-parallel" ]; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
-      #{ hostName = "root@10.42.1.6"; supportedFeatures = []; systems = [ "powerpc64-linux" ]; maxJobs = 1; sshKey = key; }
-    ];
-    settings = {
-      max-jobs = 2;
-      cores = 2;
-      substituters = lib.mkForce [
-        "http://nas.localnet:8081"
-        #"ssh://nix-ssh@amd"
-      ];
-    };
-    extraOptions = mkAfter ''
-      gc-keep-derivations = true
-      keep-outputs = false
-      auto-optimise-store = false
-      secret-key-files = /etc/nix/keys/secret-key-file
-    '';
-  };
-  nixpkgs = {
-    config = {
-      allowUnfree = true;
-    };
-    overlays = [
-      overlay1
-    ];
-  };
-  programs.vim.fat = false;
+  system.stateVersion = "16.03";
   users = {
     users.clever.extraGroups = [ "ipfs" ];
     extraUsers = {
@@ -357,5 +360,4 @@ in {
       };
     };
   };
-  system.stateVersion = "16.03";
 }

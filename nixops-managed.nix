@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 let
   cfg = pkgs.writeText "configuration.nix" ''
@@ -12,8 +12,8 @@ in {
     "nixpkgs=/run/current-system/nixpkgs"
     "nixpkgs-overlays=/run/current-system/overlays"
   ];
-  system.extraSystemBuilderCmds = ''
-    ln -sv ${pkgs.path} $out/nixpkgs
+  system.systemBuilderCommands = ''
+    ln -sv ${inputs.nixpkgs} $out/nixpkgs
     #ln -sv {./overlays} $out/overlays
   '';
 }
