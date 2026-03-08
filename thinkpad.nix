@@ -110,9 +110,6 @@ in {
   hardware = {
     firmware = with pkgs; [ linux-firmware sof-firmware wireless-regdb ];
     alsa.enable = lib.mkForce false;
-    pulseaudio = {
-      enable = true;
-    };
   };
   networking = {
     bonds = {
@@ -203,6 +200,7 @@ in {
     openssh.settings.X11Forwarding = true;
     pipewire.enable = false;
     prometheus.exporters.smartctl.devices = [ "/dev/nvme0n1" ];
+    pulseaudio.enable = true;
     samba = {
       enable = false;
       openFirewall = true;
