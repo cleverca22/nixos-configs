@@ -105,6 +105,7 @@ in {
     "/var/lib/docker" = {
       device = "thinkpad/docker";
       fsType = "zfs";
+      options = [ "nofail" ];
     };
   };
   hardware = {
@@ -193,6 +194,7 @@ in {
     };
   };
   services = {
+    displayManager.sddm.enable = true;
     kubo = {
       enable = true;
     };
@@ -225,7 +227,6 @@ in {
     vnstat.enable = true;
     xserver = {
       enable = true;
-      displayManager.sddm.enable = true;
       desktopManager.xfce.enable = true;
     };
   };
