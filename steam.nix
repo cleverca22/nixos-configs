@@ -14,7 +14,7 @@ let
       pkgs_steam.lutris-free
       pkgs.opencomposite
     ];
-    fileSystems."/home/clever/.local/share/Steam/userdata/8297027/gamerecordings" = { device = "amd/nosnap"; fsType = "zfs"; };
+    fileSystems."/home/clever/.local/share/Steam/userdata/8297027/gamerecordings" = { device = "amd/nosnap"; fsType = "zfs"; options = [ "nofail" ]; };
     hardware.graphics.enable32Bit = true;
     nixpkgs.overlays = [ overlay ];
 
