@@ -186,7 +186,7 @@ in {
     gparted
     gramps
     graphviz
-    helvum
+    #helvum # maybe try crosspipe
     hping
     iftop
     iperf
