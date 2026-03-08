@@ -99,6 +99,7 @@ in {
       jq
       lsof
       nettools
+      nodejs
       nvme-cli
       pciutils usbutils # lsusb and lspci
       powerjoular
@@ -336,6 +337,16 @@ in {
       defaultVoicePort = 9990;
       fileTransferPort = 30034;
       queryPort = 10012;
+    };
+    prometheus.exporters.smartctl = {
+      enable = true;
+      devices = [
+        "/dev/disk/by-id/scsi-35000c500aec02903"
+        "/dev/disk/by-id/scsi-35000c500ae467097"
+        "/dev/disk/by-id/scsi-35000c500ae4598f3"
+        "/dev/disk/by-id/ata-WDC_WD10EACS-00D6B1_WD-WCAU45661255"
+        "/dev/disk/by-id/nvme-Lexar_SSD_EQ790_1TB_QC6211R002061P220C"
+      ];
     };
     udev = {
       extraRules = ''
