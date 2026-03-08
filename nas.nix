@@ -95,6 +95,7 @@ in {
       inputs.zfs-utils.packages.x86_64-linux.txg-watcher
       iotop
       iperf3
+      irssi
       jq
       lsof
       nettools
