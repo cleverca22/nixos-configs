@@ -259,6 +259,7 @@ in {
       fsType = "nfs";
       options= [ "x-systemd.automount" "noauto" "soft" ];
     };
+    "/var/lib/docker" = { fsType = "zfs"; device = "amd/docker"; };
     "/var/lib/systemd/coredump" = { device = "amd/coredumps"; fsType = "zfs"; };
     #"/boot/EFI" = { device = "UUID=0ECD-75E7"; fsType = "vfat"; };
     #"/media/Music/" = { device = "192.168.123.32:/mnt/Music/"; fsType = "nfs"; };
