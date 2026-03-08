@@ -500,7 +500,12 @@ in {
     prometheus.exporters = {
       smartctl = {
         enable = true;
-        devices = [ "/dev/nvme0" "/dev/nvme1" "/dev/sda" "/dev/sdb" ];
+        devices = [
+          "/dev/disk/by-id/nvme-INTEL_MEMPEK1W016GA_PHBT721401QR016D"
+          "/dev/disk/by-id/nvme-INTEL_SSDPEKKW512G7_BTPY652506Q0512F"
+          "/dev/disk/by-id/ata-HITACHI_HDS7216SBSUN160G_0802QA4P1M_PVE301ZFSA4P1M"
+          "/dev/disk/by-id/ata-KINGSTON_SH103S3120G_50026B7244024678"
+        ];
         port = 9633;
       };
     };
