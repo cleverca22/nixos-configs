@@ -321,6 +321,10 @@ in {
               targets = [ "thin-router:9633" ];
               labels.alias = "thin-router";
             }
+            {
+              targets = [ "router:9633" ];
+              labels.alias = "router";
+            }
           ];
         }
         {
@@ -360,6 +364,20 @@ in {
                 #"system76:8000"
               ];
               labels.alias = "amd";
+            }
+          ];
+        }
+        {
+          job_name = "anubis";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          scheme = "http";
+          static_configs = [
+            {
+              targets = [
+                "thin-router.localnet:8081"
+              ];
+              labels.domain = "hydra.angeldsis.com";
             }
           ];
         }

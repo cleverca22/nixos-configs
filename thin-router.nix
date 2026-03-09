@@ -101,6 +101,7 @@ in
             config.services.prometheus.exporters.bind.port
             config.services.prometheus.exporters.node.port
             config.services.prometheus.exporters.smartctl.port
+            8081 # anubis metrics
             9103 # zfs-frag
             49115 49116 # temp-daemon
           ];
