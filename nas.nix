@@ -226,10 +226,7 @@ in {
   };
   programs.vim.fat = false;
   swapDevices = [
-    { device = "/dev/media/swap"; priority = 5; }
-    { label = "SWAP_A"; priority = 10; }
-    { label = "SWAP_B"; priority = 10; }
-    { label = "SWAP_C"; priority = 10; }
+    { label = "lexar-swap"; priority = 20; }
   ];
   security.audit.enable = false;
   services = {

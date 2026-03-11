@@ -8,8 +8,8 @@ let
 
   # aliases by usage
   LAN = TOP;
-  WAN = BOTTOM;
-  localip = "47.54.160.77";
+  WAN = ETH;
+  localip = "142.68.251.92";
 in
 {
   imports = [
@@ -17,6 +17,7 @@ in
     ./clevers_machines.nix
     ./earthtools.ca.nix
     ./exporter.nix
+    ./nixops-managed.nix
     ./sounds.nix
     ./temp-daemon.nix
     ./zdb.nix

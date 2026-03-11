@@ -10,7 +10,7 @@ in {
   nix.nixPath = [
     "nixos-config=${cfg}"
     "nixpkgs=/run/current-system/nixpkgs"
-    "nixpkgs-overlays=/run/current-system/overlays"
+    #"nixpkgs-overlays=/run/current-system/overlays"
   ];
   system.systemBuilderCommands = ''
     ln -sv ${inputs.nixpkgs} $out/nixpkgs
