@@ -233,8 +233,8 @@ in {
     vulkan-tools
     wget usbutils nox
     xkill
-    xorg.xev unrar unzip openssl xrestop zip ntfs3g
-    xscreensaver wireshark-qt ncdu
+    xev unrar unzip openssl xrestop zip ntfs3g
+    xscreensaver wireshark ncdu
     yt-dlp
     zgrviewer
 
@@ -291,7 +291,7 @@ in {
     bridges = {
       br0 = {
         interfaces = [
-          "enp8s0"
+          "enp9s0"
           "tap0"
         ];
       };
@@ -325,7 +325,7 @@ in {
     in {
       inherit tap0;
       #inherit tox_master0;
-      enp8s0 = {
+      enp9s0 = {
         mtu = 1500;
         wakeOnLan.enable = true;
       };
@@ -502,6 +502,7 @@ in {
         enable = true;
         devices = [
           "/dev/disk/by-id/nvme-INTEL_MEMPEK1W016GA_PHBT721401QR016D"
+          "/dev/disk/by-id/nvme-Samsung_SSD_990_PRO_2TB_S7L9NJ0YB11373M" # 2TB
           "/dev/disk/by-id/nvme-INTEL_SSDPEKKW512G7_BTPY652506Q0512F"
           "/dev/disk/by-id/ata-HITACHI_HDS7216SBSUN160G_0802QA4P1M_PVE301ZFSA4P1M"
           "/dev/disk/by-id/ata-KINGSTON_SH103S3120G_50026B7244024678"
@@ -555,7 +556,6 @@ in {
       enable = true;
       displayManager.lightdm.enable = true;
       desktopManager = {
-        gnome.enable = false;
         xfce.enable = true;
         xterm.enable = false;
       };
@@ -573,7 +573,8 @@ in {
     #{ device = "/dev/nvme0n1p3"; priority = 10; }
     #{ device = "/dev/disk/by-partlabel/swap1"; priority = 10; }
     #{ device = "/dev/disk/by-partlabel/swap2"; priority = 10; }
-    { device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
+    #{ device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
+    #{ device = "/dev/disk/by-uuid/464d057a-d17f-4f69-a56b-7849fad96f7e"; priority = 11; }
     { device = "/dev/disk/by-uuid/3fdb005c-97e7-4dfb-9a3f-71748d714ae4"; priority = 9; }
   ];
   system.stateVersion = "24.05";
