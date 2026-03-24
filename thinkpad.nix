@@ -14,6 +14,7 @@ in {
     ./docker.nix
     ./exporter.nix
     ./gpg.nix
+    ./ipfs-test.nix
     ./laptop-postgres.nix
     ./sounds.nix
     ./steam.nix
@@ -195,9 +196,6 @@ in {
   };
   services = {
     displayManager.sddm.enable = true;
-    kubo = {
-      enable = true;
-    };
     ntp.enable = true;
     openssh.settings.X11Forwarding = true;
     pipewire.enable = false;
