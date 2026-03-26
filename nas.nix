@@ -26,6 +26,7 @@ in {
     ./iohk-binary-cache.nix
     ./media-center.nix
     ./nas-hydra.nix
+    ./nas-proxmox.nix
     #./snmpd.nix
     ./grocy.nix
     ./gtnh.nix

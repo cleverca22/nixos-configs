@@ -18,6 +18,7 @@ in {
     ./laptop-postgres.nix
     ./sounds.nix
     ./steam.nix
+    ./thinkpad-proxmox.nix
     ./thinkpad-wifi-client.nix
     ./zdb.nix
     ./zfs-patch.nix
@@ -126,6 +127,9 @@ in {
       #};
     };
     #defaultGateway = "10.0.0.1";
+    extraHosts = ''
+      10.0.0.11 nas
+    '';
     firewall.allowedUDPPorts = [ config.services.toxvpn.port ];
     hostId = "5a11b73e";
     hostName = "thinkpad";
