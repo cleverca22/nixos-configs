@@ -9,7 +9,8 @@ let
   });
 in {
   imports = [
-    # ./amd-wg.nix
+    ./amd-wg.nix
+    ./amd-proxmox.nix
     # ./psql_test.nix
     # ./radeon-exporter.nix
     ./amdgpu.nix
@@ -330,7 +331,7 @@ in {
         wakeOnLan.enable = true;
       };
       br0 = {
-        mtu = 1500;
+        mtu = 9000;
         ipv4.addresses = [
           {
             address = "10.0.0.15";
@@ -390,7 +391,7 @@ in {
     min-free-collection = true;
     settings = {
       auto-optimise-store = true;
-      cores = 10;
+      cores = 25;
       max-jobs = 4;
       sandbox = "relaxed";
       substituters = [
@@ -576,6 +577,7 @@ in {
     #{ device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
     #{ device = "/dev/disk/by-uuid/464d057a-d17f-4f69-a56b-7849fad96f7e"; priority = 11; }
     { device = "/dev/disk/by-uuid/3fdb005c-97e7-4dfb-9a3f-71748d714ae4"; priority = 9; }
+    { device = "/dev/disk/by-uuid/464d057a-d17f-4f69-a56b-7849fad96f7e"; priority = 10; }
   ];
   system.stateVersion = "24.05";
   time = {

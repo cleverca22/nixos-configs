@@ -171,6 +171,10 @@ in {
       10.0.0.110      pi500e
       192.168.123.21  dadnas
     '';
+    hosts = {
+      "10.0.0.15" = [ "amd" ];
+      #"10.6.0.2" = [ "amd" ];
+    };
   };
   nix = {
     min-free-collection = true;
