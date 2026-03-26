@@ -15,6 +15,7 @@
       url = "github:input-output-hk/iohk-ops/65cb4d0b11d4504497aa334fb648716de2338ff5";
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    proxmox-nixos.url = "github:SaumonNet/proxmox-nixos";
     rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
     temp-daemon.inputs.nixpkgs.follows = "nixpkgs";
     temp-daemon.url = "github:cleverca22/temp_daemon";
@@ -27,7 +28,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { agenix, colmena, rpi-nixos, temp-daemon, firmware, cachecache, self, toxvpn, utils, nixpkgs, zfs-utils, iohk-ops, hydra }@attrs:
+  outputs = { agenix, colmena, firmware, cachecache, self, nixpkgs, iohk-ops, hydra, proxmox-nixos, rpi-nixos, temp-daemon, toxvpn, utils, zfs-utils }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:
