@@ -3,7 +3,7 @@
 
   services.ipfs-cluster = {
     enable = true;
-    consensus = "raft";
+    consensus = "crdt";
     openSwarmPort = true;
     secretFile = "/root/cluster.secret";
   };

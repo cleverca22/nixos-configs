@@ -19,7 +19,7 @@ in {
     ./direnv.nix
     ./docker.nix
     ./exporter.nix
-    ./ipfs.nix
+    ./ipfs-test.nix
     ./pipewire.nix
     ./rpi-udev.nix
     (modulesPath + "/installer/scan/not-detected.nix")
