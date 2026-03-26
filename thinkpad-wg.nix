@@ -1,5 +1,6 @@
 {
   networking = {
+    firewall.allowedUDPPorts = [ 51822 ];
     wireguard = {
       interfaces = {
         wg0 = {
