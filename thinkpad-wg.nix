@@ -4,7 +4,7 @@
       interfaces = {
         wg0 = {
           privateKeyFile = "/root/blockfrost.wg.sec";
-          ips = [ "10.6.0.2/16" ];
+          ips = [ "10.6.0.4/16" ];
           listenPort = 51822;
           peers = [
             { # dbsyncsnap1.core
@@ -12,10 +12,10 @@
               publicKey = "bsy4wbh7sleHwdp2C0Br52xqBPEoPbR2caN9bTDQglc=";
               endpoint = "45.63.41.160:51822";
             }
-            { # thinkpad
-              allowedIPs = [ "10.6.0.4/32" ];
-              publicKey = "3uT1mDtRHl+HCvzsXo8y1TtJZwb62iEedghCDxXx2l4=";
-              endpoint = "10.0.0.112:51822";
+            { # amd
+              allowedIPs = [ "10.6.0.2/32" ];
+              publicKey = "ddUVGbhwh0eknKBi5ECFEls7ZhADs+x9t6aTQ90NGXc=";
+              endpoint = "10.0.0.15:51822";
             }
           ];
         };

@@ -19,6 +19,7 @@ in {
     ./sounds.nix
     ./steam.nix
     ./thinkpad-proxmox.nix
+    ./thinkpad-wg.nix
     ./thinkpad-wifi-client.nix
     ./zdb.nix
     ./zfs-patch.nix
