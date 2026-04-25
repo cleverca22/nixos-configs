@@ -4646,7 +4646,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "irate(node_disk_read_bytes_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]\"}[5m])",
+          "expr": "irate(node_disk_read_bytes_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]([0-9]n1)?\"}[5m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{device}} - Successfully read bytes",
@@ -4658,7 +4658,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "irate(node_disk_written_bytes_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]\"}[5m])",
+          "expr": "irate(node_disk_written_bytes_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]([0-9]n1)?\"}[5m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{device}} - Successfully written bytes",
@@ -4793,7 +4793,7 @@
             "type": "prometheus",
             "uid": "000000001"
           },
-          "expr": "irate(node_disk_io_time_seconds_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]\"} [5m])",
+          "expr": "irate(node_disk_io_time_seconds_total{instance=~\"$node:$port\",job=~\"$job\",device=~\"[a-z]*[a-z]([0-9]n1)?\"} [5m])",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{device}} - Milliseconds spent doing I/Os",
@@ -19517,12 +19517,20 @@
           "text": "node",
           "value": "node"
         },
-        "definition": "",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "000000001"
+        },
+        "definition": "label_values(node_exporter_build_info,job)",
         "includeAll": false,
         "label": "Job",
         "name": "job",
         "options": [],
-        "query": "label_values(node_exporter_build_info, job)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(node_exporter_build_info,job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "regexApplyTo": "value",
@@ -19535,12 +19543,20 @@
           "text": "monitoring",
           "value": "monitoring"
         },
-        "definition": "",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "000000001"
+        },
+        "definition": "label_values(node_exporter_build_info{job=~\"$job\"},instance)",
         "includeAll": false,
         "label": "Host:",
         "name": "node",
         "options": [],
-        "query": "label_values(node_exporter_build_info{job=~\"$job\"}, instance)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(node_exporter_build_info{job=~\"$job\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "/([^:]+):.*/",
         "regexApplyTo": "value",
@@ -19552,12 +19568,20 @@
           "text": "9100",
           "value": "9100"
         },
-        "definition": "",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "000000001"
+        },
+        "definition": "label_values(node_exporter_build_info{instance=~\"$node:(.*)\"},instance)",
         "includeAll": false,
         "label": "Port",
         "name": "port",
         "options": [],
-        "query": "label_values(node_exporter_build_info{instance=~\"$node:(.*)\"}, instance)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(node_exporter_build_info{instance=~\"$node:(.*)\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "/[^:]+:(.*)/",
         "regexApplyTo": "value",
@@ -19574,6 +19598,6 @@
   "timezone": "browser",
   "title": "Node System Dashboard",
   "uid": "ZaqfSS6mz",
-  "version": 674,
+  "version": 1,
   "weekStart": ""
 }
