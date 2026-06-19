@@ -125,6 +125,7 @@
       ghidra = nixpkgs.legacyPackages.${system}.ghidra.overrideAttrs (old: {
         patches = old.patches ++ [ ./ghidra-1147.patch ];
       });
+      rpiboot = nixpkgs.legacyPackages.${system}.callPackage ./rpiboot.nix {};
       bircd = nixpkgs.legacyPackages.i686-linux.callPackage ./bircd.nix {};
     };
     hydraJobs = {
