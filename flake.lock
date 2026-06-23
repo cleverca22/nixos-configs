@@ -160,6 +160,24 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -215,6 +233,25 @@
         "owner": "input-output-hk",
         "repo": "iohk-ops",
         "rev": "65cb4d0b11d4504497aa334fb648716de2338ff5",
+        "type": "github"
+      }
+    },
+    "latency-tracker": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1779870649,
+        "narHash": "sha256-5zoyX/B75E4tFv7o40E4+DLc790xKmDL2Qlc9amZFII=",
+        "owner": "cleverca22",
+        "repo": "latency-tracker",
+        "rev": "ede32ca0bab2a881b56d91c4ba45b2176c2b5a16",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "repo": "latency-tracker",
         "type": "github"
       }
     },
@@ -394,11 +431,26 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1772773019,
-        "narHash": "sha256-E1bxHxNKfDoQUuvriG71+f+s/NT0qWkImXsYZNFFfCs=",
+        "lastModified": 1779388254,
+        "narHash": "sha256-+kk3W5iUUGWDS6guk3VU3ZhUWhmiqfAjlv+cJeidquc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "8d0a7d4c0437cc1e5349d3dabde379c5e2a66305",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1781577229,
+        "narHash": "sha256-lrp67w8AulE9Ks53n27I45ADSzbOCn4H+CNW1Ck8B+8=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "aca4d95fce4914b3892661bcb80b8087293536c6",
+        "rev": "567a49d1913ce81ac6e9582e3553dd90a955875f",
         "type": "github"
       },
       "original": {
@@ -408,7 +460,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1631846720,
         "narHash": "sha256-Z7v67hKpDwCuNJddBqdjGYS2O21l3BVCUmMMJQU5hzM=",
@@ -422,7 +474,7 @@
         "type": "indirect"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1736042175,
         "narHash": "sha256-jdd5UWtLVrNEW8K6u5sy5upNAFmF3S4Y+OIeToqJ1X8=",
@@ -465,7 +517,8 @@
         "firmware": "firmware",
         "hydra": "hydra",
         "iohk-ops": "iohk-ops",
-        "nixpkgs": "nixpkgs_4",
+        "latency-tracker": "latency-tracker",
+        "nixpkgs": "nixpkgs_5",
         "proxmox-nixos": "proxmox-nixos",
         "rpi-nixos": "rpi-nixos",
         "temp-daemon": "temp-daemon",
@@ -477,7 +530,7 @@
     "rpi-nixos": {
       "inputs": {
         "nixos-configs": "nixos-configs",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "lastModified": 1630430629,
@@ -540,6 +593,21 @@
         "type": "github"
       }
     },
+    "systems_3": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
     "temp-daemon": {
       "inputs": {
         "nixpkgs": [
@@ -562,7 +630,7 @@
     },
     "toxvpn": {
       "inputs": {
-        "nixpkgs": "nixpkgs_6"
+        "nixpkgs": "nixpkgs_7"
       },
       "locked": {
         "lastModified": 1761265530,
@@ -595,7 +663,7 @@
     },
     "utils_2": {
       "inputs": {
-        "systems": "systems_2"
+        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1731533236,

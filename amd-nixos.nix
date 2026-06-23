@@ -20,6 +20,7 @@ in {
     ./docker.nix
     ./exporter.nix
     ./ipfs-test.nix
+    ./latency-tracker.nix
     ./pipewire.nix
     ./rpi-udev.nix
     (modulesPath + "/installer/scan/not-detected.nix")
@@ -90,6 +91,7 @@ in {
         #efiSysMountPoint = "/boot/EFI/";
       };
       grub = {
+        configurationLimit = 10;
         #efiInstallAsRemovable = false;
         #efiSupport = true;
         device = "nodev";
@@ -165,6 +167,10 @@ in {
     colmena
     corectrl
     d-spy
+    #koboldcpp
+    #(ollama.override { acceleration = "rocm"; })
+    #claude-code
+    #lmstudio
     ddd
     dos2unix
     dtc
@@ -176,8 +182,6 @@ in {
     file
     file-roller
     firefox
-    inputs.zfs-utils.packages.x86_64-linux.gang-finder
-    inputs.zfs-utils.packages.x86_64-linux.txg-watcher
     flashrom
     gimp
     gist
@@ -187,11 +191,15 @@ in {
     gparted
     gramps
     graphviz
+    inputs.zfs-utils.packages.x86_64-linux.gang-finder
+    inputs.self.packages.x86_64-linux.rpiboot
+    inputs.zfs-utils.packages.x86_64-linux.txg-watcher
     #helvum # maybe try crosspipe
     hping
     iftop
     iperf
     jq
+    jstest-gtk
     kdePackages.kgpg
     lshw
     lutris-free
@@ -206,6 +214,7 @@ in {
     nix-diff
     nix-du
     nmap
+    nodejs
     obs-studio
     paper-icon-theme
     pavucontrol gdb file psmisc
@@ -221,6 +230,7 @@ in {
     qview
     rtl-sdr
     rxvt-unicode-unwrapped
+    slack
     smartmontools
     socat
     sysstat pciutils vlc
@@ -249,6 +259,7 @@ in {
     #"/160g" = { label = "160g-linux"; fsType = "ext4"; };
     "/boot" = { device = "UUID=5f5946ad-5d9c-42d9-97ef-adfae2e6cc20"; fsType = "ext4"; };
     "/home" = { device = "amd/home"; fsType = "zfs"; };
+    "/home/clever/.mozilla" = { label = "mozilla"; fsType = "ext4"; options = [ "nofail" ]; };
     "/home/clever/Games" = { device = "amd/games"; fsType = "zfs"; };
     "/home/clever/apps" = { device = "amd/clever-apps"; fsType = "zfs"; };
     "/home/clever/dedup" = { device = "amd/dedup"; fsType = "zfs"; };
@@ -327,7 +338,7 @@ in {
       inherit tap0;
       #inherit tox_master0;
       enp9s0 = {
-        mtu = 1500;
+        mtu = 9000;
         wakeOnLan.enable = true;
       };
       br0 = {
@@ -478,10 +489,6 @@ in {
     iscsid.enable = true;
     kmscon = {
       enable = true;
-      extraConfig = ''
-        font-name=Inconsolata
-        font-engine=pango
-      '';
     };
     lact = {
       enable = true;
@@ -515,7 +522,7 @@ in {
     tor = {
       enable = false;
       client = {
-        enable = false;
+        enable = true;
         #privoxy.enable = true;
       };
     };
@@ -536,7 +543,7 @@ in {
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="0a5c", ATTRS{idProduct}=="2711|2763|2764", GROUP="wheel"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d00", GROUP="wheel"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="18d1", ATTRS{idProduct}=="2d01", GROUP="wheel"
-        SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi", OWNER="clever"
+        SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{serial}=="A8V93XJN", SYMLINK+="ttyftdi"
         SUBSYSTEMS=="usb", ATTRS{idVendor}=="2e8a", ATTRS{idProduct}=="0003|000a|000c", GROUP="wheel"
 
         SUBSYSTEM=="usbmon", GROUP="wireshark", MODE="0660"
@@ -616,7 +623,7 @@ in {
   systemd = {
     coredump = {
       enable = true;
-      extraConfig = "ExternalSizeMax=${toString (8 * 1024 * 1024 * 1024)}";
+      settings.Coredump.extraConfig = "ExternalSizeMax=${toString (8 * 1024 * 1024 * 1024)}";
     };
     services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
     user = {
