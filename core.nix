@@ -31,7 +31,7 @@ in {
       sqlite-interactive
       stuff
       sysstat
-      technic
+      #technic
       util
       util-linux
     ];
