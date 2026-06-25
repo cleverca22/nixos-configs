@@ -21,6 +21,7 @@
     temp-daemon.inputs.nixpkgs.follows = "nixpkgs";
     temp-daemon.url = "github:cleverca22/temp_daemon";
     toxvpn.url = "github:cleverca22/toxvpn";
+    toxvpn.inputs.nixpkgs.follows = "nixpkgs";
     utils.url = "github:numtide/flake-utils";
     #rpi-nixos.url = "path:/home/clever/apps/rpi/rpi-nixos";
     #nix.url = "path:/home/clever/apps/nix-master";

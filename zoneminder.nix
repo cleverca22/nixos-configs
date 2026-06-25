@@ -1,0 +1,3 @@
+{
+  services.zoneminder.enable = true;
+}
