@@ -190,6 +190,7 @@ in {
         "c2d.localnet-1:YTVKcy9ZO3tqPNxRqeYEYxSpUH5C8ykZ9ImUKuugf4c="
         #"hydra.nixos.org-1:CNHJZBh9K4tP3EKF6FkkgeVYsS3ohTl+oS0Qa8bezVs="
         "amd-1:8E8Dz+Vc/6+8SePHMrJxe92IUYHBdv5pbI7YLnJH6Ek="
+        "hydra.angeldsis.com-1:7s6tP5et6L8Y6sX7XGIwzX5bnLp00MtUQ/1C9t1IBGE="
       ];
       trusted-users = [ "builder" ];
     };
