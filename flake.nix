@@ -3,7 +3,10 @@
     agenix.url = "github:ryantm/agenix";
     cachecache.inputs.nixpkgs.follows = "nixpkgs";
     cachecache.url = "github:cleverca22/cachecache";
-    colmena.url = "github:zhaofengli/colmena";
+    colmena = {
+      url = "github:zhaofengli/colmena";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     firmware = {
       flake = false;
       url = "path:/home/clever/apps/rpi/firmware2";
@@ -14,9 +17,14 @@
       flake = false;
       url = "github:input-output-hk/iohk-ops/65cb4d0b11d4504497aa334fb648716de2338ff5";
     };
-    latency-tracker.url = "github:cleverca22/latency-tracker";
+    latency-tracker = {
+      url = "github:cleverca22/latency-tracker";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "utils";
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    proxmox-nixos.url = "github:SaumonNet/proxmox-nixos";
+    proxmox-nixos.url = "github:cleverca22/proxmox-nixos/offline-migration";
+    proxmox-nixos.inputs.utils.follows = "utils";
     rpi-nixos.url = "github:cleverca22/rpi-nixos?rev=7dea0d95cfb31060b360833d5f60e0f5ebb4b84a";
     temp-daemon.inputs.nixpkgs.follows = "nixpkgs";
     temp-daemon.url = "github:cleverca22/temp_daemon";
@@ -28,6 +36,7 @@
     zfs-utils = {
       url = "github:cleverca22/zfs-utils";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.utils.follows = "utils";
     };
   };
   outputs = { agenix, colmena, firmware, cachecache, self, latency-tracker, nixpkgs, iohk-ops, hydra, proxmox-nixos, rpi-nixos, temp-daemon, toxvpn, utils, zfs-utils }@attrs:
