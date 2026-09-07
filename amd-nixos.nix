@@ -29,6 +29,7 @@ in {
     ./wireshark-no-root.nix
     ./yubikey.nix
     ./zdb.nix
+    ./syncthing.nix
     ./zfs-patch.nix
   ];
   boot = {
