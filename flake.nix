@@ -22,6 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "utils";
     };
+    nixpkgs-zoneminder.url = "github:cleverca22/nixpkgs/zoneminder";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     proxmox-nixos.url = "github:cleverca22/proxmox-nixos/offline-migration";
     proxmox-nixos.inputs.utils.follows = "utils";
@@ -39,7 +40,7 @@
       inputs.utils.follows = "utils";
     };
   };
-  outputs = { agenix, colmena, firmware, cachecache, self, latency-tracker, nixpkgs, iohk-ops, hydra, proxmox-nixos, rpi-nixos, temp-daemon, toxvpn, utils, zfs-utils }@attrs:
+  outputs = { agenix, colmena, firmware, cachecache, self, latency-tracker, nixpkgs-zoneminder, nixpkgs, iohk-ops, hydra, proxmox-nixos, rpi-nixos, temp-daemon, toxvpn, utils, zfs-utils }@attrs:
   let
     lib = (import nixpkgs { system = "x86_64-linux"; }).lib;
     common-config = { pkgs, ... }:

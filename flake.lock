@@ -385,6 +385,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-zoneminder": {
+      "locked": {
+        "lastModified": 1782439201,
+        "narHash": "sha256-n+4qf8dXiJGsmgzU4ta3rfJpPprxrid6b0jZBYcJpGs=",
+        "owner": "cleverca22",
+        "repo": "nixpkgs",
+        "rev": "58b24cf6a13eea1aac88403ed77a4e282f5694cb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cleverca22",
+        "ref": "zoneminder",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1712848736,
@@ -465,6 +481,7 @@
         "iohk-ops": "iohk-ops",
         "latency-tracker": "latency-tracker",
         "nixpkgs": "nixpkgs_3",
+        "nixpkgs-zoneminder": "nixpkgs-zoneminder",
         "proxmox-nixos": "proxmox-nixos",
         "rpi-nixos": "rpi-nixos",
         "temp-daemon": "temp-daemon",

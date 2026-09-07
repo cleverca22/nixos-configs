@@ -1,0 +1,14 @@
+diff --git a/web/includes/functions.php b/web/includes/functions.php
+index 19b3cf11c..c253c64af 100644
+--- a/web/includes/functions.php
++++ b/web/includes/functions.php
+@@ -1850,7 +1850,8 @@ function cache_bust($file) {
+   $parts = pathinfo($file);
+   global $css;
+   $dirname = str_replace('/', '_', $parts['dirname']);
+-  $cacheFile = $dirname.'_'.$parts['filename'].'-'.$css.'-'.filemtime($file).'.'.$parts['extension'];
++  $srcHash = '@srcHash@';
++  $cacheFile = $dirname.'_'.$parts['filename'].'-'.$css.'-'.$srcHash.'.'.$parts['extension'];
+   if (
+     @symlink(ZM_PATH_WEB.'/'.$file, ZM_DIR_CACHE.'/'.$cacheFile)
+     or
