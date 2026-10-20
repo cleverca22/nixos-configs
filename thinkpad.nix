@@ -23,6 +23,8 @@ in {
     ./thinkpad-wifi-client.nix
     ./zdb.nix
     ./zfs-patch.nix
+    ./syncthing.nix
+    ./zoneminder.nix
   ];
   boot = {
     blacklistedKernelModules = [ "dvb_usb_rtl28xxu" ];
@@ -61,14 +63,15 @@ in {
     gdb
     gimp
     git-crypt
+    ffmpeg
     i2c-tools
-    net-tools
     inputs.agenix.packages.${pkgs.system}.agenix
     iperf3
     josm
     jq
     kdePackages.kgpg
     lutris
+    net-tools
     nix-diff
     openssl
     pciutils
@@ -127,10 +130,18 @@ in {
       #  };
       #};
     };
+    #dhcpcd.extraConfig = ''
+    #  fqdn both
+    #  hostname thinkpad.localnet
+    #'';
     #defaultGateway = "10.0.0.1";
-    firewall.allowedUDPPorts = [ config.services.toxvpn.port ];
+    firewall = {
+      allowedTCPPorts = [ 20000 ];
+      allowedUDPPorts = [ config.services.toxvpn.port ];
+    };
     hostId = "5a11b73e";
     hostName = "thinkpad";
+    domain = "localnet";
     interfaces = {
       enp0s31f6 = {
         wakeOnLan.enable = true;
