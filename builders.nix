@@ -48,12 +48,12 @@ in {
   };
   thinkpad = {
     hostName = "thinkpad";
-    maxJobs = 2;
+    maxJobs = 8;
     speedFactor = 4;
     sshKey = key;
     sshUser = "builder";
     supportedFeatures = [ "big-parallel" "kvm" "nixos-test" ];
-    systems = [ "x86_64-linux" ];
+    systems = [ "i686-linux" "x86_64-linux" ];
   };
   darwin = {
     hostName = "du075.macincloud.com";
