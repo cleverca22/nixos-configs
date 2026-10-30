@@ -2,6 +2,9 @@
 
 {
   defaults = {
+    imports = [
+      ./CVE-2026-98432.nix
+    ];
     documentation.enable = false;
   };
   meta = {

@@ -9,8 +9,9 @@ let
   });
 in {
   imports = [
-    ./amd-wg.nix
+    ./CVE-2026-98432.nix
     ./amd-proxmox.nix
+    ./amd-wg.nix
     # ./psql_test.nix
     # ./radeon-exporter.nix
     ./amdgpu.nix
@@ -31,11 +32,13 @@ in {
     ./zdb.nix
     ./syncthing.nix
     ./zfs-patch.nix
+    ./passkey.nix
   ];
   boot = {
     binfmt = {
       emulatedSystems = [
         "armv7l-linux"
+        "aarch64-linux"
       ];
     };
     blacklistedKernelModules = [
@@ -131,7 +134,7 @@ in {
     #gtkwave
     #remmina
     #saleae-logic-2
-    #stellarium
+    stellarium
     #tigervnc
     #youtube-dl
     (hwloc.override { x11Support = true; })
@@ -156,6 +159,7 @@ in {
     #xsane
     adwaita-qt
     adwaita-qt6
+    urh
     appimage-run
     asciinema
     audacity
@@ -319,7 +323,25 @@ in {
       #192.168.2.1   ext.earthtools.ca reven.angeldsis.com repo.angeldsis.com gallery.earthtools.ca
       #167.114.21.160 angeldsis.com
     '';
-    firewall.enable = false;
+    firewall = {
+      enable = true;
+      interfaces = {
+        wg0 = {
+          allowedTCPPorts = [
+            2222
+          ];
+        };
+        br0 = {
+          allowedTCPPorts = [
+            80
+            3000 # latency-tracker
+          ];
+          allowedUDPPorts = [
+            21027
+          ];
+        };
+      };
+    };
     hostId = "fe1f6cbf";
     hostName = "amd-nixos";
     interfaces = let
@@ -624,7 +646,7 @@ in {
   systemd = {
     coredump = {
       enable = true;
-      settings.Coredump.extraConfig = "ExternalSizeMax=${toString (8 * 1024 * 1024 * 1024)}";
+      settings.Coredump.ExternalSizeMax = "${toString (8 * 1024 * 1024 * 1024)}";
     };
     services.sshd.wantedBy = pkgs.lib.mkForce [ "multi-user.target" ];
     user = {
