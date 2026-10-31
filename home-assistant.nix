@@ -163,7 +163,6 @@ in {
   };
   services.home-assistant = {
     enable = true;
-    openFirewall = true;
     package = (fixed_pkgs.home-assistant.override {
       extraComponents = [
         "cast" "http" "openweathermap" "roku"
