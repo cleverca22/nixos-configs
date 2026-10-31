@@ -9,7 +9,6 @@ let
   });
 in {
   imports = [
-    ./CVE-2026-98432.nix
     ./amd-proxmox.nix
     ./amd-wg.nix
     # ./psql_test.nix
