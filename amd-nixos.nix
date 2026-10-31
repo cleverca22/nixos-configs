@@ -502,12 +502,6 @@ in {
     rtkit.enable = lib.mkForce false;
   };
   services = {
-    i2pd = {
-      bandwidth = 1024;
-      enable = false;
-      proto.http.enable = true;
-      proto.i2cp.enable = true;
-    };
     iscsid.enable = true;
     kmscon = {
       enable = true;
