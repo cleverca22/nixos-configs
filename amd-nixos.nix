@@ -239,7 +239,6 @@ in {
     socat
     sysstat pciutils vlc
     tcpdump
-    tmate
     tree
     utox
     valgrind
