@@ -64,6 +64,7 @@ in {
             #"systemd.network-metrics"
             "systemd.enable-start-time-metrics"
             "tcpstat"
+            "textfile"
             "time"
             "timex"
             "vmstat"
@@ -71,6 +72,9 @@ in {
             #"ksmd"
             #"logind"
             #"processes"
+          ];
+          extraFlags = [
+            "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files"
           ];
           openFirewall = config.exporters.openFirewall;
         };
