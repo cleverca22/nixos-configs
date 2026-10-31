@@ -42,7 +42,6 @@ in {
         allowDiscards = true;
         device = "/dev/nvme0n1p2";
         name = "root";
-        preLVM = true;
       };
       availableKernelModules = [ "xhci_pci" "ahci" "nvme" "rtsx_pci_sdmmc" ];
     };
