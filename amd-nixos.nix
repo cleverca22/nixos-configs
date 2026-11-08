@@ -19,7 +19,7 @@ in {
     ./direnv.nix
     ./docker.nix
     ./exporter.nix
-    ./ipfs-test.nix
+    #./ipfs-test.nix
     ./latency-tracker.nix
     ./pipewire.nix
     ./rpi-udev.nix
@@ -30,7 +30,7 @@ in {
     ./yubikey.nix
     ./zdb.nix
     ./syncthing.nix
-    ./zfs-patch.nix
+    #./zfs-patch.nix
     ./passkey.nix
   ];
   boot = {
