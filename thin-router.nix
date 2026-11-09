@@ -173,6 +173,11 @@ in
       experimental-features = nix-command flakes
     '';
   };
+  nixpkgs.overlays = [
+    (self: super: {
+      toxvpn = super.toxvpn // { meta.mainProgram = "toxvpn"; };
+    })
+  ];
 
   programs = {
     vim.fat = false;
