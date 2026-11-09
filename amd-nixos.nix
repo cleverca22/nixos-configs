@@ -27,10 +27,11 @@ in {
     (modulesPath + "/profiles/all-hardware.nix")
     ./steam.nix
     ./wireshark-no-root.nix
+    ./syncthing.nix
+    ./toxvpn-client.nix
     ./yubikey.nix
     ./zdb.nix
-    ./syncthing.nix
-    #./zfs-patch.nix
+    ./zfs-patch.nix
     ./passkey.nix
   ];
   boot = {

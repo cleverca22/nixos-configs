@@ -39,6 +39,7 @@ in {
     ./rtorrent.nix
     ./syncplay.nix
     ./tgt_service.nix
+    ./toxvpn-client.nix
     ./zdb.nix
     ./zfs-patch.nix
     #<nixpkgs/nixos/modules/installer/scan/not-detected.nix>
@@ -157,7 +158,6 @@ in {
         9987 # ts3
         9990 # ts3 2nd
         33445
-        config.services.toxvpn.port
       ];
     };
     hostId = "491ddec8";

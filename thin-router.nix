@@ -20,6 +20,7 @@ in
     ./nixops-managed.nix
     ./sounds.nix
     ./temp-daemon.nix
+    ./toxvpn-client.nix
     ./zdb.nix
     ./zfs-patch.nix
   ];
@@ -173,11 +174,6 @@ in
       experimental-features = nix-command flakes
     '';
   };
-  nixpkgs.overlays = [
-    (self: super: {
-      toxvpn = super.toxvpn // { meta.mainProgram = "toxvpn"; };
-    })
-  ];
 
   programs = {
     vim.fat = false;

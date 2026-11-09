@@ -21,6 +21,7 @@ in {
     ./thinkpad-proxmox.nix
     ./thinkpad-wg.nix
     ./thinkpad-wifi-client.nix
+    ./toxvpn-client.nix
     ./zdb.nix
     ./zfs-patch.nix
     ./syncthing.nix
@@ -137,7 +138,6 @@ in {
     #defaultGateway = "10.0.0.1";
     firewall = {
       allowedTCPPorts = [ 20000 ];
-      allowedUDPPorts = [ config.services.toxvpn.port ];
     };
     hostId = "5a11b73e";
     hostName = "thinkpad";
