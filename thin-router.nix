@@ -74,7 +74,11 @@ in
     "/nas" = {
       device = "nas:/nas";
       fsType = "nfs";
-      options = [ "soft" "nofail" ];
+      options = [
+        "soft"
+        "nofail"
+        "x-systemd.requires=network-online.target"
+      ];
     };
   };
 
