@@ -63,7 +63,6 @@ in {
           ln -s ${self.binutils.out}/share/man/man1/strings.1.gz $out/share/man/man1/
         '';
         technic = self.callPackage ./technic.nix {};
-        toxvpn = inputs.toxvpn.packages.x86_64-linux.default;
         util = self.callPackage ./util.nix {};
       })
     ];
