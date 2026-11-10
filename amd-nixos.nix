@@ -19,7 +19,7 @@ in {
     ./direnv.nix
     ./docker.nix
     ./exporter.nix
-    #./ipfs-test.nix
+    ./ipfs-test.nix
     ./latency-tracker.nix
     ./pipewire.nix
     ./rpi-udev.nix
@@ -594,12 +594,6 @@ in {
     zfs.autoSnapshot.enable = true;
   };
   swapDevices = [
-    #{ device = "/dev/nvme0n1p3"; priority = 10; }
-    #{ device = "/dev/disk/by-partlabel/swap1"; priority = 10; }
-    #{ device = "/dev/disk/by-partlabel/swap2"; priority = 10; }
-    #{ device = "/dev/disk/by-uuid/ea242aa4-59c5-4597-a5a5-e2874318aca2"; priority = 10; }
-    #{ device = "/dev/disk/by-uuid/464d057a-d17f-4f69-a56b-7849fad96f7e"; priority = 11; }
-    { device = "/dev/disk/by-uuid/3fdb005c-97e7-4dfb-9a3f-71748d714ae4"; priority = 9; }
     { device = "/dev/disk/by-uuid/464d057a-d17f-4f69-a56b-7849fad96f7e"; priority = 10; }
   ];
   system.stateVersion = "24.05";
