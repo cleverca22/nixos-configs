@@ -62,16 +62,19 @@ in {
       ];
     };
     hydra = {
-      evaluatorSettings.max_concurrent_evals = 1;
+      evaluatorSettings = {
+        max_concurrent_evals = 1;
+      };
       queueRunner.settings.tokenPaths = [ config.age.secrets."hydra-token".path ];
       queueRunner.grpc.address = "10.0.0.11";
       #package = hydra-fork;
       enable = true;
       extraConfig = with passwords; ''
+        allow_import_from_derivation = true
         binary_cache_secret_key_file = /etc/nix/keys/secret-key-file
-        store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
-        max_output_size = ${toString (1024*1024*1024*3)} # 3gig
         evaluator_initial_heap_size = ${toString (1024*1024*1024)} # 1gig
+        max_output_size = ${toString (1024*1024*1024*3)} # 3gig
+        store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
         <github_authorization>
           input-output-hk = ${token1}
           cleverca22 = ${token1}
