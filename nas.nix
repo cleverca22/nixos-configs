@@ -266,6 +266,7 @@ in {
         #"iqn.2016-02.windows-extra" = { backingStore = "/dev/naspool/windows-extra"; index = 4; };
         "iqn.2022-10.huge" = { backingStore = "/dev/zvol/naspool/huge"; index = 5; blockSize = 4096; };
         "iqn.2026-03.amd-mirror" = { backingStore = "/dev/zvol/naspool/amd-mirror"; index = 7; blockSize = 512; };
+        "iqn.2026-09.vali" = { backingStore = "/dev/zvol/naspool/vali"; index = 8; blockSize = 4096; };
       };
     };
     locate.enable = true;

@@ -26,6 +26,7 @@ in {
     ./zfs-patch.nix
     ./syncthing.nix
     ./zoneminder.nix
+    ./hydra-client.nix
   ];
   boot = {
     blacklistedKernelModules = [ "dvb_usb_rtl28xxu" ];

@@ -18,7 +18,9 @@ let
   };
   #hydra-fork = (import (hydraSrc + "/release.nix") { hydraSrc = hydraSrc'; nixpkgs = pkgs.path; }).build.x86_64-linux;
 in {
-  users.users.hydra-www.extraGroups = [ "hydra" ];
+  age.secrets = {
+    "hydra-token".file = ./secrets/hydra-token.age;
+  };
   systemd.services.hydra-queue-runner = {
     serviceConfig = {
       #ExecStart = lib.mkForce "@${config.services.hydra.package}/bin/hydra-queue-runner hydra-queue-runner -vvvvvv";
@@ -34,25 +36,41 @@ in {
     allowed-uris = https://github.com/input-output-hk/nixpkgs/archive/ https://github.com/nixos https://github.com/input-output-hk https://github.com/taktoa/nixpkgs github:
     experimental-features = nix-command flakes
   '';
-  nix.min-free = 10;
+  networking = {
+    firewall = {
+      allowedTCPPorts = [
+        50051 # hydra gRPC
+      ];
+    };
+  };
   nix.max-free = 15;
+  nix.min-free = 10;
   nix.settings.auto-optimise-store = true;
   services = {
     postgresql = {
       package = pkgs.postgresql_16;
       identMap = ''
-        hydra-users clever clever
-        hydra-users root root
+        hydra clever clever
+        hydra root root
+        hydra root hydra-www
+        postgres root postgres
       '';
+      ensureUsers = [
+        {
+          name = "hydra-www";
+        }
+      ];
     };
     hydra = {
-      package = hydra-fork;
+      evaluatorSettings.max_concurrent_evals = 1;
+      queueRunner.settings.tokenPaths = [ config.age.secrets."hydra-token".path ];
+      queueRunner.grpc.address = "10.0.0.11";
+      #package = hydra-fork;
       enable = true;
       extraConfig = with passwords; ''
         binary_cache_secret_key_file = /etc/nix/keys/secret-key-file
         store-uri = file:///nix/store?secret-key=/etc/nix/keys/secret-key-file
         max_output_size = ${toString (1024*1024*1024*3)} # 3gig
-        max_concurrent_evals = 1
         evaluator_initial_heap_size = ${toString (1024*1024*1024)} # 1gig
         <github_authorization>
           input-output-hk = ${token1}
@@ -115,4 +133,5 @@ in {
       };
     };
   };
+  users.users.hydra-www.extraGroups = [ "hydra" ];
 }
