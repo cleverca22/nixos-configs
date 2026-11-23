@@ -81,7 +81,7 @@ in {
         wireguard.enable = true;
       };
     };
-    networking.firewall.allowedTCPPorts = lib.mkIf config.exporters.openFirewall [ 9113 9102 ];
+    networking.firewall.allowedTCPPorts = lib.mkIf config.exporters.openFirewall [ 9113 9102 9586 ];
     systemd.services = {
       "prometheus-node-exporter" = {
         serviceConfig.ProtectHome = lib.mkForce false;
