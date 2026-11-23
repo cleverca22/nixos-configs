@@ -207,6 +207,16 @@ in {
         (mkMinecraft "prom")
         (mkMinecraft "prom2")
         {
+          job_name = "wireguard";
+          scrape_interval = "60s";
+          metrics_path = "/metrics";
+          static_configs = [
+            {
+              targets = [ "amd:9586" ];
+            }
+          ];
+        }
+        {
           job_name = "gtnh";
           scrape_interval = "10s";
           metrics_path = "/";

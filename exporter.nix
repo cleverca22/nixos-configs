@@ -78,6 +78,7 @@ in {
           ];
           openFirewall = config.exporters.openFirewall;
         };
+        wireguard.enable = true;
       };
     };
     networking.firewall.allowedTCPPorts = lib.mkIf config.exporters.openFirewall [ 9113 9102 ];
